@@ -23,4 +23,4 @@ A Build Pipeline utility package for the [Unity](https://unity.com/) Game Engine
 ### Via Unity Package Manager and Git url
 
 - Open your Unity Package Manager
-- Add package from git url: `https://github.com/RageAgainstThePixel/com.utilities.buildpipeline.git#upm`
+- Add package from git url: `https://github.com/RageAgainstThePixel/com.utilities.buildpipeine.git#upm`
