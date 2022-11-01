@@ -16,15 +16,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  validate-editor-installation:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: windows
-            build-target: Android
-          - os: windows
-            build-target: StandaloneWindows64
 
     steps:
       - uses: actions/checkout@v2
@@ -33,6 +31,24 @@ jobs:
 
       - name: validate editor installation
         uses: xrtk/unity-validate@main
+
+  build:
+    needs: validate-editor-installation
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows
+            build-target: Android
+          - os: windows
+            build-target: StandaloneWindows64
+          - os: macos
+            build-target: Android
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          clean: true
 
       - name: Unity Build (${{ matrix.build-target }})
         uses: RageAgainstThePixel/unity-build@main
