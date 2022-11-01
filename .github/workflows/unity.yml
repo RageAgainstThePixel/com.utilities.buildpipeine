@@ -42,3 +42,5 @@ jobs:
         uses: RageAgainstThePixel/unity-build@main
         with:
           build-target: ${{ matrix.build-target }}
+          additional-validate-args: '-force-free'
+          additional-build-args: '-force-free'
