@@ -42,8 +42,6 @@ jobs:
             build-target: Android
           - os: windows
             build-target: StandaloneWindows64
-          - os: macos
-            build-target: Android
 
     steps:
       - uses: actions/checkout@v2
