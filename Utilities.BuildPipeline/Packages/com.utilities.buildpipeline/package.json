@@ -1,6 +1,6 @@
 {
   "name": "com.utilities.buildpipeline",
-  "displayName": "Build Pipeline",
+  "displayName": "Build Pipeline Utilities",
   "description": "The Build Pipeline Utiltites aims to give developers more tools and options when making builds with the command line or with continuous integration.",
   "keywords": [],
   "version": "1.0.0-preview.1",
