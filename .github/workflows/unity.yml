@@ -29,11 +29,24 @@ jobs:
             build-target: StandaloneOSX
 
     steps:
+      - uses: actions/checkout@v3
+
+        # Installs the Unity Editor based on your project version text file
+        # sets -> env.UNITY_EDITOR_PATH
+        # sets -> env.UNITY_PROJECT_PATH
+        # https://github.com/XRTK/unity-setup
       - uses: xrtk/unity-setup@v4
 
-      - uses: actions/checkout@v3
+        # Activates the installation with the provided credentials
+        # https://github.com/XRTK/activate-unity-license
+      - uses: xrtk/activate-unity-license@v1
         with:
-          clean: true
+          # Required
+          username: ${{ secrets.UNITY_USERNAME }}
+          password: ${{ secrets.UNITY_PASSWORD }}
+          # Optional
+          license-type: 'Personal' # Chooses license type to use [ Personal, Professional ]
+          serial: ${{ secrets.UNITY_SERIAL }} # Required for pro/plus activations
 
       - name: Unity Build (${{ matrix.build-target }})
         uses: RageAgainstThePixel/unity-build@main
