@@ -1,4 +1,4 @@
-name: Unity Build
+name: unity-build-validation
 
 on:
   push:
@@ -16,34 +16,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  validate-editor-installation:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          clean: true
-
-      - name: validate editor installation
-        uses: xrtk/unity-validate@v2
-
   build:
-    needs: validate-editor-installation
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
-          - os: windows
-            build-target: Android
-          - os: windows
+          - os: ubuntu-latest
+            build-target: StandaloneLinux64
+          - os: windows-latest
             build-target: StandaloneWindows64
+          - os: macos-latest
+            build-target: StandaloneOSX
 
     steps:
+      - uses: xrtk/unity-setup@v4
+
       - uses: actions/checkout@v3
         with:
           clean: true
