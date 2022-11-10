@@ -99,6 +99,10 @@ namespace Utilities.Editor.BuildPipeline
                     case BuildTarget.StandaloneWindows:
                     case BuildTarget.StandaloneWindows64:
                         return ".exe";
+                    case BuildTarget.EmbeddedLinux:
+                    case BuildTarget.LinuxHeadlessSimulation:
+                    case BuildTarget.StandaloneLinux64:
+                        return string.Empty;
                     default:
                         return "/";
                 }
