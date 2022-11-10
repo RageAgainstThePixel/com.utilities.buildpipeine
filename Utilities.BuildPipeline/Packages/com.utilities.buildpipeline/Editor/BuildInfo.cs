@@ -101,8 +101,6 @@ namespace Utilities.Editor.BuildPipeline
                         return ".exe";
                     case BuildTarget.StandaloneOSX:
                         return ".app";
-                    case BuildTarget.EmbeddedLinux:
-                    case BuildTarget.LinuxHeadlessSimulation:
                     case BuildTarget.StandaloneLinux64:
                         return string.Empty;
                     default:
