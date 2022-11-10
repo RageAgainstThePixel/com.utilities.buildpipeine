@@ -99,6 +99,8 @@ namespace Utilities.Editor.BuildPipeline
                     case BuildTarget.StandaloneWindows:
                     case BuildTarget.StandaloneWindows64:
                         return ".exe";
+                    case BuildTarget.StandaloneOSX:
+                        return ".app";
                     case BuildTarget.EmbeddedLinux:
                     case BuildTarget.LinuxHeadlessSimulation:
                     case BuildTarget.StandaloneLinux64:
