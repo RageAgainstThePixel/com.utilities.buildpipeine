@@ -35,7 +35,7 @@ jobs:
         # sets -> env.UNITY_EDITOR_PATH
         # sets -> env.UNITY_PROJECT_PATH
         # https://github.com/XRTK/unity-setup
-      - uses: xrtk/unity-setup@v5
+      - uses: xrtk/unity-setup@v6
 
         # Activates the installation with the provided credentials
         # https://github.com/XRTK/activate-unity-license
