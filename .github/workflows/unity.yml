@@ -25,8 +25,8 @@ jobs:
             build-target: StandaloneLinux64
           - os: windows-latest
             build-target: StandaloneWindows64
-          #- os: macos-latest
-          #  build-target: StandaloneOSX
+          - os: macos-latest
+            build-target: StandaloneOSX
 
     steps:
       - uses: actions/checkout@v3
@@ -45,7 +45,7 @@ jobs:
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
           # Optional
-          license-type: 'Pro' # Chooses license type to use [ Personal, Professional ]
+          license-type: 'Personal' # Chooses license type to use [ Personal, Professional ]
           serial: ${{ secrets.UNITY_SERIAL }} # Required for pro/plus activations
 
       - name: Unity Build (${{ matrix.build-target }})
