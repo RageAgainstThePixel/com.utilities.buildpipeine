@@ -92,7 +92,7 @@ jobs:
       #     serial: ${{ secrets.UNITY_SERIAL }} # Required for pro/plus activations
 
       - name: Unity Build (${{ matrix.build-target }})
-        uses: RageAgainstThePixel/unity-build@v1
+        uses: RageAgainstThePixel/unity-build@v3
         with:
           build-target: ${{ matrix.build-target }}
 ```
