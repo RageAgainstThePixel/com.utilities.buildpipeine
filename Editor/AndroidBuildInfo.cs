@@ -28,6 +28,22 @@ namespace Utilities.Editor.BuildPipeline
                     case "-splitApk":
                         PlayerSettings.Android.useAPKExpansionFiles = true;
                         break;
+                    case "-keyaliasName":
+                        PlayerSettings.Android.keyaliasName = arguments[++i];
+                        PlayerSettings.Android.useCustomKeystore = true;
+                        break;
+                    case "-keyaliasPass":
+                        PlayerSettings.Android.keyaliasPass = arguments[++i];
+                        PlayerSettings.Android.useCustomKeystore = true;
+                        break;
+                    case "-keystoreName":
+                        PlayerSettings.Android.keystoreName = arguments[++i];
+                        PlayerSettings.Android.useCustomKeystore = true;
+                        break;
+                    case "-keystorePass":
+                        PlayerSettings.Android.useCustomKeystore = true;
+                        PlayerSettings.Android.keystorePass = arguments[++i];
+                        break;
                 }
             }
         }
@@ -50,7 +66,7 @@ namespace Utilities.Editor.BuildPipeline
             {
                 PlayerSettings.Android.bundleVersionCode = VersionCode.Value;
             }
-            else
+            else if (AutoIncrement)
             {
                 // Usually version codes are unique and not tied to the usual semver versions
                 // see https://developer.android.com/studio/publish/versioning#appversioning
