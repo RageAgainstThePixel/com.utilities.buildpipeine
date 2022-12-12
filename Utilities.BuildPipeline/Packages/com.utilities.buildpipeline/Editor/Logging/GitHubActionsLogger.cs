@@ -13,8 +13,5 @@ namespace Utilities.Editor.BuildPipeline.Logging
 
         /// <inheritdoc />
         public override string Error => "::error::";
-
-        /// <inheritdoc />
-        public override string Log => "::notice::";
     }
 }
