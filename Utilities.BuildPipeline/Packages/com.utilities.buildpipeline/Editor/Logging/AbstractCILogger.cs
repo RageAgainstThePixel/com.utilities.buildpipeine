@@ -39,15 +39,15 @@ namespace Utilities.Editor.BuildPipeline.Logging
                 switch (logType)
                 {
                     case LogType.Log:
-                        format = $"\n{Log}{format}";
+                        format = $"\n{Log}{LogColor}{format}{ResetColor}";
                         break;
                     case LogType.Assert:
                     case LogType.Error:
                     case LogType.Exception:
-                        format = $"\n{Error}{format}";
+                        format = $"\n{Error}{ErrorColor}{format}{ResetColor}";
                         break;
                     case LogType.Warning:
-                        format = $"\n{Warning}{format}";
+                        format = $"\n{Warning}{WarningColor}{format}{WarningColor}";
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(logType), logType, null);
@@ -72,9 +72,21 @@ namespace Utilities.Editor.BuildPipeline.Logging
         public virtual string Log => string.Empty;
 
         /// <inheritdoc />
-        public virtual string Error => string.Empty;
+        public virtual string LogColor => "`e[32m";
 
         /// <inheritdoc />
         public virtual string Warning => string.Empty;
+
+        /// <inheritdoc />
+        public virtual string WarningColor => "`e[0;33m";
+
+        /// <inheritdoc />
+        public virtual string Error => "`e[0;31m";
+
+        /// <inheritdoc />
+        public virtual string ErrorColor => string.Empty;
+
+        /// <inheritdoc />
+        public virtual string ResetColor => "`e[0m";
     }
 }

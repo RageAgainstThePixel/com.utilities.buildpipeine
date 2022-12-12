@@ -61,6 +61,10 @@ namespace Utilities.Editor.BuildPipeline.Logging
             {
                 Logger = new GitHubActionsLogger();
             }
+
+            Debug.Log("Test Log");
+            Debug.LogWarning("Test Warning");
+            Debug.LogError("Test Error");
         }
     }
 }
