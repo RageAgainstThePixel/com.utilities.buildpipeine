@@ -72,21 +72,21 @@ namespace Utilities.Editor.BuildPipeline.Logging
         public virtual string Log => string.Empty;
 
         /// <inheritdoc />
-        public virtual string LogColor => "``e[32m";
+        public virtual string LogColor => @"\`e[32m";
 
         /// <inheritdoc />
         public virtual string Warning => string.Empty;
 
         /// <inheritdoc />
-        public virtual string WarningColor => "``e[0;33m";
+        public virtual string WarningColor => @"\`e[0;33m";
 
         /// <inheritdoc />
-        public virtual string Error => "``e[0;31m";
+        public virtual string Error => @"\`e[0;31m";
 
         /// <inheritdoc />
-        public virtual string ErrorColor => "``e[0;31m;";
+        public virtual string ErrorColor => @"\`e[0;31m;";
 
         /// <inheritdoc />
-        public virtual string ResetColor => "``e[0m";
+        public virtual string ResetColor => @"\`e[0m";
     }
 }
