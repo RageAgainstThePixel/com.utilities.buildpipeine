@@ -37,7 +37,7 @@ jobs:
         # https://github.com/XRTK/unity-setup
       - uses: xrtk/unity-setup@v6
         with:
-          modules: '${{ matrix.build-targets }}'
+          modules: ${{ matrix.build-target }}
 
         # Activates the installation with the provided credentials
         # https://github.com/XRTK/activate-unity-license
