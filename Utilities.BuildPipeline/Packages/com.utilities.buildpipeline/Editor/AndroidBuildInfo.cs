@@ -20,6 +20,7 @@ namespace Utilities.Editor.BuildPipeline
             base.ParseCommandLineArgs();
 
             var arguments = Environment.GetCommandLineArgs();
+            var useCustomKeystore = false;
 
             for (int i = 0; i < arguments.Length; ++i)
             {
@@ -28,23 +29,20 @@ namespace Utilities.Editor.BuildPipeline
                     case "-splitApk":
                         PlayerSettings.Android.useAPKExpansionFiles = true;
                         break;
-                    case "-keyaliasName":
-                        PlayerSettings.Android.keyaliasName = arguments[++i];
-                        PlayerSettings.Android.useCustomKeystore = true;
-                        break;
                     case "-keyaliasPass":
-                        PlayerSettings.Android.keyaliasPass = arguments[++i];
-                        PlayerSettings.Android.useCustomKeystore = true;
-                        break;
-                    case "-keystoreName":
-                        PlayerSettings.Android.keystoreName = arguments[++i];
-                        PlayerSettings.Android.useCustomKeystore = true;
+                        PlayerSettings.keyaliasPass = arguments[++i];
+                        useCustomKeystore = true;
                         break;
                     case "-keystorePass":
-                        PlayerSettings.Android.keystorePass = arguments[++i];
-                        PlayerSettings.Android.useCustomKeystore = true;
+                        PlayerSettings.keystorePass = arguments[++i];
+                        useCustomKeystore = true;
                         break;
                 }
+            }
+
+            if (useCustomKeystore)
+            {
+                PlayerSettings.Android.useCustomKeystore = true;
             }
         }
 
