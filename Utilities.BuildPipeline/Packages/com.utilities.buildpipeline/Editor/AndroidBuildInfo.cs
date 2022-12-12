@@ -41,8 +41,8 @@ namespace Utilities.Editor.BuildPipeline
                         PlayerSettings.Android.useCustomKeystore = true;
                         break;
                     case "-keystorePass":
-                        PlayerSettings.Android.useCustomKeystore = true;
                         PlayerSettings.Android.keystorePass = arguments[++i];
+                        PlayerSettings.Android.useCustomKeystore = true;
                         break;
                 }
             }
