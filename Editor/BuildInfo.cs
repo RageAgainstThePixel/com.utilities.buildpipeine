@@ -151,7 +151,9 @@ namespace Utilities.Editor.BuildPipeline
                         AutoIncrement = true;
                         break;
                     case "-versionName":
-                        if (Version.TryParse(arguments[++i], out var version))
+                        var versionString = UnityPlayerBuildTools.GetValidVersionString(arguments[++i]);
+
+                        if (Version.TryParse(versionString, out var version))
                         {
                             Version = version;
                         }
