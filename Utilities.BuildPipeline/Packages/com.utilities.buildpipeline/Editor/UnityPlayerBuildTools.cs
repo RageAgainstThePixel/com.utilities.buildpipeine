@@ -121,8 +121,10 @@ namespace Utilities.Editor.BuildPipeline
                     return $"{parts[0]}.0.0";
                 case 2:
                     return $"{parts[0]}.{parts[1]}.0";
-                default:
+                case 3:
                     return $"{parts[0]}.{parts[1]}.{parts[2]}";
+                default:
+                    return $"{parts[0]}.{parts[1]}.{parts[2]}.{parts[^1]}";
             }
         }
 
@@ -161,7 +163,7 @@ namespace Utilities.Editor.BuildPipeline
             }
 
             // Updates the Application.version and syncs Android and iOS bundle version strings
-            PlayerSettings.bundleVersion = version.ToString(3);
+            PlayerSettings.bundleVersion = version.ToString();
             // Update Lumin bc the Application.version isn't synced like Android & iOS
             PlayerSettings.Lumin.versionName = PlayerSettings.bundleVersion;
             // Update WSA bc the Application.version isn't synced line Android & iOS
