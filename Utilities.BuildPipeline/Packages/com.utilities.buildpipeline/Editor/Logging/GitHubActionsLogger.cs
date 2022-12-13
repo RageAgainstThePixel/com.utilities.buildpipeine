@@ -9,9 +9,9 @@ namespace Utilities.Editor.BuildPipeline.Logging
     public class GitHubActionsLogger : AbstractCILogger
     {
         /// <inheritdoc />
-        public override string Error => "::error::";
+        public override string Warning => "::warning::";
 
         /// <inheritdoc />
-        public override string Warning => "::warning::";
+        public override string Error => "::error::";
     }
 }
