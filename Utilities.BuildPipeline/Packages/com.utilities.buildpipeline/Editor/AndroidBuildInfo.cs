@@ -37,6 +37,9 @@ namespace Utilities.Editor.BuildPipeline
                         PlayerSettings.keystorePass = arguments[++i];
                         useCustomKeystore = true;
                         break;
+                    case "-export":
+                        EditorUserBuildSettings.exportAsGoogleAndroidProject = true;
+                        break;
                 }
             }
 
