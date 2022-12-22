@@ -184,7 +184,7 @@ namespace Utilities.Editor.BuildPipeline
                     case "-buildOutputDirectory":
                         OutputDirectory = arguments[++i];
                         break;
-                    case "-export":
+                    case "-acceptExternalModificationsToPlayer":
                         BuildOptions = BuildOptions.SetFlag(BuildOptions.AcceptExternalModificationsToPlayer);
                         break;
                     case "-colorSpace":
