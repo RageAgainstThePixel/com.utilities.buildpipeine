@@ -87,7 +87,9 @@ namespace Utilities.Editor.BuildPipeline
         }
 
         /// <inheritdoc />
-        public string FullOutputPath => $"{OutputDirectory}/{BundleIdentifier}{ExecutableFileExtension}";
+        public string FullOutputPath => IsExport ?
+            OutputDirectory :
+            $"{OutputDirectory}/{BundleIdentifier}{ExecutableFileExtension}";
 
         /// <inheritdoc />
         public virtual string ExecutableFileExtension
@@ -134,6 +136,9 @@ namespace Utilities.Editor.BuildPipeline
 
         /// <inheritdoc />
         public string BuildSymbols { get; set; } = string.Empty;
+
+        /// <inheritdoc />
+        public bool IsExport { get; private set; }
 
         /// <inheritdoc />
         public virtual void ParseCommandLineArgs()
@@ -205,6 +210,9 @@ namespace Utilities.Editor.BuildPipeline
                                 break;
                         }
 
+                        break;
+                    case "-export":
+                        IsExport = true;
                         break;
                 }
             }
