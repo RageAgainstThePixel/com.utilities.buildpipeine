@@ -17,7 +17,7 @@ A Build Pipeline utility package for the [Unity](https://unity.com/) Game Engine
   - `Name: OpenUPM`
   - `URL: https://package.openupm.com`
   - `Scope(s):`
-    - `com.utilities.buildpipeline`
+    - `com.utilities`
 - Open the Unity Package Manager window
 - Change the Registry from Unity to `My Registries`
 - Add the `Utilities.BuildPipeline` package
