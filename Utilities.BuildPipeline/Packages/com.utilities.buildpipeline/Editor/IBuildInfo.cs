@@ -100,6 +100,11 @@ namespace Utilities.Editor.BuildPipeline
         string Configuration { get; set; }
 
         /// <summary>
+        /// True, if the project is being exported to a native project.
+        /// </summary>
+        bool IsExport { get; }
+
+        /// <summary>
         /// Parses command line args via <see cref="Environment.GetCommandLineArgs"/>
         /// </summary>
         /// <remarks>
