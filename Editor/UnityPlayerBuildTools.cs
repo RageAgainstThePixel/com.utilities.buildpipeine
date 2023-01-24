@@ -122,9 +122,9 @@ namespace Utilities.Editor.BuildPipeline
                 case 2:
                     return $"{parts[0]}.{parts[1]}.0";
                 case 3:
-                    return $"{parts[0]}.{parts[1]}.{parts[2]}";
+                    return $"{parts[0]}.{parts[1]}.{parts[2].Replace("-preview", string.Empty)}";
                 default:
-                    return $"{parts[0]}.{parts[1]}.{parts[2]}.{parts[^1]}";
+                    return $"{parts[0]}.{parts[1]}.{parts[2].Replace("-preview", string.Empty)}.{parts[^1]}";
             }
         }
 
