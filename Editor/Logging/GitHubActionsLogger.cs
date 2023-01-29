@@ -21,7 +21,9 @@ namespace Utilities.Editor.BuildPipeline.Logging
         /// <inheritdoc />
         public override void GenerateBuildSummary(BuildReport buildReport)
         {
-            var buildResultMessage = $"Build success? {buildReport.summary.result}\nBuild time: {buildReport.summary.totalTime:g}";
+            // temp disable logging to get the right messages sent.
+            CILoggingUtility.LoggingEnabled = false;
+            var buildResultMessage = $"Build success? {buildReport.summary.result} | Duration: {buildReport.summary.totalTime:g}";
 
             switch (buildReport.summary.result)
             {
@@ -30,10 +32,10 @@ namespace Utilities.Editor.BuildPipeline.Logging
                     break;
                 case BuildResult.Unknown:
                 case BuildResult.Cancelled:
-                    Debug.Log($"{Warning}{buildResultMessage}");
+                    Debug.Log($"{Warning}{WarningColor}{buildResultMessage}{ResetColor}");
                     break;
                 case BuildResult.Failed:
-                    Debug.Log($"{Error}{buildResultMessage}");
+                    Debug.Log($"{Error}{ErrorColor}{buildResultMessage}{ResetColor}");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -50,10 +52,10 @@ namespace Utilities.Editor.BuildPipeline.Logging
                         case LogType.Error:
                         case LogType.Assert:
                         case LogType.Exception:
-                            Debug.Log($"{Error} {message.content}");
+                            Debug.Log($"{Error}{ErrorColor}{message.content}{ResetColor}");
                             break;
                         case LogType.Warning:
-                            Debug.Log($"{Warning} {message.content}");
+                            Debug.Log($"{Warning}{WarningColor}{message.content}{ResetColor}");
                             break;
                         case LogType.Log:
                             Debug.Log($"{message.content}");
@@ -63,6 +65,8 @@ namespace Utilities.Editor.BuildPipeline.Logging
                     }
                 }
             }
+
+            CILoggingUtility.LoggingEnabled = true;
         }
     }
 }
