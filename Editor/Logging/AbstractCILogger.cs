@@ -2,6 +2,7 @@
 
 using System;
 using System.Linq;
+using UnityEditor.Build.Reporting;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -88,5 +89,8 @@ namespace Utilities.Editor.BuildPipeline.Logging
 
         /// <inheritdoc />
         public virtual string ResetColor => "\u001b[0m";
+
+        /// <inheritdoc />
+        public virtual void GenerateBuildSummary(BuildReport buildReport) { }
     }
 }

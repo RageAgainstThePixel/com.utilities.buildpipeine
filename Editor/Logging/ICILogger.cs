@@ -1,5 +1,6 @@
 ﻿// Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using UnityEditor.Build.Reporting;
 using UnityEngine;
 
 namespace Utilities.Editor.BuildPipeline.Logging
@@ -43,5 +44,11 @@ namespace Utilities.Editor.BuildPipeline.Logging
         /// ANSI Reset color code.
         /// </summary>
         string ResetColor { get; }
+
+        /// <summary>
+        /// Generate a nicely formatted build summary for the CI Logger.
+        /// </summary>
+        /// <param name="buildReport"><see cref="BuildReport"/>.</param>
+        void GenerateBuildSummary(BuildReport buildReport);
     }
 }

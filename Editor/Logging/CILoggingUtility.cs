@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.Build.Reporting;
 using UnityEngine;
 
 namespace Utilities.Editor.BuildPipeline.Logging
@@ -62,5 +63,7 @@ namespace Utilities.Editor.BuildPipeline.Logging
                 Logger = new GitHubActionsLogger();
             }
         }
+
+        public static void GenerateBuildReport(BuildReport buildReport) => Logger?.GenerateBuildSummary(buildReport);
     }
 }
