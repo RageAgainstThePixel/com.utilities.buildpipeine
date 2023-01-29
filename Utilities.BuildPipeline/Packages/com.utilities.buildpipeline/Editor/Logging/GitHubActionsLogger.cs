@@ -22,6 +22,22 @@ namespace Utilities.Editor.BuildPipeline.Logging
         /// <inheritdoc />
         public override string Error => "::error::";
 
+        private static readonly string[] suffix = { "bytes", "KB", "MB", "GB", "TB" };
+
+        private static string FormatFileSize(ulong fileSize)
+        {
+            const int offset = 1024;
+            var i = 0;
+
+            while (fileSize > offset && i < suffix.Length)
+            {
+                fileSize /= offset;
+                i++;
+            }
+
+            return $"{fileSize} {suffix[i]}";
+        }
+
         /// <inheritdoc />
         public override void GenerateBuildSummary(BuildReport buildReport, Stopwatch stopwatch)
         {
@@ -46,7 +62,7 @@ namespace Utilities.Editor.BuildPipeline.Logging
             }
 
             summaryWriter.WriteLine($"Total duration: {stopwatch.Elapsed:g}");
-            summaryWriter.WriteLine($"Size: {buildReport.summary.totalSize}");
+            summaryWriter.WriteLine($"Size: {FormatFileSize(buildReport.summary.totalSize)}");
 
             switch (buildReport.summary.result)
             {
