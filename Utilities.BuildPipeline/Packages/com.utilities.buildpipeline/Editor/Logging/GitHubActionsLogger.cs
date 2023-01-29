@@ -114,29 +114,37 @@ namespace Utilities.Editor.BuildPipeline.Logging
 
                 foreach (var message in step.messages)
                 {
-                    summaryWriter.WriteLine($"| {message.type} | {message.content} |");
+                    var logMessage = message.content.Replace("\n", string.Empty);
+                    logMessage = logMessage.Replace(Error, string.Empty);
+                    logMessage = logMessage.Replace(Warning, string.Empty);
+                    logMessage = logMessage.Replace(ErrorColor, string.Empty);
+                    logMessage = logMessage.Replace(WarningColor, string.Empty);
+                    logMessage = logMessage.Replace(ResetColor, string.Empty);
+
+                    summaryWriter.WriteLine($"| {message.type} | {logMessage} |");
 
                     switch (message.type)
                     {
                         case LogType.Error:
                         case LogType.Assert:
                         case LogType.Exception:
-                            Debug.Log($"{Error}{ErrorColor}{message.content}{ResetColor}");
+                            Debug.Log($"{Error}{ErrorColor}{logMessage}{ResetColor}");
                             break;
                         case LogType.Warning:
-                            Debug.Log($"{Warning}{WarningColor}{message.content}{ResetColor}");
+                            Debug.Log($"{Warning}{WarningColor}{logMessage}{ResetColor}");
                             break;
                         case LogType.Log:
-                            Debug.Log($"{message.content}");
+                            Debug.Log($"{logMessage}");
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
                 }
+
+                summaryWriter.WriteLine("</details>");
+                summaryWriter.WriteLine("");
             }
 
-            summaryWriter.WriteLine("</details>");
-            summaryWriter.WriteLine("");
             summaryWriter.Close();
             summaryWriter.Dispose();
             CILoggingUtility.LoggingEnabled = true;
