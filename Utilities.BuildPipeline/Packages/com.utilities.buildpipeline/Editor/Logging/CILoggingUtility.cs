@@ -6,6 +6,7 @@ using System.Diagnostics;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Utilities.Editor.BuildPipeline.Logging
 {
