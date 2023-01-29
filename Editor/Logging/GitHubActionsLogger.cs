@@ -63,6 +63,9 @@ namespace Utilities.Editor.BuildPipeline.Logging
 
             summaryWriter.WriteLine($"Total duration: {stopwatch.Elapsed:g}");
             summaryWriter.WriteLine($"Size: {FormatFileSize(buildReport.summary.totalSize)}");
+            summaryWriter.WriteLine("");
+            summaryWriter.WriteLine("## Logs");
+            summaryWriter.WriteLine("");
 
             switch (buildReport.summary.result)
             {
@@ -83,6 +86,10 @@ namespace Utilities.Editor.BuildPipeline.Logging
             var totalBuildTime = TimeSpan.Zero;
             var stepNumber = 0;
 
+
+            summaryWriter.WriteLine("| log type | message |");
+            summaryWriter.WriteLine("| -------- | ------- |");
+
             foreach (var step in buildReport.steps)
             {
                 stepNumber++;
@@ -99,27 +106,22 @@ namespace Utilities.Editor.BuildPipeline.Logging
                 Debug.Log(buildStepMessage);
 
                 var hasMessages = step.messages.Length > 0;
-                summaryWriter.WriteLine($"## {buildStepMessage}");
-                summaryWriter.WriteLine($"Duration: {step.duration:g}");
 
                 if (!hasMessages)
                 {
                     continue;
                 }
 
-                summaryWriter.WriteLine($"<details open><summary>{step.messages.Length} Log Messages</summary>");
-                summaryWriter.WriteLine("");
-                summaryWriter.WriteLine("| log type | message |");
-                summaryWriter.WriteLine("| -------- | ------- |");
-
                 foreach (var message in step.messages)
                 {
                     var logMessage = message.content.Replace("\n", string.Empty);
+                    logMessage = logMessage.Replace("\r", string.Empty);
                     logMessage = logMessage.Replace(Error, string.Empty);
                     logMessage = logMessage.Replace(Warning, string.Empty);
                     logMessage = logMessage.Replace(ErrorColor, string.Empty);
                     logMessage = logMessage.Replace(WarningColor, string.Empty);
                     logMessage = logMessage.Replace(ResetColor, string.Empty);
+                    logMessage = logMessage.Replace(LogColor, string.Empty);
 
                     summaryWriter.WriteLine($"| {message.type} | {logMessage} |");
 
@@ -140,9 +142,6 @@ namespace Utilities.Editor.BuildPipeline.Logging
                             throw new ArgumentOutOfRangeException();
                     }
                 }
-
-                summaryWriter.WriteLine("</details>");
-                summaryWriter.WriteLine("");
             }
 
             summaryWriter.Close();
