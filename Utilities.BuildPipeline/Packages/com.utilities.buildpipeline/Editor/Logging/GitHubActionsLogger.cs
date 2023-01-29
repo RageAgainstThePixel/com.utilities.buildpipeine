@@ -1,6 +1,7 @@
 ﻿// Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
@@ -23,30 +24,40 @@ namespace Utilities.Editor.BuildPipeline.Logging
         {
             // temp disable logging to get the right messages sent.
             CILoggingUtility.LoggingEnabled = false;
-            var buildResultMessage = $"Build success? {buildReport.summary.result} | Duration: {buildReport.summary.totalTime:g}";
+            var buildResultMessage = $"Build success? {buildReport.summary.result}";
+            Environment.SetEnvironmentVariable("GITHUB_STEP_SUMMARY", $"# {buildResultMessage}");
 
             switch (buildReport.summary.result)
             {
                 case BuildResult.Succeeded:
-                    Debug.Log($"::notice::{buildResultMessage}");
+                    Debug.Log($"{buildResultMessage}");
                     break;
                 case BuildResult.Unknown:
                 case BuildResult.Cancelled:
-                    Debug.Log($"{Warning}{WarningColor}{buildResultMessage}{ResetColor}");
+                    Debug.Log($"{WarningColor}{buildResultMessage}{ResetColor}");
                     break;
                 case BuildResult.Failed:
-                    Debug.Log($"{Error}{ErrorColor}{buildResultMessage}{ResetColor}");
+                    Debug.Log($"{ErrorColor}{buildResultMessage}{ResetColor}");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            TimeSpan totalBuildTime = TimeSpan.Zero;
 
             foreach (var step in buildReport.steps)
             {
-                Debug.Log($"::notice::Build Step: {step.name} | Duration: {step.duration:g}");
+                var buildStepMessage = $"Phase: {step.name} | Duration: {step.duration:g}";
+                Debug.Log(buildStepMessage);
+                totalBuildTime += step.duration;
+
+                Environment.SetEnvironmentVariable("GITHUB_STEP_SUMMARY", $"## {buildStepMessage}");
+                Environment.SetEnvironmentVariable("GITHUB_STEP_SUMMARY", "| log type | message |");
+                Environment.SetEnvironmentVariable("GITHUB_STEP_SUMMARY", "| -------- | ------- |");
 
                 foreach (var message in step.messages)
                 {
+                    Environment.SetEnvironmentVariable("GITHUB_STEP_SUMMARY", $"| {message.type} | {message.content} |");
+
                     switch (message.type)
                     {
                         case LogType.Error:
@@ -66,6 +77,7 @@ namespace Utilities.Editor.BuildPipeline.Logging
                 }
             }
 
+            Environment.SetEnvironmentVariable("GITHUB_STEP_SUMMARY", $"## Total build time: {totalBuildTime:g}");
             CILoggingUtility.LoggingEnabled = true;
         }
     }
