@@ -355,12 +355,7 @@ namespace Utilities.Editor.BuildPipeline
             }
 
             stopwatch.Stop();
-
-            if (buildInfo.IsCommandLine)
-            {
-                CILoggingUtility.GenerateBuildReport(buildReport, stopwatch);
-            }
-
+            CILoggingUtility.GenerateBuildReport(buildReport, stopwatch);
             Debug.Log("Exiting command line build...");
             EditorApplication.Exit(buildReport.summary.result == BuildResult.Succeeded ? 0 : 1);
         }
