@@ -1,5 +1,6 @@
 ﻿// Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Diagnostics;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
@@ -49,6 +50,7 @@ namespace Utilities.Editor.BuildPipeline.Logging
         /// Generate a nicely formatted build summary for the CI Logger.
         /// </summary>
         /// <param name="buildReport"><see cref="BuildReport"/>.</param>
-        void GenerateBuildSummary(BuildReport buildReport);
+        /// <param name="stopwatch"></param>
+        void GenerateBuildSummary(BuildReport buildReport, Stopwatch stopwatch);
     }
 }

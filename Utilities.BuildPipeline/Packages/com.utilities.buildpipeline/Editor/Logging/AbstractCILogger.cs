@@ -1,9 +1,11 @@
 ﻿// Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
 namespace Utilities.Editor.BuildPipeline.Logging
@@ -91,6 +93,6 @@ namespace Utilities.Editor.BuildPipeline.Logging
         public virtual string ResetColor => "\u001b[0m";
 
         /// <inheritdoc />
-        public virtual void GenerateBuildSummary(BuildReport buildReport) { }
+        public virtual void GenerateBuildSummary(BuildReport buildReport, Stopwatch stopwatch) { }
     }
 }

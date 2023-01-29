@@ -3,6 +3,7 @@
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -321,6 +322,7 @@ namespace Utilities.Editor.BuildPipeline
             Debug.Log($"Starting command line build for {EditorPreferences.ApplicationProductName}...");
 
             BuildReport buildReport = default;
+            var stopwatch = Stopwatch.StartNew();
 
             try
             {
@@ -352,7 +354,8 @@ namespace Utilities.Editor.BuildPipeline
                 return;
             }
 
-            CILoggingUtility.GenerateBuildReport(buildReport);
+            stopwatch.Stop();
+            CILoggingUtility.GenerateBuildReport(buildReport, stopwatch);
             Debug.Log("Exiting command line build...");
             EditorApplication.Exit(buildReport.summary.result == BuildResult.Succeeded ? 0 : 1);
         }
