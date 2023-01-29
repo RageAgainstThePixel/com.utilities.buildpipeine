@@ -58,7 +58,7 @@ namespace Utilities.Editor.BuildPipeline.Logging
                 stepNumber++;
                 totalBuildTime += step.duration;
 
-                var buildStepMessage = $"{stepNumber}. {step.name}";
+                var buildStepMessage = $"{stepNumber}. {step.name[..step.name.IndexOf("=", StringComparison.Ordinal)]}";
                 Debug.Log(buildStepMessage);
 
                 var hasMessages = step.messages.Length > 0;
