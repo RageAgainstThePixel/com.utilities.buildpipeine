@@ -27,14 +27,26 @@ namespace Utilities.Editor.BuildPipeline.Logging
         {
             // temp disable logging to get the right messages sent.
             CILoggingUtility.LoggingEnabled = false;
-            var buildResultMessage = $"Build {buildReport.summary.result}!";
+            var buildResultMessage = $"{buildReport.summary.platform} Build {buildReport.summary.result}!";
             var summary = Environment.GetEnvironmentVariable("GITHUB_STEP_SUMMARY");
             if (summary == null) { return; }
 
             using var summaryWriter = new StreamWriter(summary, true, Encoding.UTF8);
             summaryWriter.WriteLine($"# {buildResultMessage}");
             summaryWriter.WriteLine("");
+
+            if (buildReport.summary.totalErrors > 0)
+            {
+                summaryWriter.WriteLine($"Errors: {buildReport.summary.totalErrors}");
+            }
+
+            if (buildReport.summary.totalWarnings > 0)
+            {
+                summaryWriter.WriteLine($"Warnings: {buildReport.summary.totalWarnings}");
+            }
+
             summaryWriter.WriteLine($"Total duration: {stopwatch.Elapsed:g}");
+            summaryWriter.WriteLine($"Size: {buildReport.summary.totalSize}");
 
             switch (buildReport.summary.result)
             {
