@@ -27,7 +27,7 @@ namespace Utilities.Editor.BuildPipeline.Logging
         {
             // temp disable logging to get the right messages sent.
             CILoggingUtility.LoggingEnabled = false;
-            var buildResultMessage = $"Build success? {buildReport.summary.result}";
+            var buildResultMessage = $"Build {buildReport.summary.result}";
             var summary = Environment.GetEnvironmentVariable("GITHUB_STEP_SUMMARY");
             if (summary == null) { return; }
 
@@ -49,15 +49,29 @@ namespace Utilities.Editor.BuildPipeline.Logging
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            TimeSpan totalBuildTime = TimeSpan.Zero;
+
+            var totalBuildTime = TimeSpan.Zero;
+            var stepNumber = 0;
 
             foreach (var step in buildReport.steps)
             {
-                var buildStepMessage = $"Phase: {step.name} | Duration: {step.duration:g}";
-                Debug.Log(buildStepMessage);
+                stepNumber++;
                 totalBuildTime += step.duration;
 
+                var buildStepMessage = $"{stepNumber}. {step.name}";
+                Debug.Log(buildStepMessage);
+
+                var hasMessages = step.messages.Length > 0;
                 summaryWriter.WriteLine($"## {buildStepMessage}");
+                summaryWriter.WriteLine($"Completed in {step.duration:g}");
+
+                if (!hasMessages)
+                {
+                    continue;
+                }
+
+                summaryWriter.WriteLine($"<details open><summary>{step.messages.Length} Log Messages</summary>");
+                summaryWriter.WriteLine("");
                 summaryWriter.WriteLine("| log type | message |");
                 summaryWriter.WriteLine("| -------- | ------- |");
 
@@ -84,6 +98,8 @@ namespace Utilities.Editor.BuildPipeline.Logging
                 }
             }
 
+            summaryWriter.WriteLine("</details>");
+            summaryWriter.WriteLine("");
             summaryWriter.WriteLine($"## Total build time: {totalBuildTime:g}");
             summaryWriter.Close();
             summaryWriter.Dispose();
