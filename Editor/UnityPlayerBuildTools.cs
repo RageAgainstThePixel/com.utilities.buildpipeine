@@ -353,7 +353,8 @@ namespace Utilities.Editor.BuildPipeline
             }
 
             var buildResultMessage = $"Exiting command line build...\nBuild success? {buildReport.summary.result}\nBuild time: {buildReport.summary.totalTime:g}";
-            var buildEventLogs = string.Join("\n", buildReport.steps.SelectMany(step => step.messages.SelectMany(message => $"[{message.type}] {message.content}")));
+            var buildEventLogs = string.Join("\n", buildReport.steps.SelectMany(step => step.messages.Select(message => $"[{message.type}] {message.content}")));
+
             switch (buildReport.summary.result)
             {
                 case BuildResult.Succeeded:
