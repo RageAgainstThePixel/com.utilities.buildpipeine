@@ -1,12 +1,12 @@
 ﻿// Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using UnityEditor.Build.Reporting;
-using UnityEditor.VersionControl;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Utilities.Editor.BuildPipeline.Logging
 {
@@ -23,11 +23,11 @@ namespace Utilities.Editor.BuildPipeline.Logging
         public override string Error => "::error::";
 
         /// <inheritdoc />
-        public override void GenerateBuildSummary(BuildReport buildReport)
+        public override void GenerateBuildSummary(BuildReport buildReport, Stopwatch stopwatch)
         {
             // temp disable logging to get the right messages sent.
             CILoggingUtility.LoggingEnabled = false;
-            var buildResultMessage = $"Build {buildReport.summary.result}";
+            var buildResultMessage = $"Build {buildReport.summary.result} Duration: {stopwatch.Elapsed:g}";
             var summary = Environment.GetEnvironmentVariable("GITHUB_STEP_SUMMARY");
             if (summary == null) { return; }
 
