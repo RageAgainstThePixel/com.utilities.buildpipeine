@@ -352,26 +352,8 @@ namespace Utilities.Editor.BuildPipeline
                 return;
             }
 
-            var buildResultMessage = $"Exiting command line build...\nBuild success? {buildReport.summary.result}\nBuild time: {buildReport.summary.totalTime:g}";
-            var buildEventLogs = string.Join("\n", buildReport.steps.SelectMany(step => step.messages.Select(message => $"[{message.type}] {message.content}")));
-
-            switch (buildReport.summary.result)
-            {
-                case BuildResult.Succeeded:
-                    Debug.Log(buildResultMessage);
-                    break;
-                case BuildResult.Unknown:
-                case BuildResult.Cancelled:
-                    Debug.LogWarning($"{buildResultMessage}\nBuild Event Logs:\n{buildEventLogs}");
-                    break;
-                case BuildResult.Failed:
-                    Debug.LogWarning($"{buildResultMessage}\nBuild Event Logs:\n{buildEventLogs}");
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
+            CILoggingUtility.GenerateBuildReport(buildReport);
+            Debug.Log("Exiting command line build...");
             EditorApplication.Exit(buildReport.summary.result == BuildResult.Succeeded ? 0 : 1);
         }
 
