@@ -2,7 +2,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using UnityEditor.Build.Reporting;
+using UnityEditor.VersionControl;
 using UnityEngine;
 
 namespace Utilities.Editor.BuildPipeline.Logging
@@ -25,7 +28,11 @@ namespace Utilities.Editor.BuildPipeline.Logging
             // temp disable logging to get the right messages sent.
             CILoggingUtility.LoggingEnabled = false;
             var buildResultMessage = $"Build success? {buildReport.summary.result}";
-            Environment.SetEnvironmentVariable("GITHUB_STEP_SUMMARY", $"# {buildResultMessage}");
+            var summary = Environment.GetEnvironmentVariable("GITHUB_STEP_SUMMARY");
+            if (summary == null) { return; }
+
+            using var summaryWriter = new StreamWriter(summary, true, Encoding.UTF8);
+            summaryWriter.WriteLine($"# {buildResultMessage}");
 
             switch (buildReport.summary.result)
             {
@@ -50,13 +57,13 @@ namespace Utilities.Editor.BuildPipeline.Logging
                 Debug.Log(buildStepMessage);
                 totalBuildTime += step.duration;
 
-                Environment.SetEnvironmentVariable("GITHUB_STEP_SUMMARY", $"## {buildStepMessage}");
-                Environment.SetEnvironmentVariable("GITHUB_STEP_SUMMARY", "| log type | message |");
-                Environment.SetEnvironmentVariable("GITHUB_STEP_SUMMARY", "| -------- | ------- |");
+                summaryWriter.WriteLine($"## {buildStepMessage}");
+                summaryWriter.WriteLine("| log type | message |");
+                summaryWriter.WriteLine("| -------- | ------- |");
 
                 foreach (var message in step.messages)
                 {
-                    Environment.SetEnvironmentVariable("GITHUB_STEP_SUMMARY", $"| {message.type} | {message.content} |");
+                    summaryWriter.WriteLine($"| {message.type} | {message.content} |");
 
                     switch (message.type)
                     {
@@ -77,7 +84,9 @@ namespace Utilities.Editor.BuildPipeline.Logging
                 }
             }
 
-            Environment.SetEnvironmentVariable("GITHUB_STEP_SUMMARY", $"## Total build time: {totalBuildTime:g}");
+            summaryWriter.WriteLine($"## Total build time: {totalBuildTime:g}");
+            summaryWriter.Close();
+            summaryWriter.Dispose();
             CILoggingUtility.LoggingEnabled = true;
         }
     }

@@ -352,7 +352,11 @@ namespace Utilities.Editor.BuildPipeline
                 return;
             }
 
-            CILoggingUtility.GenerateBuildReport(buildReport);
+            if (buildInfo.IsCommandLine)
+            {
+                CILoggingUtility.GenerateBuildReport(buildReport);
+            }
+
             Debug.Log("Exiting command line build...");
             EditorApplication.Exit(buildReport.summary.result == BuildResult.Succeeded ? 0 : 1);
         }
