@@ -84,7 +84,7 @@ namespace Utilities.Editor.BuildPipeline.Logging
 
                 var hasMessages = step.messages.Length > 0;
                 summaryWriter.WriteLine($"## {buildStepMessage}");
-                summaryWriter.WriteLine($"Completed in {step.duration:g}");
+                summaryWriter.WriteLine($"Duration: {step.duration:g}");
 
                 if (!hasMessages)
                 {
