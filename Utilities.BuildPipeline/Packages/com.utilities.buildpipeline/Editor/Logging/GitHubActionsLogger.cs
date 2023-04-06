@@ -123,7 +123,20 @@ namespace Utilities.Editor.BuildPipeline.Logging
                     logMessage = logMessage.Replace(ResetColor, string.Empty);
                     logMessage = logMessage.Replace(LogColor, string.Empty);
 
-                    summaryWriter.WriteLine($"| {message.type} | {logMessage} |");
+                    switch (message.type)
+                    {
+                        case LogType.Error:
+                        case LogType.Assert:
+                        case LogType.Exception:
+                            summaryWriter.WriteLine($"| :boom: {message.type} | {logMessage} |");
+                            break;
+                        case LogType.Warning:
+                            summaryWriter.WriteLine($"| :warning: {message.type} | {logMessage} |");
+                            break;
+                        case LogType.Log:
+                            summaryWriter.WriteLine($"| {message.type} | {logMessage} |");
+                            break;
+                    }
 
                     switch (message.type)
                     {
