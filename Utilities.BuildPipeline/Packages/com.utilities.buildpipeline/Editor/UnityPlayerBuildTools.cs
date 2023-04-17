@@ -129,17 +129,20 @@ namespace Utilities.Editor.BuildPipeline
             }
         }
 
+        [MenuItem("Tools/Build Player", false, 999)]
+        public static void BuildPlayerMenu()
+        {
+            var result = BuildUnityPlayer();
+            EditorUtility.RevealInFinder(result.summary.outputPath);
+        }
+
         /// <summary>
         /// Starts the build process with the provided <see cref="IBuildInfo"/>
         /// </summary>
         /// <returns>The <see cref="BuildReport"/> from Unity's <see cref="BuildPipeline"/></returns>
         public static BuildReport BuildUnityPlayer()
         {
-            if (BuildInfo == null)
-            {
-                throw new ArgumentNullException(nameof(BuildInfo));
-            }
-
+            if (BuildInfo == null) { throw new ArgumentNullException(nameof(BuildInfo)); }
             EditorUtility.DisplayProgressBar($"{BuildInfo.BuildTarget} Build Pipeline", "Gathering Build Data...", 0.25f);
 
             if (BuildInfo.IsCommandLine)
