@@ -2,8 +2,6 @@
 
 [![openupm](https://img.shields.io/npm/v/com.utilities.buildpipeline?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.utilities.buildpipeline/)
 
-[![marketplace](https://img.shields.io/static/v1?label=&labelColor=505050&message=Unity%20Build%20Pipeline%20Utility&color=0076D6&logo=github-actions&logoColor=0076D6)](https://github.com/marketplace/actions/unity-build-pipeline-utility)
-
 A Build Pipeline utility package for the [Unity](https://unity.com/) Game Engine.
 
 ## Installing
@@ -12,12 +10,12 @@ A Build Pipeline utility package for the [Unity](https://unity.com/) Game Engine
 
 - Open your Unity project settings
 - Select the `Package Manager`
-![scoped-registries](Utilities.BuildPipeline/Packages/com.utilities.buildpipeline/Documentation~/images/package-manager-scopes.png)
+![scoped-registries](Documentation~/images/package-manager-scopes.png)
 - Add the OpenUPM package registry:
   - `Name: OpenUPM`
   - `URL: https://package.openupm.com`
   - `Scope(s):`
-    - `com.utilities`
+    - `com.utilities.buildpipeline`
 - Open the Unity Package Manager window
 - Change the Registry from Unity to `My Registries`
 - Add the `Utilities.BuildPipeline` package
