@@ -267,10 +267,10 @@ namespace Utilities.Editor.BuildPipeline
                 PlayerSettings.SetApplicationIdentifier(buildTargetGroup, oldBuildIdentifier);
             }
 
+            PlayerSettings.SetAdditionalIl2CppArgs(string.Empty);
+
             PlayerSettings.colorSpace = oldColorSpace;
-
             EditorUtility.ClearProgressBar();
-
             return buildReport;
         }
 
