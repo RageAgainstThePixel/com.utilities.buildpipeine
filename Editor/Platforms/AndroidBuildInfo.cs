@@ -15,6 +15,11 @@ namespace Utilities.Editor.BuildPipeline
         /// <inheritdoc />
         public override string ExecutableFileExtension => ".apk";
 
+        /// <inheritdoc />
+        public override string FullOutputPath => PlayerSettings.Android.buildApkPerCpuArchitecture
+            ? OutputDirectory
+            : base.FullOutputPath;
+
         public override void ParseCommandLineArgs()
         {
             base.ParseCommandLineArgs();
@@ -26,6 +31,9 @@ namespace Utilities.Editor.BuildPipeline
             {
                 switch (arguments[i])
                 {
+                    case "-splitBinary":
+                        PlayerSettings.Android.buildApkPerCpuArchitecture = true;
+                        break;
                     case "-splitApk":
                         PlayerSettings.Android.useAPKExpansionFiles = true;
                         break;

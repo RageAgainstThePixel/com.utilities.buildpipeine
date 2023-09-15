@@ -16,12 +16,6 @@ namespace Utilities.Editor.BuildPipeline
     /// </summary>
     public class BuildInfo : IBuildInfo
     {
-        public BuildInfo()
-        {
-            BuildTarget = EditorUserBuildSettings.activeBuildTarget;
-            IsCommandLine = Application.isBatchMode;
-        }
-
         /// <inheritdoc />
         public bool AutoIncrement { get; set; }
 
@@ -53,10 +47,10 @@ namespace Utilities.Editor.BuildPipeline
         public int? VersionCode { get; set; }
 
         /// <inheritdoc />
-        public virtual BuildTarget BuildTarget { get; }
+        public virtual BuildTarget BuildTarget { get; } = EditorUserBuildSettings.activeBuildTarget;
 
         /// <inheritdoc />
-        public bool IsCommandLine { get; }
+        public bool IsCommandLine { get; } = Application.isBatchMode;
 
         private string outputDirectory;
 
@@ -87,7 +81,7 @@ namespace Utilities.Editor.BuildPipeline
         }
 
         /// <inheritdoc />
-        public string FullOutputPath => IsExport ?
+        public virtual string FullOutputPath => IsExport ?
             OutputDirectory :
             $"{OutputDirectory}/{BundleIdentifier}{ExecutableFileExtension}";
 
