@@ -60,6 +60,7 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
+      max-parallel: 2 # Use this if you're activating pro license with matrix
       matrix:
         include:
           - os: windows-latest
@@ -80,16 +81,16 @@ jobs:
         with:
           modules: ${{ matrix.build-target }}
 
-      #   # Activates the installation with the provided credentials
-      #   # https://github.com/XRTK/activate-unity-license
-      # - uses: xrtk/activate-unity-license@v2
-      #   with:
-      #     # Required
-      #     username: ${{ secrets.UNITY_USERNAME }}
-      #     password: ${{ secrets.UNITY_PASSWORD }}
-      #     # Optional
-      #     license-type: 'Personal' # Chooses license type to use [ Personal, Professional ]
-      #     serial: ${{ secrets.UNITY_SERIAL }} # Required for pro/plus activations
+        # Activates the installation with the provided credentials
+        # https://github.com/XRTK/activate-unity-license
+      - uses: xrtk/activate-unity-license@v3
+        with:
+          # Required
+          username: ${{ secrets.UNITY_USERNAME }}
+          password: ${{ secrets.UNITY_PASSWORD }}
+          # Optional
+          license-type: 'Professional' # Chooses license type to use [ Personal, Professional ]
+          serial: ${{ secrets.UNITY_SERIAL }} # Required for pro/plus activations
 
       - name: Unity Build (${{ matrix.build-target }})
         uses: RageAgainstThePixel/unity-build@v6
