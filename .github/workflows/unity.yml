@@ -30,7 +30,7 @@ jobs:
             build-target: StandaloneOSX
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
         # Installs the Unity Editor based on your project version text file
         # sets -> env.UNITY_EDITOR_PATH
