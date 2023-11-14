@@ -19,6 +19,7 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       max-parallel: 2 # Use this if you're activating pro license with matrix
       matrix:
         include:
@@ -55,3 +56,9 @@ jobs:
         uses: RageAgainstThePixel/unity-build@main
         with:
           build-target: ${{ matrix.build-target }}
+
+      - uses: actions/upload-artifact@v3
+        name: Upload Artifacts
+        if: ${{ always() }}
+        with:
+          path: '${{ github.workspace }}/Builds/Logs'
