@@ -48,6 +48,16 @@ namespace Utilities.Editor.BuildPipeline
                     case "-export":
                         EditorUserBuildSettings.exportAsGoogleAndroidProject = true;
                         break;
+                    case "-symbols":
+                        var symbols = arguments[++i] switch
+                        {
+                            "public" => AndroidCreateSymbols.Public,
+                            "debugging" => AndroidCreateSymbols.Debugging,
+                            _ => AndroidCreateSymbols.Disabled
+                        };
+
+                        EditorUserBuildSettings.androidCreateSymbols = symbols;
+                        break;
                 }
             }
 
