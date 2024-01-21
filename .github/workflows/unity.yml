@@ -20,7 +20,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
-      max-parallel: 2 # Use this if you're activating pro license with matrix
+      # max-parallel: 2 # Use this if you're activating pro license with matrix
       matrix:
         include:
           - os: ubuntu-latest
@@ -43,22 +43,28 @@ jobs:
 
         # Activates the installation with the provided credentials
         # https://github.com/XRTK/activate-unity-license
-      - uses: xrtk/activate-unity-license@v3
+      - uses: xrtk/activate-unity-license@v4
         with:
           # Required
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
           # Optional
           license-type: 'Personal' # Chooses license type to use [ Personal, Professional ]
-          serial: ${{ secrets.UNITY_SERIAL }} # Required for pro/plus activations
+          auth-key: ${{ secrets.UNITY_2FA_KEY }} # Required for personal activations
+          # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro/plus activations
 
       - name: Unity Build (${{ matrix.build-target }})
         uses: RageAgainstThePixel/unity-build@main
         with:
           build-target: ${{ matrix.build-target }}
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: Upload Artifacts
         if: ${{ always() }}
         with:
-          path: '${{ github.workspace }}/Builds/Logs'
+          path: |
+            ${{ env.UNITY_PROJECT_PATH }}/**/*.log
+            ${{ env.UNITY_PROJECT_PATH }}/Builds/${{ matrix.build-target }}/
+            !${{ env.UNITY_PROJECT_PATH }}/Builds/${{ matrix.build-target }}/*_BackUpThisFolder_ButDontShipItWithYourGame/**
+            !${{ env.UNITY_PROJECT_PATH }}/Builds/${{ matrix.build-target }}/*_BurstDebugInformation_DoNotShip/**
+
