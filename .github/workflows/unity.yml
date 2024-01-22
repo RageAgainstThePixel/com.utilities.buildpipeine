@@ -43,7 +43,7 @@ jobs:
 
         # Activates the installation with the provided credentials
         # https://github.com/XRTK/activate-unity-license
-      - uses: xrtk/activate-unity-license@fix/docs
+      - uses: xrtk/activate-unity-license@v5
         with:
           # Required
           username: ${{ secrets.UNITY_USERNAME }}
