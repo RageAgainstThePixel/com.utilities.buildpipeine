@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -62,6 +62,7 @@ jobs:
         name: Upload Artifacts
         if: ${{ always() }}
         with:
+          name: '${{ runner.os }}-${{ inputs.build-target }}-${{ github.run_number }}.${{ github.run_attempt }}-Artifacts'
           path: |
             ${{ env.UNITY_PROJECT_PATH }}/**/*.log
             ${{ env.UNITY_PROJECT_PATH }}/Builds/${{ matrix.build-target }}/
