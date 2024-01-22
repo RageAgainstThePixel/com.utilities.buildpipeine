@@ -83,7 +83,7 @@ jobs:
 
         # Activates the installation with the provided credentials
         # https://github.com/XRTK/activate-unity-license
-      - uses: xrtk/activate-unity-license@v5
+      - uses: xrtk/activate-unity-license@v7
         with:
           # Required
           username: ${{ secrets.UNITY_USERNAME }}
@@ -94,7 +94,7 @@ jobs:
           # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro/plus activations
 
       - name: Unity Build (${{ matrix.build-target }})
-        uses: RageAgainstThePixel/unity-build@v6
+        uses: RageAgainstThePixel/unity-build@v7
         with:
           build-target: ${{ matrix.build-target }}
 ```
