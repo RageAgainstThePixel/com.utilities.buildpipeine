@@ -4,7 +4,6 @@ using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
@@ -226,18 +225,9 @@ namespace Utilities.Editor.BuildPipeline
                 PlayerSettings.colorSpace = buildInfo.ColorSpace.Value;
             }
 
-            var cacheDirectory = $"{Directory.GetParent(Application.dataPath)}{Path.DirectorySeparatorChar}Library{Path.DirectorySeparatorChar}il2cpp_cache{Path.DirectorySeparatorChar}{buildInfo.BuildTarget}";
-
-            if (!Directory.Exists(cacheDirectory))
-            {
-                Directory.CreateDirectory(cacheDirectory);
-            }
-
-            PlayerSettings.SetAdditionalIl2CppArgs(buildInfo.BuildTarget != BuildTarget.Android
-                ? $"--cachedirectory=\"{cacheDirectory}\""
-                : string.Empty);
-
             BuildReport buildReport = default;
+            var oldScenes = EditorBuildSettings.scenes;
+            EditorBuildSettings.scenes = buildInfo.Scenes.ToArray();
 
             if (Application.isBatchMode)
             {
@@ -261,16 +251,19 @@ namespace Utilities.Editor.BuildPipeline
             {
                 Debug.LogError(e);
             }
-
-            if (PlayerSettings.GetApplicationIdentifier(buildTargetGroup) != oldBuildIdentifier)
+            finally
             {
-                PlayerSettings.SetApplicationIdentifier(buildTargetGroup, oldBuildIdentifier);
+                EditorBuildSettings.scenes = oldScenes;
+                PlayerSettings.colorSpace = oldColorSpace;
+
+                if (PlayerSettings.GetApplicationIdentifier(buildTargetGroup) != oldBuildIdentifier)
+                {
+                    PlayerSettings.SetApplicationIdentifier(buildTargetGroup, oldBuildIdentifier);
+                }
+
+                EditorUtility.ClearProgressBar();
             }
 
-            PlayerSettings.SetAdditionalIl2CppArgs(string.Empty);
-
-            PlayerSettings.colorSpace = oldColorSpace;
-            EditorUtility.ClearProgressBar();
             return buildReport;
         }
 
