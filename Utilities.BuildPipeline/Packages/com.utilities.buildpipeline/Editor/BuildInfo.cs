@@ -175,10 +175,10 @@ namespace Utilities.Editor.BuildPipeline
                         BundleIdentifier = arguments[++i];
                         break;
                     case "-sceneList":
-                        Scenes = Scenes.Union(UnityPlayerBuildTools.SplitSceneList(arguments[++i]));
+                        Scenes = UnityPlayerBuildTools.SplitSceneList(arguments[++i]);
                         break;
                     case "-sceneListFile":
-                        Scenes = Scenes.Union(UnityPlayerBuildTools.SplitSceneList(File.ReadAllText(arguments[++i])));
+                        Scenes = UnityPlayerBuildTools.SplitSceneList(File.ReadAllText(arguments[++i]));
                         break;
                     case "-buildOutputDirectory":
                         OutputDirectory = arguments[++i];

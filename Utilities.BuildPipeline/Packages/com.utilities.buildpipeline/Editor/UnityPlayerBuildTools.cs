@@ -226,17 +226,10 @@ namespace Utilities.Editor.BuildPipeline
             }
 
             BuildReport buildReport = default;
-            var oldScenes = EditorBuildSettings.scenes;
-            EditorBuildSettings.scenes = buildInfo.Scenes.ToArray();
 
             if (Application.isBatchMode)
             {
-                Debug.Log("Scenes in build:");
-
-                foreach (var scene in buildInfo.Scenes)
-                {
-                    Debug.Log($"    {scene.path}");
-                }
+                Debug.Log($"Scenes in build: {string.Join("\n    ", buildInfo.Scenes)}");
             }
 
             try
@@ -253,7 +246,6 @@ namespace Utilities.Editor.BuildPipeline
             }
             finally
             {
-                EditorBuildSettings.scenes = oldScenes;
                 PlayerSettings.colorSpace = oldColorSpace;
 
                 if (PlayerSettings.GetApplicationIdentifier(buildTargetGroup) != oldBuildIdentifier)
