@@ -77,13 +77,13 @@ jobs:
         # sets -> env.UNITY_EDITOR_PATH
         # sets -> env.UNITY_PROJECT_PATH
         # https://github.com/XRTK/unity-setup
-      - uses: xrtk/unity-setup@v7.2
+      - uses: xrtk/unity-setup@v7
         with:
           modules: ${{ matrix.build-target }}
 
         # Activates the installation with the provided credentials
         # https://github.com/XRTK/activate-unity-license
-      - uses: xrtk/activate-unity-license@v7
+      - uses: xrtk/activate-unity-license@v5
         with:
           # Required
           username: ${{ secrets.UNITY_USERNAME }}

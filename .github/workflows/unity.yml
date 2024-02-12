@@ -10,6 +10,8 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+env:
+  UNITY_PROJECT_PATH: ''
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -37,7 +39,7 @@ jobs:
         # sets -> env.UNITY_EDITOR_PATH
         # sets -> env.UNITY_PROJECT_PATH
         # https://github.com/XRTK/unity-setup
-      - uses: xrtk/unity-setup@v7.2
+      - uses: xrtk/unity-setup@v7
         with:
           build-targets: ${{ matrix.build-target }}
 
@@ -60,12 +62,16 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         name: Upload Artifacts
-        if: ${{ always() }}
+        if: always()
         with:
-          name: '${{ runner.os }}-${{ inputs.build-target }}-${{ github.run_number }}.${{ github.run_attempt }}-Artifacts'
+          compression-level: 0
+          retention-days: 1
+          overwrite: true
+          name: ${{ matrix.build-target }}-Build-Artifacts
           path: |
-            ${{ env.UNITY_PROJECT_PATH }}/**/*.log
-            ${{ env.UNITY_PROJECT_PATH }}/Builds/${{ matrix.build-target }}/
+            ${{ env.UNITY_PROJECT_PATH }}/Logs/**/*.log
+            ${{ env.UNITY_PROJECT_PATH }}/Builds/**/*.log
+            ${{ env.UNITY_PROJECT_PATH }}/Builds/${{ matrix.build-target }}/**/*
             !${{ env.UNITY_PROJECT_PATH }}/Builds/${{ matrix.build-target }}/*_BackUpThisFolder_ButDontShipItWithYourGame/**
             !${{ env.UNITY_PROJECT_PATH }}/Builds/${{ matrix.build-target }}/*_BurstDebugInformation_DoNotShip/**
 
