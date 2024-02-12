@@ -59,19 +59,4 @@ jobs:
         uses: RageAgainstThePixel/unity-build@main
         with:
           build-target: ${{ matrix.build-target }}
-
-      - uses: actions/upload-artifact@v4
-        name: Upload Artifacts
-        if: always()
-        with:
-          compression-level: 0
-          retention-days: 1
-          overwrite: true
-          name: ${{ matrix.build-target }}-Build-Artifacts
-          path: |
-            ${{ env.UNITY_PROJECT_PATH }}/Logs/**/*.log
-            ${{ env.UNITY_PROJECT_PATH }}/Builds/**/*.log
-            ${{ env.UNITY_PROJECT_PATH }}/Builds/${{ matrix.build-target }}/**/*
-            !${{ env.UNITY_PROJECT_PATH }}/Builds/${{ matrix.build-target }}/*_BackUpThisFolder_ButDontShipItWithYourGame/**
-            !${{ env.UNITY_PROJECT_PATH }}/Builds/${{ matrix.build-target }}/*_BurstDebugInformation_DoNotShip/**
-
+          publish-artifacts: false
