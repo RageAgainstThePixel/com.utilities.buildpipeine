@@ -269,6 +269,7 @@ namespace Utilities.Editor.BuildPipeline
 
             try
             {
+                ImportTMProEssentialAssets();
                 SyncSolution();
             }
             catch (Exception e)
@@ -278,6 +279,45 @@ namespace Utilities.Editor.BuildPipeline
             }
 
             EditorApplication.Exit(0);
+        }
+
+        private static void ImportTMProEssentialAssets()
+        {
+#if TEXT_MESH_PRO
+            // Check if the TextMesh Pro folder already exists
+            if (!System.IO.Directory.Exists("Assets/TextMesh Pro")) { return; }
+
+            byte[] settingsBackup;
+            string settingsFilePath;
+
+            // Check if the TMP Settings asset is already present in the project.
+            var settings = AssetDatabase.FindAssets("t:TMP_Settings");
+
+            if (settings.Length > 0)
+            {
+                // Save assets just in case the TMP Setting were modified before import.
+                AssetDatabase.SaveAssets();
+
+                // Copy existing TMP Settings asset to a byte[]
+                settingsFilePath = AssetDatabase.GUIDToAssetPath(settings[0]);
+                settingsBackup = System.IO.File.ReadAllBytes(settingsFilePath);
+
+                AssetDatabase.importPackageCompleted += ImportCallback;
+            }
+
+            var packageFullPath = TMPro.EditorUtilities.TMP_EditorUtility.packageFullPath;
+            AssetDatabase.ImportPackage($"{packageFullPath}/Package Resources/TMP Essential Resources.unitypackage", false);
+
+            void ImportCallback(string packageName)
+            {
+                // Restore backup of TMP Settings from byte[]
+                System.IO.File.WriteAllBytes(settingsFilePath, settingsBackup);
+
+                AssetDatabase.Refresh();
+
+                AssetDatabase.importPackageCompleted -= ImportCallback;
+            }
+#endif // TEXT_MESH_PRO
         }
 
         /// <summary>

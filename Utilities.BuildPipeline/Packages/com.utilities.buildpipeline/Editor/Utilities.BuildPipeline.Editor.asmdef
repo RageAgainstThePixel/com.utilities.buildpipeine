@@ -1,6 +1,9 @@
 {
     "name": "Utilities.BuildPipeline.Editor",
-    "references": [],
+    "rootNamespace": "",
+    "references": [
+        "GUID:6546d7765b4165b40850b3667f981c26"
+    ],
     "includePlatforms": [
         "Editor"
     ],
@@ -10,6 +13,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.textmeshpro",
+            "expression": "1.0.0",
+            "define": "TEXT_MESH_PRO"
+        }
+    ],
     "noEngineReferences": false
 }
