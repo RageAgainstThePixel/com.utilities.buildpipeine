@@ -60,3 +60,4 @@ jobs:
         with:
           build-target: ${{ matrix.build-target }}
           publish-artifacts: false
+          test: false
