@@ -77,7 +77,7 @@ jobs:
         # sets -> env.UNITY_EDITOR_PATH
         # sets -> env.UNITY_PROJECT_PATH
         # https://github.com/XRTK/unity-setup
-      - uses: xrtk/unity-setup@v7.2
+      - uses: xrtk/unity-setup@v7
         with:
           modules: ${{ matrix.build-target }}
 
@@ -94,7 +94,7 @@ jobs:
           # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro/plus activations
 
       - name: Unity Build (${{ matrix.build-target }})
-        uses: RageAgainstThePixel/unity-build@v6
+        uses: RageAgainstThePixel/unity-build@v7
         with:
           build-target: ${{ matrix.build-target }}
 ```
