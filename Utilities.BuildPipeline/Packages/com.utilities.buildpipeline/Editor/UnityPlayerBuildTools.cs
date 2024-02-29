@@ -306,15 +306,25 @@ namespace Utilities.Editor.BuildPipeline
             }
 
             var packageFullPath = TMPro.EditorUtilities.TMP_EditorUtility.packageFullPath;
-            AssetDatabase.ImportPackage($"{packageFullPath}/Package Resources/TMP Essential Resources.unitypackage", false);
+            var importPath = $"{packageFullPath}/Package Resources/TMP Essential Resources.unitypackage";
+
+            if (!System.IO.File.Exists(importPath))
+            {
+                throw new System.IO.FileNotFoundException($"Unable to find the TextMesh Pro package at {importPath}");
+            }
+
+            AssetDatabase.ImportPackage(importPath, false);
+
+            if (!System.IO.Directory.Exists("Assets/TextMesh Pro"))
+            {
+                throw new Exception("Failed to import TextMeshPro resources!");
+            }
 
             void ImportCallback(string packageName)
             {
                 // Restore backup of TMP Settings from byte[]
                 System.IO.File.WriteAllBytes(settingsFilePath, settingsBackup);
-
                 AssetDatabase.Refresh();
-
                 AssetDatabase.importPackageCompleted -= ImportCallback;
             }
 #endif // TEXT_MESH_PRO
