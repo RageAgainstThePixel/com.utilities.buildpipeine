@@ -61,3 +61,15 @@ jobs:
           build-target: ${{ matrix.build-target }}
           publish-artifacts: false
           test: false
+
+      - name: Validate Text Mesh Pro Resources
+        run: |
+          # Validate Text Mesh Pro Resources
+          $TMPRO_PATH = "$env:UNITY_PROJECT_PATH/Assets/TextMesh Pro"
+          if (Test-Path $TMPRO_PATH) {
+            Write-Host "Text Mesh Pro Resources found at $TMPRO_PATH"
+          } else {
+            Write-Host "Text Mesh Pro Resources not found at $TMPRO_PATH"
+            exit 1
+          }
+        shell: pwsh
