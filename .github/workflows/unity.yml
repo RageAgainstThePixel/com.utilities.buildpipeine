@@ -70,6 +70,8 @@ jobs:
             Write-Host "Text Mesh Pro Resources found at $TMPRO_PATH"
           } else {
             Write-Host "Text Mesh Pro Resources not found at $TMPRO_PATH"
+            # list the folders in the Assets directory
+            Get-ChildItem -Path $env:UNITY_PROJECT_PATH/Assets -Directory | Select-Object Name | Format-Table -AutoSize
             exit 1
           }
         shell: pwsh
