@@ -316,7 +316,7 @@ namespace Utilities.Editor.BuildPipeline
                 throw new System.IO.FileNotFoundException($"Unable to find the TextMesh Pro package at {importPath}");
             }
 
-            ImportPackageImmediately(importPath);
+            AssetDatabase.ImportPackage(importPath, false);
 
             void ImportCallback(string packageName)
             {
