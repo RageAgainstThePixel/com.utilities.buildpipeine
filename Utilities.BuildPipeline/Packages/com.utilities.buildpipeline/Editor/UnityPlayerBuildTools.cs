@@ -316,7 +316,7 @@ namespace Utilities.Editor.BuildPipeline
                 throw new System.IO.FileNotFoundException($"Unable to find the TextMesh Pro package at {importPath}");
             }
 
-            AssetDatabase.ImportPackage(importPath, false);
+            ImportPackageImmediately(importPath);
 
             void ImportCallback(string packageName)
             {
@@ -337,7 +337,7 @@ namespace Utilities.Editor.BuildPipeline
 
         private static void ImportPackageImmediately(string importPath)
         {
-            var importImmediate = typeof(AssetDatabase).GetMethod(nameof(ImportPackageImmediately));
+            var importImmediate = typeof(AssetDatabase).GetMethod(nameof(ImportPackageImmediately), BindingFlags.NonPublic | BindingFlags.Static);
             Debug.Assert(importImmediate != null);
             importImmediate.Invoke(null, new object[] { importPath });
         }
