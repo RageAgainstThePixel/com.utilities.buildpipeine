@@ -289,6 +289,8 @@ namespace Utilities.Editor.BuildPipeline
 #if TEXT_MESH_PRO
         private static async Task ImportTMProEssentialAssetsAsync()
         {
+            Debug.Log($"Import TextMesh Pro Essentials....");
+
             var tcs = new TaskCompletionSource<bool>();
             // Check if the TextMesh Pro folder already exists
             if (!System.IO.Directory.Exists("Assets/TextMesh Pro")) { return; }
@@ -325,7 +327,7 @@ namespace Utilities.Editor.BuildPipeline
             {
                 // Restore backup of TMP Settings from byte[]
                 System.IO.File.WriteAllBytes(settingsFilePath, settingsBackup);
-                AssetDatabase.Refresh();
+                AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
                 AssetDatabase.importPackageCompleted -= ImportCallback;
                 tcs.SetResult(true);
             }
