@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -263,13 +264,13 @@ namespace Utilities.Editor.BuildPipeline
         /// Validates the Unity Project assets by forcing a symbolic link sync and creates solution files.
         /// </summary>
         [UsedImplicitly]
-        public static void ValidateProject()
+        public static async void ValidateProject()
         {
             CILoggingUtility.LoggingEnabled = false;
 
             try
             {
-                ImportTMProEssentialAssets();
+                await ImportTMProEssentialAssetsAsync();
                 SyncSolution();
             }
             catch (Exception e)
@@ -281,8 +282,9 @@ namespace Utilities.Editor.BuildPipeline
             EditorApplication.Exit(0);
         }
 
-        private static void ImportTMProEssentialAssets()
+        private static async Task ImportTMProEssentialAssetsAsync()
         {
+            var tcs = new TaskCompletionSource<bool>();
 #if TEXT_MESH_PRO
             // Check if the TextMesh Pro folder already exists
             if (!System.IO.Directory.Exists("Assets/TextMesh Pro")) { return; }
@@ -300,13 +302,13 @@ namespace Utilities.Editor.BuildPipeline
 
                 // Copy existing TMP Settings asset to a byte[]
                 settingsFilePath = AssetDatabase.GUIDToAssetPath(settings[0]);
-                settingsBackup = System.IO.File.ReadAllBytes(settingsFilePath);
-
+                settingsBackup = await System.IO.File.ReadAllBytesAsync(settingsFilePath);
                 AssetDatabase.importPackageCompleted += ImportCallback;
             }
 
             var packageFullPath = TMPro.EditorUtilities.TMP_EditorUtility.packageFullPath;
             var importPath = $"{packageFullPath}/Package Resources/TMP Essential Resources.unitypackage";
+            Debug.Log($"Importing TextMeshPro from {importPath}");
 
             if (!System.IO.File.Exists(importPath))
             {
@@ -326,8 +328,12 @@ namespace Utilities.Editor.BuildPipeline
                 System.IO.File.WriteAllBytes(settingsFilePath, settingsBackup);
                 AssetDatabase.Refresh();
                 AssetDatabase.importPackageCompleted -= ImportCallback;
+                tcs.SetResult(true);
             }
+#else
+            tcs.SetResult(true);
 #endif // TEXT_MESH_PRO
+            await tcs.Task;
         }
 
         /// <summary>
