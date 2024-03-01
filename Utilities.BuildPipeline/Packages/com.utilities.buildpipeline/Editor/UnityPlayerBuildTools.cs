@@ -269,23 +269,26 @@ namespace Utilities.Editor.BuildPipeline
 
             try
             {
-                ImportTMProEssentialAssets();
+                ImportTMProEssentialAssetsAsync();
                 SyncSolution();
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                Debug.LogException(e);
                 EditorApplication.Exit(1);
             }
 
+            Debug.Log("Project Validation Completed");
             EditorApplication.Exit(0);
         }
 
-        private static void ImportTMProEssentialAssets()
+        private static void ImportTMProEssentialAssetsAsync()
         {
 #if TEXT_MESH_PRO
+            Debug.Log("TextMesh Pro Essentials Import started....");
+
             // Check if the TextMesh Pro folder already exists
-            if (!System.IO.Directory.Exists("Assets/TextMesh Pro")) { return; }
+            if (System.IO.Directory.Exists("Assets/TextMesh Pro")) { return; }
 
             byte[] settingsBackup;
             string settingsFilePath;
@@ -301,23 +304,42 @@ namespace Utilities.Editor.BuildPipeline
                 // Copy existing TMP Settings asset to a byte[]
                 settingsFilePath = AssetDatabase.GUIDToAssetPath(settings[0]);
                 settingsBackup = System.IO.File.ReadAllBytes(settingsFilePath);
-
                 AssetDatabase.importPackageCompleted += ImportCallback;
             }
 
             var packageFullPath = TMPro.EditorUtilities.TMP_EditorUtility.packageFullPath;
-            AssetDatabase.ImportPackage($"{packageFullPath}/Package Resources/TMP Essential Resources.unitypackage", false);
+            var importPath = $"{packageFullPath}/Package Resources/TMP Essential Resources.unitypackage";
+            Debug.Log($"TextMesh Pro Essentials Import from {importPath}");
+
+            if (!System.IO.File.Exists(importPath))
+            {
+                throw new System.IO.FileNotFoundException($"Unable to find the TextMesh Pro package at {importPath}");
+            }
+
+            ImportPackageImmediately(importPath);
 
             void ImportCallback(string packageName)
             {
+                Debug.Log("TextMesh Pro Essentials Import::ImportCallback");
                 // Restore backup of TMP Settings from byte[]
                 System.IO.File.WriteAllBytes(settingsFilePath, settingsBackup);
-
-                AssetDatabase.Refresh();
-
                 AssetDatabase.importPackageCompleted -= ImportCallback;
             }
+
+            if (!System.IO.Directory.Exists("Assets/TextMesh Pro"))
+            {
+                throw new Exception("Failed to import TextMeshPro resources!");
+            }
+
+            Debug.Log("TextMesh Pro Essentials Import Completed");
 #endif // TEXT_MESH_PRO
+        }
+
+        private static void ImportPackageImmediately(string importPath)
+        {
+            var importImmediate = typeof(AssetDatabase).GetMethod(nameof(ImportPackageImmediately), BindingFlags.NonPublic | BindingFlags.Static);
+            Debug.Assert(importImmediate != null);
+            importImmediate.Invoke(null, new object[] { importPath });
         }
 
         /// <summary>
@@ -325,6 +347,7 @@ namespace Utilities.Editor.BuildPipeline
         /// </summary>
         public static void SyncSolution()
         {
+            Debug.Log(nameof(SyncSolution));
             var syncVs = Type.GetType("UnityEditor.SyncVS,UnityEditor");
             Debug.Assert(syncVs != null);
             var syncSolution = syncVs.GetMethod("SyncSolution", BindingFlags.Public | BindingFlags.Static);
