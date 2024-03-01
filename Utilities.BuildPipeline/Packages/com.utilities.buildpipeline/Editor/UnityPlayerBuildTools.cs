@@ -270,22 +270,26 @@ namespace Utilities.Editor.BuildPipeline
 
             try
             {
+#if TEXT_MESH_PRO
                 await ImportTMProEssentialAssetsAsync();
+#else
+                await Task.CompletedTask;
+#endif // TEXT_MESH_PRO
                 SyncSolution();
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                Debug.LogException(e);
                 EditorApplication.Exit(1);
             }
 
             EditorApplication.Exit(0);
         }
 
+#if TEXT_MESH_PRO
         private static async Task ImportTMProEssentialAssetsAsync()
         {
             var tcs = new TaskCompletionSource<bool>();
-#if TEXT_MESH_PRO
             // Check if the TextMesh Pro folder already exists
             if (!System.IO.Directory.Exists("Assets/TextMesh Pro")) { return; }
 
@@ -317,11 +321,6 @@ namespace Utilities.Editor.BuildPipeline
 
             AssetDatabase.ImportPackage(importPath, false);
 
-            if (!System.IO.Directory.Exists("Assets/TextMesh Pro"))
-            {
-                throw new Exception("Failed to import TextMeshPro resources!");
-            }
-
             void ImportCallback(string packageName)
             {
                 // Restore backup of TMP Settings from byte[]
@@ -330,11 +329,15 @@ namespace Utilities.Editor.BuildPipeline
                 AssetDatabase.importPackageCompleted -= ImportCallback;
                 tcs.SetResult(true);
             }
-#else
-            tcs.SetResult(true);
-#endif // TEXT_MESH_PRO
+
             await tcs.Task;
+
+            if (!System.IO.Directory.Exists("Assets/TextMesh Pro"))
+            {
+                throw new Exception("Failed to import TextMeshPro resources!");
+            }
         }
+#endif // TEXT_MESH_PRO
 
         /// <summary>
         /// Force Unity To Write Project Files
