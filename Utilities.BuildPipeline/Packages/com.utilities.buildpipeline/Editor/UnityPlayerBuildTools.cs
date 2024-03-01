@@ -271,7 +271,7 @@ namespace Utilities.Editor.BuildPipeline
             try
             {
 #if TEXT_MESH_PRO
-                await ImportTMProEssentialAssetsAsync();
+                await ImportTMProEssentialAssetsAsync().ConfigureAwait(true);;
 #else
                 await Task.CompletedTask;
 #endif // TEXT_MESH_PRO
@@ -283,6 +283,7 @@ namespace Utilities.Editor.BuildPipeline
                 EditorApplication.Exit(1);
             }
 
+            Debug.Log("Project Validation Completed");
             EditorApplication.Exit(0);
         }
 
@@ -308,7 +309,7 @@ namespace Utilities.Editor.BuildPipeline
 
                 // Copy existing TMP Settings asset to a byte[]
                 settingsFilePath = AssetDatabase.GUIDToAssetPath(settings[0]);
-                settingsBackup = await System.IO.File.ReadAllBytesAsync(settingsFilePath);
+                settingsBackup = await System.IO.File.ReadAllBytesAsync(settingsFilePath).ConfigureAwait(true);
                 AssetDatabase.importPackageCompleted += ImportCallback;
             }
 
@@ -338,6 +339,8 @@ namespace Utilities.Editor.BuildPipeline
             {
                 throw new Exception("Failed to import TextMeshPro resources!");
             }
+
+            Debug.Log($"TextMesh Pro Essentials Import Completed");
         }
 #endif // TEXT_MESH_PRO
 
@@ -346,6 +349,7 @@ namespace Utilities.Editor.BuildPipeline
         /// </summary>
         public static void SyncSolution()
         {
+            Debug.Log(nameof(SyncSolution));
             var syncVs = Type.GetType("UnityEditor.SyncVS,UnityEditor");
             Debug.Assert(syncVs != null);
             var syncSolution = syncVs.GetMethod("SyncSolution", BindingFlags.Public | BindingFlags.Static);
