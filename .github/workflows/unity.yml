@@ -68,7 +68,7 @@ jobs:
         with:
           build-target: ${{ matrix.build-target }}
           publish-artifacts: true
-          additional-build-args: '-export'
+          additional-build-args: '-export -buildOutputDirectory "${{github.workspace}}/Builds/Custom/${{ matrix.build-target }}"'
           test: false
 
       - name: Validate Text Mesh Pro Resources
