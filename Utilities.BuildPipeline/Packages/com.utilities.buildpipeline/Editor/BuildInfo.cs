@@ -62,19 +62,19 @@ namespace Utilities.Editor.BuildPipeline
                 : outputDirectory;
             set
             {
-                //if (Path.IsPathRooted(value))
-                //{
-                //    if (!Directory.Exists(value))
-                //    {
-                //        Directory.CreateDirectory(value);
-                //    }
+                if (Path.IsPathRooted(value))
+                {
+                    if (!Directory.Exists(value))
+                    {
+                        Directory.CreateDirectory(value);
+                    }
 
-                //    outputDirectory = Path.GetRelativePath(Directory.GetParent(EditorPreferences.ApplicationDataPath)!.FullName, value);
-                //}
-                //else
-                //{
-                outputDirectory = value;
-                //}
+                    outputDirectory = Path.GetRelativePath(Directory.GetParent(EditorPreferences.ApplicationDataPath)!.FullName, value);
+                }
+                else
+                {
+                    outputDirectory = value;
+                }
             }
         }
 
@@ -96,9 +96,7 @@ namespace Utilities.Editor.BuildPipeline
         }
 
         /// <inheritdoc />
-        public virtual string FullOutputPath => IsExport ?
-            OutputDirectory :
-            $"{OutputDirectory}{Path.DirectorySeparatorChar}{BundleIdentifier}{ExecutableFileExtension}";
+        public virtual string FullOutputPath => $"{OutputDirectory}{Path.DirectorySeparatorChar}{BundleIdentifier}{ExecutableFileExtension}";
 
         /// <inheritdoc />
         public virtual string ExecutableFileExtension
@@ -145,9 +143,6 @@ namespace Utilities.Editor.BuildPipeline
 
         /// <inheritdoc />
         public string BuildSymbols { get; set; } = string.Empty;
-
-        /// <inheritdoc />
-        public bool IsExport { get; private set; }
 
         /// <inheritdoc />
         public virtual void ParseCommandLineArgs()
@@ -221,7 +216,6 @@ namespace Utilities.Editor.BuildPipeline
 
                         break;
                     case "-export":
-                        IsExport = true;
 #if PLATFORM_STANDALONE_WIN
                         UnityEditor.WindowsStandalone.UserBuildSettings.createSolution = true;
 #endif

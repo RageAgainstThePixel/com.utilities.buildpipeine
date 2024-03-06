@@ -15,10 +15,15 @@ namespace Utilities.Editor.BuildPipeline
 
         public override string ExecutableFileExtension => ".app";
 
+#if UNITY_STANDALONE_OSX
+
+        public override string FullOutputPath => UserBuildSettings.createXcodeProject
+            ? OutputDirectory
+            : base.FullOutputPath;
+
         public override void ParseCommandLineArgs()
         {
             base.ParseCommandLineArgs();
-#if UNITY_STANDALONE_OSX
             var arguments = Environment.GetCommandLineArgs();
 
             for (int i = 0; i < arguments.Length; i++)
@@ -46,7 +51,7 @@ namespace Utilities.Editor.BuildPipeline
                         break;
                 }
             }
-#endif
         }
+#endif
     }
 }
