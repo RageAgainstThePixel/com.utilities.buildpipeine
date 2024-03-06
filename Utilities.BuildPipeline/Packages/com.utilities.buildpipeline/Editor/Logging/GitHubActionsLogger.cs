@@ -72,7 +72,7 @@ namespace Utilities.Editor.BuildPipeline.Logging
 #if UNITY_2022_1_OR_NEWER
             fileList.AddRange(buildReport.GetFiles().Select(file => $"{file.role} | {file.path}"));
 #else
-            fileList.AddRange(buildReport.files);
+            fileList.AddRange(buildReport.files.Select(file => $"{file.role} | {file.path}"));
 #endif
             foreach (var file in fileList)
             {
