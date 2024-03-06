@@ -62,26 +62,27 @@ namespace Utilities.Editor.BuildPipeline
                 : outputDirectory;
             set
             {
-                var projectRoot = Directory.GetParent(EditorPreferences.ApplicationDataPath)!.FullName;
+                var projectRoot = Directory.GetParent(EditorPreferences.ApplicationDataPath)!.FullName.Replace("\\", "/");
+                var newValue = value?.Replace("\\", "/");
                 Debug.Log($"projectRoot: {projectRoot}");
-                Debug.Log($"set outPutDirectory: {value}");
+                Debug.Log($"set outPutDirectory: {newValue}");
 
-                if (!string.IsNullOrWhiteSpace(value) && Path.IsPathRooted(value))
+                if (!string.IsNullOrWhiteSpace(newValue) && Path.IsPathRooted(newValue))
                 {
                     Debug.Log("IsRooted");
 
-                    if (value.StartsWith(projectRoot))
+                    if (newValue.StartsWith(projectRoot))
                     {
-                        outputDirectory = value.Replace(projectRoot, string.Empty);
+                        outputDirectory = newValue.Replace(projectRoot, string.Empty);
                     }
                     else
                     {
-                        outputDirectory = Path.GetRelativePath(projectRoot, value);
+                        outputDirectory = Path.GetRelativePath(projectRoot, newValue);
                     }
                 }
                 else
                 {
-                    outputDirectory = value;
+                    outputDirectory = newValue;
                 }
 
                 Debug.Log($"formatted output directory: {outputDirectory}");
