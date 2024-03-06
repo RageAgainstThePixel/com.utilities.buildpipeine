@@ -62,19 +62,19 @@ namespace Utilities.Editor.BuildPipeline
                 : outputDirectory;
             set
             {
-                if (Path.IsPathRooted(value))
-                {
-                    if (!Directory.Exists(value))
-                    {
-                        Directory.CreateDirectory(value);
-                    }
+                //if (Path.IsPathRooted(value))
+                //{
+                //    if (!Directory.Exists(value))
+                //    {
+                //        Directory.CreateDirectory(value);
+                //    }
 
-                    outputDirectory = Path.GetRelativePath(Directory.GetParent(EditorPreferences.ApplicationDataPath)!.FullName, value);
-                }
-                else
-                {
-                    outputDirectory = value;
-                }
+                //    outputDirectory = Path.GetRelativePath(Directory.GetParent(EditorPreferences.ApplicationDataPath)!.FullName, value);
+                //}
+                //else
+                //{
+                outputDirectory = value;
+                //}
             }
         }
 
