@@ -109,7 +109,17 @@ namespace Utilities.Editor.BuildPipeline.Logging
 
             if (logs.Count > 0)
             {
-                summaryWriter.WriteLine("<details><summary>Logs</summary>");
+                var hasErrors = logs.Any(log => log.Contains($"| :boom: {LogType.Error} |"));
+
+                if (hasErrors)
+                {
+                    summaryWriter.WriteLine("<details open><summary>Logs</summary>");
+                }
+                else
+                {
+                    summaryWriter.WriteLine("<details><summary>Logs</summary>");
+                }
+
                 summaryWriter.WriteLine("");
                 summaryWriter.WriteLine("| log type | message |");
                 summaryWriter.WriteLine("| -------- | ------- |");
