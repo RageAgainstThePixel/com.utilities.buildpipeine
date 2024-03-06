@@ -71,13 +71,15 @@ namespace Utilities.Editor.BuildPipeline
                 {
                     Debug.Log("IsRooted");
 
-                    if (newValue.StartsWith(projectRoot))
+                    if (newValue.Contains(projectRoot))
                     {
+                        Debug.Log("IsInRoot");
                         outputDirectory = newValue.Replace(projectRoot, string.Empty);
                     }
                     else
                     {
-                        outputDirectory = Path.GetRelativePath(projectRoot, newValue);
+                        Debug.Log("IsRelative");
+                        outputDirectory = Path.GetRelativePath(projectRoot, newValue).Replace("\\", "/");
                     }
                 }
                 else
