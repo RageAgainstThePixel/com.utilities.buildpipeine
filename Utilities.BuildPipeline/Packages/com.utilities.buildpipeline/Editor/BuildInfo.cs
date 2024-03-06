@@ -178,7 +178,7 @@ namespace Utilities.Editor.BuildPipeline
                         Scenes = UnityPlayerBuildTools.SplitSceneList(File.ReadAllText(arguments[++i]));
                         break;
                     case "-buildOutputDirectory":
-                        OutputDirectory = arguments[++i];
+                        OutputDirectory = arguments[++i].Replace('\'', char.MinValue).Replace('"', char.MinValue);
                         break;
                     case "-acceptExternalModificationsToPlayer":
                         BuildOptions = BuildOptions.SetFlag(BuildOptions.AcceptExternalModificationsToPlayer);
