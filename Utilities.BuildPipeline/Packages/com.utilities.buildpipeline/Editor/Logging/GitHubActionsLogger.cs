@@ -111,15 +111,9 @@ namespace Utilities.Editor.BuildPipeline.Logging
             {
                 var hasErrors = logs.Any(log => log.Contains($"| :boom: {LogType.Error} |"));
 
-                if (hasErrors)
-                {
-                    summaryWriter.WriteLine("<details open><summary>Logs</summary>");
-                }
-                else
-                {
-                    summaryWriter.WriteLine("<details><summary>Logs</summary>");
-                }
-
+                summaryWriter.WriteLine(hasErrors
+                    ? "<details open><summary>Logs</summary>"
+                    : "<details><summary>Logs</summary>");
                 summaryWriter.WriteLine("");
                 summaryWriter.WriteLine("| log type | message |");
                 summaryWriter.WriteLine("| -------- | ------- |");
@@ -134,11 +128,11 @@ namespace Utilities.Editor.BuildPipeline.Logging
 
             summaryWriter.WriteLine("<details><summary>Build Outputs</summary>");
             var fileList = new List<string>();
-        #if UNITY_2022_1_OR_NEWER
+#if UNITY_2022_1_OR_NEWER
             fileList.AddRange(buildReport.GetFiles().Select(file => $"| {file.role} | {file.path} |"));
-        #else
+#else
             fileList.AddRange(buildReport.files.Select(file => $"{file.role} | {file.path}"));
-        #endif
+#endif
             summaryWriter.WriteLine("");
             summaryWriter.WriteLine("| file type | path |");
             summaryWriter.WriteLine("| --------- | ---- |");
