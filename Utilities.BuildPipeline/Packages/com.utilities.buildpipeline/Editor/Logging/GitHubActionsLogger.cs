@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
@@ -67,11 +68,17 @@ namespace Utilities.Editor.BuildPipeline.Logging
             summaryWriter.WriteLine($"Output Path: {buildReport.summary.outputPath}");
             summaryWriter.WriteLine("");
             summaryWriter.WriteLine("<details><summary>Build Outputs</summary>");
+            var fileList = new List<string>();
 #if UNITY_2022_1_OR_NEWER
-            summaryWriter.WriteLine($"{string.Join("\n    ", buildReport.GetFiles())}");
+            fileList.AddRange(buildReport.GetFiles().Select(file => $"{file.role} | {file.path}"));
 #else
-            summaryWriter.WriteLine($"{string.Join("\n    ", buildReport.files)}");
+            fileList.AddRange(buildReport.files);
 #endif
+            foreach (var file in fileList)
+            {
+                summaryWriter.WriteLine(file);
+            }
+
             summaryWriter.WriteLine("</details>");
             summaryWriter.WriteLine("");
 
