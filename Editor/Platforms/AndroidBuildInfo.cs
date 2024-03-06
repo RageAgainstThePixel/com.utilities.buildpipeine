@@ -16,7 +16,7 @@ namespace Utilities.Editor.BuildPipeline
         public override string ExecutableFileExtension => ".apk";
 
         /// <inheritdoc />
-        public override string FullOutputPath => PlayerSettings.Android.buildApkPerCpuArchitecture
+        public override string FullOutputPath => PlayerSettings.Android.buildApkPerCpuArchitecture || EditorUserBuildSettings.exportAsGoogleAndroidProject
             ? OutputDirectory
             : base.FullOutputPath;
 

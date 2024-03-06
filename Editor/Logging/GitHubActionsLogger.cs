@@ -1,8 +1,10 @@
 ﻿// Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
@@ -63,8 +65,84 @@ namespace Utilities.Editor.BuildPipeline.Logging
 
             summaryWriter.WriteLine($"Total duration: {stopwatch.Elapsed:g}");
             summaryWriter.WriteLine($"Size: {FormatFileSize(buildReport.summary.totalSize)}");
+            summaryWriter.WriteLine($"Output Path: {buildReport.summary.outputPath}");
             summaryWriter.WriteLine("");
-            summaryWriter.WriteLine("## Logs");
+
+            var totalBuildTime = TimeSpan.Zero;
+            var logs = new List<string>();
+
+            foreach (var step in buildReport.steps)
+            {
+                totalBuildTime += step.duration;
+                var hasMessages = step.messages.Length > 0;
+
+                if (!hasMessages) { continue; }
+
+                foreach (var message in step.messages)
+                {
+                    var logMessage = message.content.Replace("\n", string.Empty);
+                    logMessage = logMessage.Replace("\r", string.Empty);
+                    logMessage = logMessage.Replace(Error, string.Empty);
+                    logMessage = logMessage.Replace(Warning, string.Empty);
+                    logMessage = logMessage.Replace(ErrorColor, string.Empty);
+                    logMessage = logMessage.Replace(WarningColor, string.Empty);
+                    logMessage = logMessage.Replace(ResetColor, string.Empty);
+                    logMessage = logMessage.Replace(LogColor, string.Empty);
+
+                    switch (message.type)
+                    {
+                        case LogType.Error:
+                        case LogType.Assert:
+                        case LogType.Exception:
+                            logs.Add($"| :boom: {message.type} | {logMessage} |");
+                            break;
+                        case LogType.Warning:
+                            logs.Add($"| :warning: {message.type} | {logMessage} |");
+                            break;
+                        case LogType.Log:
+                        default:
+                            logs.Add($"| {message.type} | {logMessage} |");
+                            break;
+                    }
+                }
+            }
+
+            if (logs.Count > 0)
+            {
+                var hasErrors = logs.Any(log => log.Contains($"| :boom: {LogType.Error} |"));
+
+                summaryWriter.WriteLine(hasErrors
+                    ? "<details open><summary>Logs</summary>"
+                    : "<details><summary>Logs</summary>");
+                summaryWriter.WriteLine("");
+                summaryWriter.WriteLine("| log type | message |");
+                summaryWriter.WriteLine("| -------- | ------- |");
+
+                foreach (var log in logs)
+                {
+                    summaryWriter.WriteLine(log);
+                }
+
+                summaryWriter.WriteLine("</details>");
+            }
+
+            summaryWriter.WriteLine("<details><summary>Build Outputs</summary>");
+            var fileList = new List<string>();
+#if UNITY_2022_1_OR_NEWER
+            fileList.AddRange(buildReport.GetFiles().Select(file => $"| {file.role} | {file.path} |"));
+#else
+            fileList.AddRange(buildReport.files.Select(file => $"{file.role} | {file.path}"));
+#endif
+            summaryWriter.WriteLine("");
+            summaryWriter.WriteLine("| file type | path |");
+            summaryWriter.WriteLine("| --------- | ---- |");
+
+            foreach (var file in fileList)
+            {
+                summaryWriter.WriteLine(file);
+            }
+
+            summaryWriter.WriteLine("</details>");
             summaryWriter.WriteLine("");
 
             switch (buildReport.summary.result)
@@ -83,82 +161,7 @@ namespace Utilities.Editor.BuildPipeline.Logging
                     throw new ArgumentOutOfRangeException();
             }
 
-            var totalBuildTime = TimeSpan.Zero;
-            var stepNumber = 0;
-
-
-            summaryWriter.WriteLine("| log type | message |");
-            summaryWriter.WriteLine("| -------- | ------- |");
-
-            foreach (var step in buildReport.steps)
-            {
-                stepNumber++;
-                totalBuildTime += step.duration;
-
-                var nameIndex = step.name.IndexOf("=", StringComparison.Ordinal);
-
-                if (nameIndex < 0)
-                {
-                    nameIndex = step.name.Length;
-                }
-
-                var buildStepMessage = $"{stepNumber}. {step.name[..nameIndex]}";
-                Debug.Log(buildStepMessage);
-
-                var hasMessages = step.messages.Length > 0;
-
-                if (!hasMessages)
-                {
-                    continue;
-                }
-
-                foreach (var message in step.messages)
-                {
-                    var logMessage = message.content.Replace("\n", string.Empty);
-                    logMessage = logMessage.Replace("\r", string.Empty);
-                    logMessage = logMessage.Replace(Error, string.Empty);
-                    logMessage = logMessage.Replace(Warning, string.Empty);
-                    logMessage = logMessage.Replace(ErrorColor, string.Empty);
-                    logMessage = logMessage.Replace(WarningColor, string.Empty);
-                    logMessage = logMessage.Replace(ResetColor, string.Empty);
-                    logMessage = logMessage.Replace(LogColor, string.Empty);
-
-                    switch (message.type)
-                    {
-                        case LogType.Error:
-                        case LogType.Assert:
-                        case LogType.Exception:
-                            summaryWriter.WriteLine($"| :boom: {message.type} | {logMessage} |");
-                            break;
-                        case LogType.Warning:
-                            summaryWriter.WriteLine($"| :warning: {message.type} | {logMessage} |");
-                            break;
-                        case LogType.Log:
-                            summaryWriter.WriteLine($"| {message.type} | {logMessage} |");
-                            break;
-                    }
-
-                    switch (message.type)
-                    {
-                        case LogType.Error:
-                        case LogType.Assert:
-                        case LogType.Exception:
-                            Debug.Log($"{Error}{ErrorColor}{logMessage}{ResetColor}");
-                            break;
-                        case LogType.Warning:
-                            Debug.Log($"{Warning}{WarningColor}{logMessage}{ResetColor}");
-                            break;
-                        case LogType.Log:
-                            Debug.Log($"{logMessage}");
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                }
-            }
-
             summaryWriter.Close();
-            summaryWriter.Dispose();
             CILoggingUtility.LoggingEnabled = true;
         }
     }

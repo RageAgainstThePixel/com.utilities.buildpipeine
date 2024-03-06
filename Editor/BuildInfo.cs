@@ -60,7 +60,16 @@ namespace Utilities.Editor.BuildPipeline
             get => string.IsNullOrEmpty(outputDirectory)
                 ? outputDirectory = BuildDeployPreferences.BuildDirectory
                 : outputDirectory;
-            set => outputDirectory = value;
+            set
+            {
+                var projectRoot = Directory.GetParent(EditorPreferences.ApplicationDataPath)!.FullName.Replace("\\", "/");
+                var newValue = value?.Replace("\\", "/");
+                outputDirectory = !string.IsNullOrWhiteSpace(newValue) && Path.IsPathRooted(newValue)
+                    ? newValue.Contains(projectRoot)
+                        ? newValue.Replace($"{projectRoot}/", string.Empty)
+                        : Path.GetRelativePath(projectRoot, newValue).Replace("\\", "/")
+                    : newValue;
+            }
         }
 
         /// <inheritdoc />
@@ -69,7 +78,7 @@ namespace Utilities.Editor.BuildPipeline
             get
             {
                 var rootBuildDirectory = OutputDirectory;
-                var dirCharIndex = rootBuildDirectory.IndexOf("/", StringComparison.Ordinal);
+                var dirCharIndex = rootBuildDirectory.IndexOf(Path.DirectorySeparatorChar, StringComparison.Ordinal);
 
                 if (dirCharIndex != -1)
                 {
@@ -81,9 +90,7 @@ namespace Utilities.Editor.BuildPipeline
         }
 
         /// <inheritdoc />
-        public virtual string FullOutputPath => IsExport ?
-            OutputDirectory :
-            $"{OutputDirectory}/{BundleIdentifier}{ExecutableFileExtension}";
+        public virtual string FullOutputPath => $"{OutputDirectory}{Path.DirectorySeparatorChar}{BundleIdentifier}{ExecutableFileExtension}";
 
         /// <inheritdoc />
         public virtual string ExecutableFileExtension
@@ -100,7 +107,7 @@ namespace Utilities.Editor.BuildPipeline
                     case BuildTarget.StandaloneLinux64:
                         return string.Empty;
                     default:
-                        return "/";
+                        return Path.DirectorySeparatorChar.ToString();
                 }
             }
         }
@@ -130,9 +137,6 @@ namespace Utilities.Editor.BuildPipeline
 
         /// <inheritdoc />
         public string BuildSymbols { get; set; } = string.Empty;
-
-        /// <inheritdoc />
-        public bool IsExport { get; private set; }
 
         /// <inheritdoc />
         public virtual void ParseCommandLineArgs()
@@ -181,7 +185,7 @@ namespace Utilities.Editor.BuildPipeline
                         Scenes = UnityPlayerBuildTools.SplitSceneList(File.ReadAllText(arguments[++i]));
                         break;
                     case "-buildOutputDirectory":
-                        OutputDirectory = arguments[++i];
+                        OutputDirectory = arguments[++i]?.Replace("'", string.Empty).Replace("\"", string.Empty);
                         break;
                     case "-acceptExternalModificationsToPlayer":
                         BuildOptions = BuildOptions.SetFlag(BuildOptions.AcceptExternalModificationsToPlayer);
@@ -206,7 +210,6 @@ namespace Utilities.Editor.BuildPipeline
 
                         break;
                     case "-export":
-                        IsExport = true;
 #if PLATFORM_STANDALONE_WIN
                         UnityEditor.WindowsStandalone.UserBuildSettings.createSolution = true;
 #endif
