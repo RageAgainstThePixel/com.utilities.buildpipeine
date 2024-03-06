@@ -98,3 +98,42 @@ jobs:
         with:
           build-target: ${{ matrix.build-target }}
 ```
+
+### Additional Custom Command Line Arguments
+
+In addition to any already defined [Unity Editor command line arguments](https://docs.unity3d.com/Manual/EditorCommandLineArguments.html), this plugin offers some additional options:
+
+| Argument | Description |
+| -------- | ----------- |
+| `-ignoreCompilerErrors` | Disables logging. |
+| `-autoIncrement` | Enables auto incrementing. |
+| `-versionName` | Sets the version of the application. Value must be string. |
+| `-versionCode` | Sets the version code of the application. Value must be an integer. |
+| `-bundleIdentifier` | Sets the bundle identifier of the application. |
+| `-sceneList` | Sets the scenes of the application, list as CSV. |
+| `-sceneListFile` | Sets the scenes of the application, list as JSON. |
+| `-buildOutputDirectory` | Sets the output directory for the build. |
+| `-acceptExternalModificationsToPlayer` | Sets the build options to accept external modifications to the player. |
+| `-colorSpace` | Sets the color space of the application, if the provided color space string is a valid `ColorSpace` enum value. |
+| `-buildConfiguration` | Sets the build configuration of the application, if the provided configuration string is `debug`, `master`, or `release`. |
+| `-export` | Creates a native code project for the target platform. |
+| `-symlinkSources` | Enables the use of symbolic links for the sources. |
+| `-disableDebugging` | Disables the ability to attach remote debuggers to the player. |
+
+#### Platform specific Command Line Arguments
+
+##### Android Command Line Arguments
+
+| Argument | Description |
+| -------- | ----------- |
+| `-splitBinary` | Builds an APK per CPU architecture. |
+| `-splitApk` | Uses APK expansion files. |
+| `-keyaliasPass` | Sets the key alias password. |
+| `-keystorePass` | Sets the keystore password. |
+| `-symbols` | Sets the symbol creation mode. Can be `public`, `debugging`, or `disabled`. |
+
+##### MacOS COmmand Line Arguments
+
+| Argument | Description |
+| -------- | ----------- |
+| `-arch` | Sets the build architecture. Can be `x64`, `arm64`, or `x64arm64`. |

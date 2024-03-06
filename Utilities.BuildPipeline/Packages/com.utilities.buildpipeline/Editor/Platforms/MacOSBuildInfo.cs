@@ -34,17 +34,17 @@ namespace Utilities.Editor.BuildPipeline
                         UserBuildSettings.createXcodeProject = true;
                         break;
                     case "-arch":
-                        var arch = arguments[++i];
+                        var arch = arguments[++i].string.ToLower();
                         UserBuildSettings.architecture = arch switch
                         {
 #if UNITY_2022_1_OR_NEWER
                             "x64" => UnityEditor.Build.OSArchitecture.x64,
-                            "ARM64" => UnityEditor.Build.OSArchitecture.ARM64,
-                            "x64ARM64" => UnityEditor.Build.OSArchitecture.x64ARM64,
+                            "arm64" => UnityEditor.Build.OSArchitecture.ARM64,
+                            "x64arm64" => UnityEditor.Build.OSArchitecture.x64ARM64,
 #else
                             "x64" => MacOSArchitecture.x64,
-                            "ARM64" => MacOSArchitecture.ARM64,
-                            "x64ARM64" => MacOSArchitecture.x64ARM64,
+                            "arm64" => MacOSArchitecture.ARM64,
+                            "x64arm64" => MacOSArchitecture.x64ARM64,
 #endif
                             _ => throw new Exception($"Unsupported architecture: {arch}"),
                         };
