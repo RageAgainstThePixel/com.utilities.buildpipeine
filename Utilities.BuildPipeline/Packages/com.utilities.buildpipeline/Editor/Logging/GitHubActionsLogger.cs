@@ -67,13 +67,68 @@ namespace Utilities.Editor.BuildPipeline.Logging
             summaryWriter.WriteLine($"Size: {FormatFileSize(buildReport.summary.totalSize)}");
             summaryWriter.WriteLine($"Output Path: {buildReport.summary.outputPath}");
             summaryWriter.WriteLine("");
+
+            var totalBuildTime = TimeSpan.Zero;
+            var logs = new List<string>();
+
+            foreach (var step in buildReport.steps)
+            {
+                totalBuildTime += step.duration;
+                var hasMessages = step.messages.Length > 0;
+
+                if (!hasMessages) { continue; }
+
+                foreach (var message in step.messages)
+                {
+                    var logMessage = message.content.Replace("\n", string.Empty);
+                    logMessage = logMessage.Replace("\r", string.Empty);
+                    logMessage = logMessage.Replace(Error, string.Empty);
+                    logMessage = logMessage.Replace(Warning, string.Empty);
+                    logMessage = logMessage.Replace(ErrorColor, string.Empty);
+                    logMessage = logMessage.Replace(WarningColor, string.Empty);
+                    logMessage = logMessage.Replace(ResetColor, string.Empty);
+                    logMessage = logMessage.Replace(LogColor, string.Empty);
+
+                    switch (message.type)
+                    {
+                        case LogType.Error:
+                        case LogType.Assert:
+                        case LogType.Exception:
+                            logs.Add($"| :boom: {message.type} | {logMessage} |");
+                            break;
+                        case LogType.Warning:
+                            logs.Add($"| :warning: {message.type} | {logMessage} |");
+                            break;
+                        case LogType.Log:
+                        default:
+                            logs.Add($"| {message.type} | {logMessage} |");
+                            break;
+                    }
+                }
+            }
+
+            if (logs.Count > 0)
+            {
+                summaryWriter.WriteLine("<details><summary>Logs</summary>");
+                summaryWriter.WriteLine("");
+                summaryWriter.WriteLine("| log type | message |");
+                summaryWriter.WriteLine("| -------- | ------- |");
+
+                foreach (var log in logs)
+                {
+                    summaryWriter.WriteLine(log);
+                }
+
+                summaryWriter.WriteLine("</details>");
+            }
+
             summaryWriter.WriteLine("<details><summary>Build Outputs</summary>");
             var fileList = new List<string>();
-#if UNITY_2022_1_OR_NEWER
+        #if UNITY_2022_1_OR_NEWER
             fileList.AddRange(buildReport.GetFiles().Select(file => $"| {file.role} | {file.path} |"));
-#else
+        #else
             fileList.AddRange(buildReport.files.Select(file => $"{file.role} | {file.path}"));
-#endif
+        #endif
             summaryWriter.WriteLine("");
             summaryWriter.WriteLine("| file type | path |");
             summaryWriter.WriteLine("| --------- | ---- |");
@@ -100,76 +155,6 @@ namespace Utilities.Editor.BuildPipeline.Logging
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
-            }
-
-            var totalBuildTime = TimeSpan.Zero;
-            //var stepNumber = 0;
-            var logs = new List<string>();
-
-            foreach (var step in buildReport.steps)
-            {
-                //stepNumber++;
-                totalBuildTime += step.duration;
-
-                //var nameIndex = step.name.IndexOf("=", StringComparison.Ordinal);
-
-                //if (nameIndex < 0)
-                //{
-                //    nameIndex = step.name.Length;
-                //}
-
-                //var buildStepMessage = $"{stepNumber}. {step.name[..nameIndex]}";
-                //Debug.Log(buildStepMessage);
-
-                var hasMessages = step.messages.Length > 0;
-
-                if (!hasMessages) { continue; }
-
-                foreach (var message in step.messages)
-                {
-                    var logMessage = message.content.Replace("\n", string.Empty);
-                    logMessage = logMessage.Replace("\r", string.Empty);
-                    logMessage = logMessage.Replace(Error, string.Empty);
-                    logMessage = logMessage.Replace(Warning, string.Empty);
-                    logMessage = logMessage.Replace(ErrorColor, string.Empty);
-                    logMessage = logMessage.Replace(WarningColor, string.Empty);
-                    logMessage = logMessage.Replace(ResetColor, string.Empty);
-                    logMessage = logMessage.Replace(LogColor, string.Empty);
-
-                    switch (message.type)
-                    {
-                        case LogType.Error:
-                        case LogType.Assert:
-                        case LogType.Exception:
-                            logs.Add($"| :boom: {message.type} | {logMessage} |");
-                            //Debug.Log($"{Error}{ErrorColor}{logMessage}{ResetColor}");
-                            break;
-                        case LogType.Warning:
-                            logs.Add($"| :warning: {message.type} | {logMessage} |");
-                            //Debug.Log($"{Warning}{WarningColor}{logMessage}{ResetColor}");
-                            break;
-                        case LogType.Log:
-                        default:
-                            logs.Add($"| {message.type} | {logMessage} |");
-                            //Debug.Log($"{logMessage}");
-                            break;
-                    }
-                }
-            }
-
-            if (logs.Count > 0)
-            {
-                summaryWriter.WriteLine("<details><summary>Logs</summary>");
-                summaryWriter.WriteLine("");
-                summaryWriter.WriteLine("| log type | message |");
-                summaryWriter.WriteLine("| -------- | ------- |");
-
-                foreach (var log in logs)
-                {
-                    summaryWriter.WriteLine(log);
-                }
-
-                summaryWriter.WriteLine("</details>");
             }
 
             summaryWriter.Close();
