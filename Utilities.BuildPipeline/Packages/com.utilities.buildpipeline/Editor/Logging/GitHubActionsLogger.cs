@@ -63,13 +63,17 @@ namespace Utilities.Editor.BuildPipeline.Logging
 
             summaryWriter.WriteLine($"Total duration: {stopwatch.Elapsed:g}");
             summaryWriter.WriteLine($"Size: {FormatFileSize(buildReport.summary.totalSize)}");
-#if UNITY_2022_1_OR_NEWER
-            summaryWriter.WriteLine($"Build Output: {string.Join("\n    ", buildReport.GetFiles())}");
-#else
-            summaryWriter.WriteLine($"Build Output: {string.Join("\n    ", buildReport.files)}");
-#endif
+            summaryWriter.WriteLine($"Output Path: {buildReport.summary.outputPath}");
             summaryWriter.WriteLine("");
-            summaryWriter.WriteLine("## Logs");
+            summaryWriter.WriteLine("<details><summary>Build Outputs</summary>");
+#if UNITY_2022_1_OR_NEWER
+            summaryWriter.WriteLine($"{string.Join("\n    ", buildReport.GetFiles())}");
+#else
+            summaryWriter.WriteLine($"{string.Join("\n    ", buildReport.files)}");
+#endif
+            summaryWriter.WriteLine("</details>");
+            summaryWriter.WriteLine("");
+            summaryWriter.WriteLine("<details><summary>Logs</summary>");
             summaryWriter.WriteLine("");
 
             switch (buildReport.summary.result)
@@ -111,10 +115,7 @@ namespace Utilities.Editor.BuildPipeline.Logging
 
                 var hasMessages = step.messages.Length > 0;
 
-                if (!hasMessages)
-                {
-                    continue;
-                }
+                if (!hasMessages) { continue; }
 
                 foreach (var message in step.messages)
                 {
@@ -161,6 +162,7 @@ namespace Utilities.Editor.BuildPipeline.Logging
                 }
             }
 
+            summaryWriter.WriteLine("</details>");
             summaryWriter.Close();
             CILoggingUtility.LoggingEnabled = true;
         }
