@@ -60,7 +60,22 @@ namespace Utilities.Editor.BuildPipeline
             get => string.IsNullOrEmpty(outputDirectory)
                 ? outputDirectory = BuildDeployPreferences.BuildDirectory
                 : outputDirectory;
-            set => outputDirectory = value;
+            set
+            {
+                if (Path.IsPathRooted(value))
+                {
+                    if (!Directory.Exists(value))
+                    {
+                        Directory.CreateDirectory(value);
+                    }
+
+                    outputDirectory = Path.GetRelativePath(Directory.GetParent(EditorPreferences.ApplicationDataPath)!.FullName, value);
+                }
+                else
+                {
+                    outputDirectory = value;
+                }
+            }
         }
 
         /// <inheritdoc />

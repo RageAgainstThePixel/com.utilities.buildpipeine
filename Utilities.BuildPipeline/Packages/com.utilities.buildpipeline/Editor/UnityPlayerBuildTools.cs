@@ -230,6 +230,9 @@ namespace Utilities.Editor.BuildPipeline
 
             if (Application.isBatchMode)
             {
+                Debug.Log($"Build Target: {buildInfo.BuildTarget}");
+                Debug.Log($"Build Options: {buildInfo.BuildOptions}");
+                Debug.Log($"Target output: \"{buildInfo.FullOutputPath}\"");
                 Debug.Log($"Scenes in build: {string.Join("\n    ", buildInfo.Scenes)}");
             }
 

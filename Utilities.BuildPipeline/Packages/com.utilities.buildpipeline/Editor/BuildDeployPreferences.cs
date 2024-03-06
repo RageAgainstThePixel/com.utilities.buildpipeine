@@ -15,7 +15,7 @@ namespace Utilities.Editor.BuildPipeline
         private const string EDITOR_PREF_BUILD_KEY = "Utilities.BuildDirectory";
 
         /// <summary>
-        /// The Build Directory that the Mixed Reality Toolkit will build to.
+        /// The Build Directory to build to.
         /// </summary>
         /// <remarks>
         /// This is a root build folder path. Each platform build will be put into a child directory with the name of the current active build target.
