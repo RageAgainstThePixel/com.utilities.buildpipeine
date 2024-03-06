@@ -46,7 +46,7 @@ jobs:
         # Activates the installation with the provided credentials
         # https://github.com/XRTK/activate-unity-license
       - uses: xrtk/activate-unity-license@v5
-        if: matrix.os != 'windows' || matrix.os != 'macos'
+        if: matrix.os != 'windows' && matrix.os != 'macos'
         with:
           # Required
           username: ${{ secrets.UNITY_USERNAME }}
