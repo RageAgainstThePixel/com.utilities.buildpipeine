@@ -207,6 +207,15 @@ namespace Utilities.Editor.BuildPipeline
                         break;
                     case "-export":
                         IsExport = true;
+#if PLATFORM_STANDALONE_WIN
+                        UnityEditor.WindowsStandalone.UserBuildSettings.createSolution = true;
+#endif
+                        break;
+                    case "-symlinkSources":
+                        EditorUserBuildSettings.symlinkSources = true;
+                        break;
+                    case "-disableDebugging":
+                        EditorUserBuildSettings.allowDebugging = false;
                         break;
                 }
             }
