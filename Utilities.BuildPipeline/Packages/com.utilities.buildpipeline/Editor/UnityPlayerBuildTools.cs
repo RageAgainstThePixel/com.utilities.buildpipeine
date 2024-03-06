@@ -233,7 +233,7 @@ namespace Utilities.Editor.BuildPipeline
                 Debug.Log($"Build Target: {buildInfo.BuildTarget}");
                 Debug.Log($"Build Options: {buildInfo.BuildOptions}");
                 Debug.Log($"Target output: \"{buildInfo.FullOutputPath}\"");
-                Debug.Log($"Scenes in build: {string.Join("\n    ", buildInfo.Scenes)}");
+                Debug.Log($"Scenes in build:\n{string.Join("\n    ", buildInfo.Scenes.Select(scene => scene.path))}");
             }
 
             try
