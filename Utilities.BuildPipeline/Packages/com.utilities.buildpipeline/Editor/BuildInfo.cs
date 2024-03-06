@@ -64,30 +64,11 @@ namespace Utilities.Editor.BuildPipeline
             {
                 var projectRoot = Directory.GetParent(EditorPreferences.ApplicationDataPath)!.FullName.Replace("\\", "/");
                 var newValue = value?.Replace("\\", "/");
-                Debug.Log($"projectRoot: {projectRoot}");
-                Debug.Log($"set outPutDirectory: {newValue}");
-
-                if (!string.IsNullOrWhiteSpace(newValue) && Path.IsPathRooted(newValue))
-                {
-                    Debug.Log("IsRooted");
-
-                    if (newValue.Contains(projectRoot))
-                    {
-                        Debug.Log("IsInRoot");
-                        outputDirectory = newValue.Replace($"{projectRoot}/", string.Empty);
-                    }
-                    else
-                    {
-                        Debug.Log("IsRelative");
-                        outputDirectory = Path.GetRelativePath(projectRoot, newValue).Replace("\\", "/");
-                    }
-                }
-                else
-                {
-                    outputDirectory = newValue;
-                }
-
-                Debug.Log($"formatted output directory: {outputDirectory}");
+                outputDirectory = !string.IsNullOrWhiteSpace(newValue) && Path.IsPathRooted(newValue)
+                    ? newValue.Contains(projectRoot)
+                        ? newValue.Replace($"{projectRoot}/", string.Empty)
+                        : Path.GetRelativePath(projectRoot, newValue).Replace("\\", "/")
+                    : newValue;
             }
         }
 
