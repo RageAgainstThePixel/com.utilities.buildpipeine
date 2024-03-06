@@ -70,10 +70,14 @@ namespace Utilities.Editor.BuildPipeline.Logging
             summaryWriter.WriteLine("<details><summary>Build Outputs</summary>");
             var fileList = new List<string>();
 #if UNITY_2022_1_OR_NEWER
-            fileList.AddRange(buildReport.GetFiles().Select(file => $"{file.role} | {file.path}"));
+            fileList.AddRange(buildReport.GetFiles().Select(file => $"| {file.role} | {file.path} |"));
 #else
             fileList.AddRange(buildReport.files.Select(file => $"{file.role} | {file.path}"));
 #endif
+            summaryWriter.WriteLine("");
+            summaryWriter.WriteLine("| file type | path |");
+            summaryWriter.WriteLine("| --------- | ---- |");
+
             foreach (var file in fileList)
             {
                 summaryWriter.WriteLine(file);
