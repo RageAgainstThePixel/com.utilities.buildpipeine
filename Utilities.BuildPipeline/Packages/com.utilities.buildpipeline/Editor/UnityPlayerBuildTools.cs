@@ -243,7 +243,7 @@ namespace Utilities.Editor.BuildPipeline
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                Debug.LogException(e);
             }
             finally
             {

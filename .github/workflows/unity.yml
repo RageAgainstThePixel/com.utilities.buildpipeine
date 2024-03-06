@@ -25,11 +25,11 @@ jobs:
       # max-parallel: 2 # Use this if you're activating pro license with matrix
       matrix:
         include:
-          - os: ubuntu-latest
-            build-target: StandaloneLinux64
-          - os: windows-latest
+          # - os: ubuntu-latest
+          #   build-target: StandaloneLinux64
+          - os: windows
             build-target: StandaloneWindows64
-          - os: macos-latest
+          - os: macos
             build-target: StandaloneOSX
 
     steps:
@@ -59,7 +59,8 @@ jobs:
         uses: RageAgainstThePixel/unity-build@main
         with:
           build-target: ${{ matrix.build-target }}
-          publish-artifacts: false
+          publish-artifacts: true
+          additional-build-args: '-export'
           test: false
 
       - name: Validate Text Mesh Pro Resources
