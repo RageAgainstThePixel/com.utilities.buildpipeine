@@ -28,23 +28,16 @@ namespace Utilities.Editor.BuildPipeline
                     case "-export":
                         UserBuildSettings.createXcodeProject = true;
                         break;
-                    case "-arch"
+                    case "-arch":
                         var arch = arguments[++i];
-
-                        switch (arch)
+                        UserBuildSettings.architecture = arch switch
                         {
-                            case "x64":
-                                UserBuildSettings.architecture = UnityEditor.Build.OSArchitecture.x64;
-                                break;
-                            case "ARM64":
-                                UserBuildSettings.architecture = UnityEditor.Build.OSArchitecture.ARM64;
-                                break;
-                            case "x64ARM64":
-                                UserBuildSettings.architecture = UnityEditor.Build.OSArchitecture.x64ARM64;
-                                break;
-                            default:
-                                throw new Exception($"Unsupported architecture: {arch}");
-                        }
+                            "x64" => MacOSArchitecture.x64,
+                            "ARM64" => MacOSArchitecture.ARM64,
+                            "x64ARM64" => MacOSArchitecture.x64ARM64,
+                            _ => throw new Exception($"Unsupported architecture: {arch}"),
+                        };
+                        break;
                 }
             }
 #endif
