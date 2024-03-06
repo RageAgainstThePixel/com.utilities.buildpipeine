@@ -1,6 +1,7 @@
 ﻿// Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -73,8 +74,6 @@ namespace Utilities.Editor.BuildPipeline.Logging
 #endif
             summaryWriter.WriteLine("</details>");
             summaryWriter.WriteLine("");
-            summaryWriter.WriteLine("<details><summary>Logs</summary>");
-            summaryWriter.WriteLine("");
 
             switch (buildReport.summary.result)
             {
@@ -93,25 +92,23 @@ namespace Utilities.Editor.BuildPipeline.Logging
             }
 
             var totalBuildTime = TimeSpan.Zero;
-            var stepNumber = 0;
-
-            summaryWriter.WriteLine("| log type | message |");
-            summaryWriter.WriteLine("| -------- | ------- |");
+            //var stepNumber = 0;
+            var logs = new List<string>();
 
             foreach (var step in buildReport.steps)
             {
-                stepNumber++;
+                //stepNumber++;
                 totalBuildTime += step.duration;
 
-                var nameIndex = step.name.IndexOf("=", StringComparison.Ordinal);
+                //var nameIndex = step.name.IndexOf("=", StringComparison.Ordinal);
 
-                if (nameIndex < 0)
-                {
-                    nameIndex = step.name.Length;
-                }
+                //if (nameIndex < 0)
+                //{
+                //    nameIndex = step.name.Length;
+                //}
 
-                var buildStepMessage = $"{stepNumber}. {step.name[..nameIndex]}";
-                Debug.Log(buildStepMessage);
+                //var buildStepMessage = $"{stepNumber}. {step.name[..nameIndex]}";
+                //Debug.Log(buildStepMessage);
 
                 var hasMessages = step.messages.Length > 0;
 
@@ -133,36 +130,37 @@ namespace Utilities.Editor.BuildPipeline.Logging
                         case LogType.Error:
                         case LogType.Assert:
                         case LogType.Exception:
-                            summaryWriter.WriteLine($"| :boom: {message.type} | {logMessage} |");
+                            logs.Add($"| :boom: {message.type} | {logMessage} |");
+                            //Debug.Log($"{Error}{ErrorColor}{logMessage}{ResetColor}");
                             break;
                         case LogType.Warning:
-                            summaryWriter.WriteLine($"| :warning: {message.type} | {logMessage} |");
+                            logs.Add($"| :warning: {message.type} | {logMessage} |");
+                            //Debug.Log($"{Warning}{WarningColor}{logMessage}{ResetColor}");
                             break;
                         case LogType.Log:
-                            summaryWriter.WriteLine($"| {message.type} | {logMessage} |");
-                            break;
-                    }
-
-                    switch (message.type)
-                    {
-                        case LogType.Error:
-                        case LogType.Assert:
-                        case LogType.Exception:
-                            Debug.Log($"{Error}{ErrorColor}{logMessage}{ResetColor}");
-                            break;
-                        case LogType.Warning:
-                            Debug.Log($"{Warning}{WarningColor}{logMessage}{ResetColor}");
-                            break;
-                        case LogType.Log:
-                            Debug.Log($"{logMessage}");
-                            break;
                         default:
-                            throw new ArgumentOutOfRangeException();
+                            logs.Add($"| {message.type} | {logMessage} |");
+                            //Debug.Log($"{logMessage}");
+                            break;
                     }
                 }
             }
 
-            summaryWriter.WriteLine("</details>");
+            if (logs.Count > 0)
+            {
+                summaryWriter.WriteLine("<details><summary>Logs</summary>");
+                summaryWriter.WriteLine("");
+                summaryWriter.WriteLine("| log type | message |");
+                summaryWriter.WriteLine("| -------- | ------- |");
+
+                foreach (var log in logs)
+                {
+                    summaryWriter.WriteLine(log);
+                }
+
+                summaryWriter.WriteLine("</details>");
+            }
+
             summaryWriter.Close();
             CILoggingUtility.LoggingEnabled = true;
         }
