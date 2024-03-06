@@ -74,7 +74,7 @@ namespace Utilities.Editor.BuildPipeline
                     if (newValue.Contains(projectRoot))
                     {
                         Debug.Log("IsInRoot");
-                        outputDirectory = newValue.Replace(projectRoot, string.Empty);
+                        outputDirectory = newValue.Replace($"{projectRoot}/", string.Empty);
                     }
                     else
                     {
