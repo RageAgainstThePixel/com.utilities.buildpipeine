@@ -63,8 +63,11 @@ namespace Utilities.Editor.BuildPipeline
             set
             {
                 var projectRoot = Directory.GetParent(EditorPreferences.ApplicationDataPath)!.FullName;
-                outputDirectory = !string.IsNullOrWhiteSpace(value) && Path.IsPathRooted(value) && !value.StartsWith(projectRoot)
-                    ? Path.GetRelativePath(projectRoot, value)
+
+                outputDirectory = !string.IsNullOrWhiteSpace(value) && Path.IsPathRooted(value)
+                    ? value.StartsWith(projectRoot)
+                        ? value.Replace(projectRoot, string.Empty)
+                        : Path.GetRelativePath(projectRoot, value)
                     : value;
             }
         }
