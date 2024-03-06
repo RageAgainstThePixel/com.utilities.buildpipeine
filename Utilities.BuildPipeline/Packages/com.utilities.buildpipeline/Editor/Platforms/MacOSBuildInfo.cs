@@ -34,7 +34,7 @@ namespace Utilities.Editor.BuildPipeline
                         UserBuildSettings.createXcodeProject = true;
                         break;
                     case "-arch":
-                        var arch = arguments[++i].string.ToLower();
+                        var arch = arguments[++i].ToLower();
                         UserBuildSettings.architecture = arch switch
                         {
 #if UNITY_2022_1_OR_NEWER
