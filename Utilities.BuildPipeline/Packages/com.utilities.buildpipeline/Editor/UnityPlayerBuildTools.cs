@@ -230,7 +230,10 @@ namespace Utilities.Editor.BuildPipeline
 
             if (Application.isBatchMode)
             {
-                Debug.Log($"Scenes in build: {string.Join("\n    ", buildInfo.Scenes)}");
+                Debug.Log($"Build Target: {buildInfo.BuildTarget}");
+                Debug.Log($"Build Options: {buildInfo.BuildOptions}");
+                Debug.Log($"Target output: \"{buildInfo.FullOutputPath}\"");
+                Debug.Log($"Scenes in build:\n{string.Join("\n    ", buildInfo.Scenes.Select(scene => scene.path))}");
             }
 
             try
@@ -243,7 +246,7 @@ namespace Utilities.Editor.BuildPipeline
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                Debug.LogException(e);
             }
             finally
             {

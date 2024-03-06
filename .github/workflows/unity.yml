@@ -34,6 +34,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          clean: true
 
         # Installs the Unity Editor based on your project version text file
         # sets -> env.UNITY_EDITOR_PATH
@@ -46,6 +49,7 @@ jobs:
         # Activates the installation with the provided credentials
         # https://github.com/XRTK/activate-unity-license
       - uses: xrtk/activate-unity-license@v5
+        if: matrix.os != 'windows' && matrix.os != 'macos'
         with:
           # Required
           username: ${{ secrets.UNITY_USERNAME }}
@@ -59,7 +63,9 @@ jobs:
         uses: RageAgainstThePixel/unity-build@main
         with:
           build-target: ${{ matrix.build-target }}
-          publish-artifacts: false
+          publish-artifacts: true
+          additional-build-args: -export
+          output-directory: ${{ github.workspace }}/Artifacts/${{ matrix.build-target }}
           test: false
 
       - name: Validate Text Mesh Pro Resources
