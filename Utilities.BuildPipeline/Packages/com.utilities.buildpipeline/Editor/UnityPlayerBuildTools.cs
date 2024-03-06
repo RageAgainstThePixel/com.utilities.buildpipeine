@@ -16,7 +16,7 @@ using Debug = UnityEngine.Debug;
 namespace Utilities.Editor.BuildPipeline
 {
     /// <summary>
-    /// Cross platform player build tools
+    /// Cross-platform player build tools
     /// </summary>
     public class UnityPlayerBuildTools : IPreprocessBuildWithReport, IPostprocessBuildWithReport
     {
@@ -45,17 +45,18 @@ namespace Utilities.Editor.BuildPipeline
                 {
                     switch (currentBuildTarget)
                     {
-                        // TODO: Add additional platform specific build info classes
-                        //case BuildTarget.StandaloneOSX:
-                        //    break;
-                        //case BuildTarget.StandaloneWindows:
-                        //    break;
-                        //case BuildTarget.iOS:
-                        //    break;
                         case BuildTarget.Android:
                             buildInfoInstance = new AndroidBuildInfo();
                             break;
+                        case BuildTarget.StandaloneOSX:
+                            buildInfoInstance = new MacOSBuildInfo();
+                            break;
+                        // TODO: Add additional platform specific build info classes as needed
+                        //case BuildTarget.StandaloneWindows:
                         //case BuildTarget.StandaloneWindows64:
+                        //    break;
+                        //case BuildTarget.iOS:
+                        //    break;
                         //    break;
                         //case BuildTarget.WebGL:
                         //    break;
