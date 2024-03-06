@@ -34,7 +34,7 @@ namespace Utilities.Editor.BuildPipeline
             get
             {
                 var rootBuildDirectory = BuildDirectory;
-                var dirCharIndex = rootBuildDirectory.IndexOf("/", StringComparison.Ordinal);
+                var dirCharIndex = rootBuildDirectory.IndexOf(Path.DirectorySeparatorChar, StringComparison.Ordinal);
 
                 if (dirCharIndex != -1)
                 {

@@ -84,7 +84,7 @@ namespace Utilities.Editor.BuildPipeline
             get
             {
                 var rootBuildDirectory = OutputDirectory;
-                var dirCharIndex = rootBuildDirectory.IndexOf("/", StringComparison.Ordinal);
+                var dirCharIndex = rootBuildDirectory.IndexOf(Path.DirectorySeparatorChar, StringComparison.Ordinal);
 
                 if (dirCharIndex != -1)
                 {
@@ -98,7 +98,7 @@ namespace Utilities.Editor.BuildPipeline
         /// <inheritdoc />
         public virtual string FullOutputPath => IsExport ?
             OutputDirectory :
-            $"{OutputDirectory}/{BundleIdentifier}{ExecutableFileExtension}";
+            $"{OutputDirectory}{Path.DirectorySeparatorChar}{BundleIdentifier}{ExecutableFileExtension}";
 
         /// <inheritdoc />
         public virtual string ExecutableFileExtension
@@ -115,7 +115,7 @@ namespace Utilities.Editor.BuildPipeline
                     case BuildTarget.StandaloneLinux64:
                         return string.Empty;
                     default:
-                        return "/";
+                        return Path.DirectorySeparatorChar.ToString();
                 }
             }
         }
