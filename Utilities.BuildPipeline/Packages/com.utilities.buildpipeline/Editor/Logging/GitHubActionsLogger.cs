@@ -63,7 +63,11 @@ namespace Utilities.Editor.BuildPipeline.Logging
 
             summaryWriter.WriteLine($"Total duration: {stopwatch.Elapsed:g}");
             summaryWriter.WriteLine($"Size: {FormatFileSize(buildReport.summary.totalSize)}");
+#if UNITY_2022_1_OR_NEWER
             summaryWriter.WriteLine($"Build Output: {string.Join("\n    ", buildReport.GetFiles())}");
+#else
+            summaryWriter.WriteLine($"Build Output: {string.Join("\n    ", buildReport.files)}");
+#endif
             summaryWriter.WriteLine("");
             summaryWriter.WriteLine("## Logs");
             summaryWriter.WriteLine("");
