@@ -63,6 +63,7 @@ namespace Utilities.Editor.BuildPipeline.Logging
 
             summaryWriter.WriteLine($"Total duration: {stopwatch.Elapsed:g}");
             summaryWriter.WriteLine($"Size: {FormatFileSize(buildReport.summary.totalSize)}");
+            summaryWriter.WriteLine($"Build Output: {string.Join("\n    ", buildReport.GetFiles())}");
             summaryWriter.WriteLine("");
             summaryWriter.WriteLine("## Logs");
             summaryWriter.WriteLine("");
@@ -85,7 +86,6 @@ namespace Utilities.Editor.BuildPipeline.Logging
 
             var totalBuildTime = TimeSpan.Zero;
             var stepNumber = 0;
-
 
             summaryWriter.WriteLine("| log type | message |");
             summaryWriter.WriteLine("| -------- | ------- |");
@@ -158,7 +158,6 @@ namespace Utilities.Editor.BuildPipeline.Logging
             }
 
             summaryWriter.Close();
-            summaryWriter.Dispose();
             CILoggingUtility.LoggingEnabled = true;
         }
     }
