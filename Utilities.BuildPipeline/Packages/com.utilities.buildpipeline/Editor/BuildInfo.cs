@@ -50,6 +50,9 @@ namespace Utilities.Editor.BuildPipeline
         public virtual BuildTarget BuildTarget { get; } = EditorUserBuildSettings.activeBuildTarget;
 
         /// <inheritdoc />
+        public virtual BuildTargetGroup BuildTargetGroup { get; } = EditorUserBuildSettings.selectedBuildTargetGroup;
+
+        /// <inheritdoc />
         public bool IsCommandLine { get; } = Application.isBatchMode;
 
         private string outputDirectory;
@@ -147,7 +150,7 @@ namespace Utilities.Editor.BuildPipeline
             {
                 switch (arguments[i])
                 {
-                    case "-ignoreCompilerErrors":
+                    case "-ignorecompilererrors":
                         CILoggingUtility.LoggingEnabled = false;
                         break;
                     case "-autoIncrement":
@@ -204,7 +207,7 @@ namespace Utilities.Editor.BuildPipeline
                                 Configuration = configuration;
                                 break;
                             default:
-                                Debug.LogError($"Failed to parse -buildConfiguration: {configuration}");
+                                Debug.LogError($"Failed to parse -buildConfiguration: \"{configuration}\"");
                                 break;
                         }
 
@@ -219,6 +222,39 @@ namespace Utilities.Editor.BuildPipeline
                         break;
                     case "-disableDebugging":
                         EditorUserBuildSettings.allowDebugging = false;
+                        break;
+                    case "-dotnetApiCompatibilityLevel":
+                        var apiCompatibilityLevelString = arguments[++i];
+
+                        if (Enum.TryParse(apiCompatibilityLevelString, true, out ApiCompatibilityLevel apiCompatibility))
+                        {
+                            PlayerSettings.SetApiCompatibilityLevel(BuildTargetGroup, apiCompatibility);
+                        }
+                        else
+                        {
+                            Debug.LogError($"Failed to parse -dotnetApiCompatibilityLevel: \"{apiCompatibilityLevelString}\"");
+                        }
+
+                        break;
+                    case "-scriptingBackend":
+                        var scriptingBackendString = arguments[++i][1..].ToLower();
+
+                        switch (scriptingBackendString)
+                        {
+                            case "mono":
+                                PlayerSettings.SetScriptingBackend(BuildTargetGroup, ScriptingImplementation.Mono2x);
+                                break;
+                            case "il2cpp":
+                                PlayerSettings.SetScriptingBackend(BuildTargetGroup, ScriptingImplementation.IL2CPP);
+                                break;
+                            case "winrt":
+                                PlayerSettings.SetScriptingBackend(BuildTargetGroup, ScriptingImplementation.WinRTDotNET);
+                                break;
+                            default:
+                                Debug.LogError($"Unsupported -scriptingBackend: \"{scriptingBackendString}\"");
+                                break;
+                        }
+
                         break;
                 }
             }

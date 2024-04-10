@@ -152,7 +152,7 @@ namespace Utilities.Editor.BuildPipeline
 
             // use https://semver.org/
             // major.minor.build
-            Version version = new Version(
+            var version = new Version(
                 (buildInfo.Version == null || buildInfo.AutoIncrement)
                     ? string.IsNullOrWhiteSpace(PlayerSettings.bundleVersion)
                         ? GetValidVersionString(Application.version)
@@ -170,7 +170,7 @@ namespace Utilities.Editor.BuildPipeline
             PlayerSettings.bundleVersion = version.ToString();
             // Update Lumin bc the Application.version isn't synced like Android & iOS
             PlayerSettings.Lumin.versionName = PlayerSettings.bundleVersion;
-            // Update WSA bc the Application.version isn't synced line Android & iOS
+            // Update WSA bc the Application.version isn't synced like Android & iOS
             PlayerSettings.WSA.packageVersion = new Version(version.Major, version.Minor, version.Build, 0);
 
             var buildTargetGroup = UnityEditor.BuildPipeline.GetBuildTargetGroup(buildInfo.BuildTarget);

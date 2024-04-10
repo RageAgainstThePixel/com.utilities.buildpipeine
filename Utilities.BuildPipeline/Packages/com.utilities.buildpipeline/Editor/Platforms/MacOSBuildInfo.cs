@@ -11,16 +11,23 @@ namespace Utilities.Editor.BuildPipeline
 {
     public class MacOSBuildInfo : BuildInfo
     {
+        /// <inheritdoc />
         public override BuildTarget BuildTarget => BuildTarget.StandaloneOSX;
 
+        /// <inheritdoc />
+        public override BuildTargetGroup BuildTargetGroup => BuildTargetGroup.Standalone;
+
+        /// <inheritdoc />
         public override string ExecutableFileExtension => ".app";
 
 #if UNITY_STANDALONE_OSX
 
+        /// <inheritdoc />
         public override string FullOutputPath => UserBuildSettings.createXcodeProject
             ? OutputDirectory
             : base.FullOutputPath;
-
+            
+        /// <inheritdoc />
         public override void ParseCommandLineArgs()
         {
             base.ParseCommandLineArgs();

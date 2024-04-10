@@ -85,6 +85,11 @@ namespace Utilities.Editor.BuildPipeline
         BuildTarget BuildTarget { get; }
 
         /// <summary>
+        /// The build target group;
+        /// </summary>
+        BuildTargetGroup BuildTargetGroup { get; }
+
+        /// <summary>
         /// Optional parameter to set the player's <see cref="ColorSpace"/>
         /// </summary>
         ColorSpace? ColorSpace { get; set; }
