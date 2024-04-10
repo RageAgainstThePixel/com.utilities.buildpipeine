@@ -115,10 +115,12 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | `-buildOutputDirectory` | Sets the output directory for the build. |
 | `-acceptExternalModificationsToPlayer` | Sets the build options to accept external modifications to the player. |
 | `-colorSpace` | Sets the color space of the application, if the provided color space string is a valid `ColorSpace` enum value. |
-| `-buildConfiguration` | Sets the build configuration of the application, if the provided configuration string is `debug`, `master`, or `release`. |
+| `-buildConfiguration` | Sets the build configuration of the application. Can be:  `debug`, `master`, or `release`. |
 | `-export` | Creates a native code project for the target platform. |
 | `-symlinkSources` | Enables the use of symbolic links for the sources. |
 | `-disableDebugging` | Disables the ability to attach remote debuggers to the player. |
+| `-dotnetApiCompatibilityLevel` | Sets the dotnet api compatibility level of the player. Can be: `NET_2_0`, `NET_2_0_Subset`, `NET_4_6`, `NET_Unity_4_8`, `NET_Web`, `NET_Micro`, `NET_Standard`, or `NET_Standard_2_0`. |
+| `-scriptingBackend` | Sets the scripting framework of the player. Can be: `Mono2x`, `IL2CPP`, or `WinRTDotNET`. |
 
 #### Platform specific Command Line Arguments
 
@@ -130,10 +132,10 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | `-splitApk` | Uses APK expansion files. |
 | `-keyaliasPass` | Sets the key alias password. |
 | `-keystorePass` | Sets the keystore password. |
-| `-symbols` | Sets the symbol creation mode. Can be `public`, `debugging`, or `disabled`. |
+| `-symbols` | Sets the symbol creation mode. Can be: `public`, `debugging`, or `disabled`. |
 
 ##### MacOS COmmand Line Arguments
 
 | Argument | Description |
 | -------- | ----------- |
-| `-arch` | Sets the build architecture. Can be `x64`, `arm64`, or `x64arm64`. |
+| `-arch` | Sets the build architecture. Can be: `x64`, `arm64`, or `x64arm64`. |
