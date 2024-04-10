@@ -13,6 +13,9 @@ namespace Utilities.Editor.BuildPipeline
         public override BuildTarget BuildTarget => BuildTarget.Android;
 
         /// <inheritdoc />
+        public override BuildTargetGroup BuildTargetGroup => BuildTargetGroup.Android;
+
+        /// <inheritdoc />
         public override string ExecutableFileExtension => ".apk";
 
         /// <inheritdoc />
