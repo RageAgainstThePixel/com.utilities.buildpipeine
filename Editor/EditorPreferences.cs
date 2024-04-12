@@ -19,11 +19,11 @@ namespace Utilities.Editor.BuildPipeline
 
         private static string applicationDataPath;
 
-        internal static string ApplicationDataPath => applicationDataPath ??= Application.dataPath;
+        internal static string ApplicationDataPath => applicationDataPath ?? (applicationDataPath = Application.dataPath);
 
         private static string applicationProductName;
 
-        internal static string ApplicationProductName => applicationProductName ??= Application.productName;
+        internal static string ApplicationProductName => applicationProductName ?? (applicationProductName = Application.productName);
 
         /// <summary>
         /// Set the saved <see cref="string"/> from to <see cref="EditorPrefs"/>.
