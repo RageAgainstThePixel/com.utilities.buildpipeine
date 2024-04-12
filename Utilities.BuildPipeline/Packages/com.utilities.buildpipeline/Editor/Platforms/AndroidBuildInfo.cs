@@ -53,7 +53,7 @@ namespace Utilities.Editor.BuildPipeline
                         break;
                     case "-symbols":
 #if UNITY_2021_1_OR_NEWER
-                        AndroidCreateSymbols symbols = arguments[++i] switch
+                        var symbols = arguments[++i] switch
                         {
                             "public" => AndroidCreateSymbols.Public,
                             "debugging" => AndroidCreateSymbols.Debugging,
