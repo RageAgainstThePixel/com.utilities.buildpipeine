@@ -52,6 +52,7 @@ namespace Utilities.Editor.BuildPipeline
                         EditorUserBuildSettings.exportAsGoogleAndroidProject = true;
                         break;
                     case "-symbols":
+#if UNITY_2021_1_OR_NEWER
                         var symbols = arguments[++i] switch
                         {
                             "public" => AndroidCreateSymbols.Public,
@@ -60,6 +61,9 @@ namespace Utilities.Editor.BuildPipeline
                         };
 
                         EditorUserBuildSettings.androidCreateSymbols = symbols;
+#else
+                        EditorUserBuildSettings.androidCreateSymbolsZip = true;
+#endif
                         break;
                 }
             }

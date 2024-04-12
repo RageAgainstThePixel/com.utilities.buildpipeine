@@ -125,7 +125,7 @@ namespace Utilities.Editor.BuildPipeline
                 case 3:
                     return $"{parts[0]}.{parts[1]}.{parts[2].Replace("-preview", string.Empty)}";
                 default:
-                    return $"{parts[0]}.{parts[1]}.{parts[2].Replace("-preview", string.Empty)}.{parts[^1]}";
+                    return $"{parts[0]}.{parts[1]}.{parts[2].Replace("-preview", string.Empty)}.{parts[parts.Length - 1]}";
             }
         }
 

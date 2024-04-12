@@ -49,120 +49,132 @@ namespace Utilities.Editor.BuildPipeline.Logging
             var summary = Environment.GetEnvironmentVariable("GITHUB_STEP_SUMMARY");
             if (summary == null) { return; }
 
-            using var summaryWriter = new StreamWriter(summary, true, Encoding.UTF8);
-            summaryWriter.WriteLine($"# {buildResultMessage}");
-            summaryWriter.WriteLine("");
-
-            if (buildReport.summary.totalErrors > 0)
+            using (var summaryWriter = new StreamWriter(summary, true, Encoding.UTF8))
             {
-                summaryWriter.WriteLine($"Errors: {buildReport.summary.totalErrors}");
-            }
+                summaryWriter.WriteLine($"# {buildResultMessage}");
+                summaryWriter.WriteLine("");
 
-            if (buildReport.summary.totalWarnings > 0)
-            {
-                summaryWriter.WriteLine($"Warnings: {buildReport.summary.totalWarnings}");
-            }
-
-            summaryWriter.WriteLine($"Total duration: {stopwatch.Elapsed:g}");
-            summaryWriter.WriteLine($"Size: {FormatFileSize(buildReport.summary.totalSize)}");
-            summaryWriter.WriteLine($"Output Path: {buildReport.summary.outputPath}");
-            summaryWriter.WriteLine("");
-
-            var totalBuildTime = TimeSpan.Zero;
-            var logs = new List<string>();
-
-            foreach (var step in buildReport.steps)
-            {
-                totalBuildTime += step.duration;
-                var hasMessages = step.messages.Length > 0;
-
-                if (!hasMessages) { continue; }
-
-                foreach (var message in step.messages)
+                if (buildReport.summary.totalErrors > 0)
                 {
-                    var logMessage = message.content.Replace("\n", string.Empty);
-                    logMessage = logMessage.Replace("\r", string.Empty);
-                    logMessage = logMessage.Replace(Error, string.Empty);
-                    logMessage = logMessage.Replace(Warning, string.Empty);
-                    logMessage = logMessage.Replace(ErrorColor, string.Empty);
-                    logMessage = logMessage.Replace(WarningColor, string.Empty);
-                    logMessage = logMessage.Replace(ResetColor, string.Empty);
-                    logMessage = logMessage.Replace(LogColor, string.Empty);
+                    summaryWriter.WriteLine($"Errors: {buildReport.summary.totalErrors}");
+                }
 
-                    switch (message.type)
+                if (buildReport.summary.totalWarnings > 0)
+                {
+                    summaryWriter.WriteLine($"Warnings: {buildReport.summary.totalWarnings}");
+                }
+
+                summaryWriter.WriteLine($"Total duration: {stopwatch.Elapsed:g}");
+                summaryWriter.WriteLine($"Size: {FormatFileSize(buildReport.summary.totalSize)}");
+                summaryWriter.WriteLine($"Output Path: {buildReport.summary.outputPath}");
+                summaryWriter.WriteLine("");
+
+                var totalBuildTime = TimeSpan.Zero;
+                var logs = new List<string>();
+
+                foreach (var step in buildReport.steps)
+                {
+                    totalBuildTime += step.duration;
+                    var hasMessages = step.messages.Length > 0;
+
+                    if (!hasMessages)
                     {
-                        case LogType.Error:
-                        case LogType.Assert:
-                        case LogType.Exception:
-                            logs.Add($"| :boom: {message.type} | {logMessage} |");
-                            break;
-                        case LogType.Warning:
-                            logs.Add($"| :warning: {message.type} | {logMessage} |");
-                            break;
-                        case LogType.Log:
-                        default:
-                            logs.Add($"| {message.type} | {logMessage} |");
-                            break;
+                        continue;
+                    }
+
+                    foreach (var message in step.messages)
+                    {
+                        var logMessage = message.content.Replace("\n", string.Empty);
+                        logMessage = logMessage.Replace("\r", string.Empty);
+                        logMessage = logMessage.Replace(Error, string.Empty);
+                        logMessage = logMessage.Replace(Warning, string.Empty);
+                        logMessage = logMessage.Replace(ErrorColor, string.Empty);
+                        logMessage = logMessage.Replace(WarningColor, string.Empty);
+                        logMessage = logMessage.Replace(ResetColor, string.Empty);
+                        logMessage = logMessage.Replace(LogColor, string.Empty);
+
+                        switch (message.type)
+                        {
+                            case LogType.Error:
+                            case LogType.Assert:
+                            case LogType.Exception:
+                                logs.Add($"| :boom: {message.type} | {logMessage} |");
+
+                                break;
+                            case LogType.Warning:
+                                logs.Add($"| :warning: {message.type} | {logMessage} |");
+
+                                break;
+                            case LogType.Log:
+                            default:
+                                logs.Add($"| {message.type} | {logMessage} |");
+
+                                break;
+                        }
                     }
                 }
-            }
 
-            if (logs.Count > 0)
-            {
-                var hasErrors = logs.Any(log => log.Contains($"| :boom: {LogType.Error} |"));
-
-                summaryWriter.WriteLine(hasErrors
-                    ? "<details open><summary>Logs</summary>"
-                    : "<details><summary>Logs</summary>");
-                summaryWriter.WriteLine("");
-                summaryWriter.WriteLine("| log type | message |");
-                summaryWriter.WriteLine("| -------- | ------- |");
-
-                foreach (var log in logs)
+                if (logs.Count > 0)
                 {
-                    summaryWriter.WriteLine(log);
+                    var hasErrors = logs.Any(log => log.Contains($"| :boom: {LogType.Error} |"));
+
+                    summaryWriter.WriteLine(hasErrors
+                        ? "<details open><summary>Logs</summary>"
+                        : "<details><summary>Logs</summary>");
+
+                    summaryWriter.WriteLine("");
+                    summaryWriter.WriteLine("| log type | message |");
+                    summaryWriter.WriteLine("| -------- | ------- |");
+
+                    foreach (var log in logs)
+                    {
+                        summaryWriter.WriteLine(log);
+                    }
+
+                    summaryWriter.WriteLine("</details>");
                 }
 
-                summaryWriter.WriteLine("</details>");
-            }
-
-            summaryWriter.WriteLine("<details><summary>Build Outputs</summary>");
-            var fileList = new List<string>();
+                summaryWriter.WriteLine("<details><summary>Build Outputs</summary>");
+                var fileList = new List<string>();
 #if UNITY_2022_1_OR_NEWER
             fileList.AddRange(buildReport.GetFiles().Select(file => $"| {file.role} | {file.path} |"));
 #else
-            fileList.AddRange(buildReport.files.Select(file => $"{file.role} | {file.path}"));
+                fileList.AddRange(buildReport.files.Select(file => $"{file.role} | {file.path}"));
 #endif
-            summaryWriter.WriteLine("");
-            summaryWriter.WriteLine("| file type | path |");
-            summaryWriter.WriteLine("| --------- | ---- |");
+                summaryWriter.WriteLine("");
+                summaryWriter.WriteLine("| file type | path |");
+                summaryWriter.WriteLine("| --------- | ---- |");
 
-            foreach (var file in fileList)
-            {
-                summaryWriter.WriteLine(file);
+                foreach (var file in fileList)
+                {
+                    summaryWriter.WriteLine(file);
+                }
+
+                summaryWriter.WriteLine("</details>");
+                summaryWriter.WriteLine("");
+
+                switch (buildReport.summary.result)
+                {
+                    case BuildResult.Succeeded:
+                        Debug.Log($"{buildResultMessage}");
+
+                        break;
+                    case BuildResult.Unknown:
+                    case BuildResult.Cancelled:
+                        Debug.Log($"{WarningColor}{buildResultMessage}{ResetColor}");
+
+                        break;
+                    case BuildResult.Failed:
+                        Debug.Log($"{ErrorColor}{buildResultMessage}{ResetColor}");
+
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                summaryWriter.Close();
+                CILoggingUtility.LoggingEnabled = true;
             }
-
-            summaryWriter.WriteLine("</details>");
-            summaryWriter.WriteLine("");
-
-            switch (buildReport.summary.result)
-            {
-                case BuildResult.Succeeded:
-                    Debug.Log($"{buildResultMessage}");
-                    break;
-                case BuildResult.Unknown:
-                case BuildResult.Cancelled:
-                    Debug.Log($"{WarningColor}{buildResultMessage}{ResetColor}");
-                    break;
-                case BuildResult.Failed:
-                    Debug.Log($"{ErrorColor}{buildResultMessage}{ResetColor}");
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            summaryWriter.Close();
-            CILoggingUtility.LoggingEnabled = true;
         }
     }
 }

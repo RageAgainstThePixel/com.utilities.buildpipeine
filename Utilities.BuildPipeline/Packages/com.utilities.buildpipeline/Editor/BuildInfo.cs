@@ -65,14 +65,27 @@ namespace Utilities.Editor.BuildPipeline
                 : outputDirectory;
             set
             {
-                var projectRoot = Directory.GetParent(EditorPreferences.ApplicationDataPath)!.FullName.Replace("\\", "/");
+                var projectRoot = Directory.GetParent(EditorPreferences.ApplicationDataPath).FullName.Replace("\\", "/");
                 var newValue = value?.Replace("\\", "/");
                 outputDirectory = !string.IsNullOrWhiteSpace(newValue) && Path.IsPathRooted(newValue)
                     ? newValue.Contains(projectRoot)
                         ? newValue.Replace($"{projectRoot}/", string.Empty)
-                        : Path.GetRelativePath(projectRoot, newValue).Replace("\\", "/")
+                        : GetRelativePath(projectRoot, newValue)
                     : newValue;
             }
+        }
+
+        private static string GetRelativePath(string fromPath, string toPath)
+        {
+#if UNITY_2021_1_OR_NEWER
+            return Path.GetRelativePath(fromPath, toPath).Replace("\\", "/");
+#else
+            var fromUri = new Uri(fromPath);
+            var toUri = new Uri(toPath);
+            var relativeUri = fromUri.MakeRelativeUri(toUri);
+            var relativePath = Uri.UnescapeDataString(relativeUri.ToString());
+            return relativePath.Replace("\\", "/");
+#endif
         }
 
         /// <inheritdoc />
@@ -81,11 +94,11 @@ namespace Utilities.Editor.BuildPipeline
             get
             {
                 var rootBuildDirectory = OutputDirectory;
-                var dirCharIndex = rootBuildDirectory.IndexOf(Path.DirectorySeparatorChar, StringComparison.Ordinal);
+                var dirCharIndex = rootBuildDirectory.IndexOf($"{Path.DirectorySeparatorChar}", StringComparison.Ordinal);
 
                 if (dirCharIndex != -1)
                 {
-                    rootBuildDirectory = rootBuildDirectory[..dirCharIndex];
+                    rootBuildDirectory = rootBuildDirectory.Substring(0, dirCharIndex);
                 }
 
                 return Path.GetFullPath(Path.Combine(Path.Combine(EditorPreferences.ApplicationDataPath, ".."), rootBuildDirectory));
@@ -197,7 +210,7 @@ namespace Utilities.Editor.BuildPipeline
                         ColorSpace = (ColorSpace)Enum.Parse(typeof(ColorSpace), arguments[++i]);
                         break;
                     case "-buildConfiguration":
-                        var configuration = arguments[++i][1..].ToLower();
+                        var configuration = arguments[++i].Substring(1).ToLower();
 
                         switch (configuration)
                         {
@@ -218,7 +231,11 @@ namespace Utilities.Editor.BuildPipeline
 #endif
                         break;
                     case "-symlinkSources":
+#if UNITY_2021_1_OR_NEWER
                         EditorUserBuildSettings.symlinkSources = true;
+#else
+                        EditorUserBuildSettings.symlinkLibraries = true;
+#endif
                         break;
                     case "-disableDebugging":
                         EditorUserBuildSettings.allowDebugging = false;
@@ -237,7 +254,7 @@ namespace Utilities.Editor.BuildPipeline
 
                         break;
                     case "-scriptingBackend":
-                        var scriptingBackendString = arguments[++i][1..].ToLower();
+                        var scriptingBackendString = arguments[++i].Substring(1).ToLower();
 
                         switch (scriptingBackendString)
                         {

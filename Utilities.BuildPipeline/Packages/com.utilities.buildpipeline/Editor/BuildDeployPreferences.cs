@@ -34,11 +34,11 @@ namespace Utilities.Editor.BuildPipeline
             get
             {
                 var rootBuildDirectory = BuildDirectory;
-                var dirCharIndex = rootBuildDirectory.IndexOf(Path.DirectorySeparatorChar, StringComparison.Ordinal);
+                var dirCharIndex = rootBuildDirectory.IndexOf($"{Path.DirectorySeparatorChar}", StringComparison.Ordinal);
 
                 if (dirCharIndex != -1)
                 {
-                    rootBuildDirectory = rootBuildDirectory[..dirCharIndex];
+                    rootBuildDirectory = rootBuildDirectory.Substring(0, dirCharIndex);
                 }
 
                 return Path.GetFullPath(Path.Combine(Path.Combine(EditorPreferences.ApplicationDataPath, ".."), rootBuildDirectory));
