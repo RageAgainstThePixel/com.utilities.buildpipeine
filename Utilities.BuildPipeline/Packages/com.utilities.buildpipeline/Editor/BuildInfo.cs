@@ -206,6 +206,10 @@ namespace Utilities.Editor.BuildPipeline
                     case "-acceptExternalModificationsToPlayer":
                         BuildOptions = BuildOptions.SetFlag(BuildOptions.AcceptExternalModificationsToPlayer);
                         break;
+                    case "-development":
+                        EditorUserBuildSettings.development = true;
+                        BuildOptions = BuildOptions.SetFlag(BuildOptions.Development);
+                        break;
                     case "-colorSpace":
                         ColorSpace = (ColorSpace)Enum.Parse(typeof(ColorSpace), arguments[++i]);
                         break;
@@ -239,6 +243,24 @@ namespace Utilities.Editor.BuildPipeline
                         break;
                     case "-disableDebugging":
                         EditorUserBuildSettings.allowDebugging = false;
+                        Debug.LogWarning("This arg has been deprecated. use \"-allowDebugging false\" instead.");
+                        break;
+                    case "-allowDebugging":
+                        var value = arguments[++i];
+
+                        switch (value.ToLower())
+                        {
+                            case "true":
+                                EditorUserBuildSettings.allowDebugging = true;
+                                break;
+                            case "false":
+                                EditorUserBuildSettings.allowDebugging = false;
+                                break;
+                            default:
+                                Debug.LogError($"Failed to parse -allowDebugging: \"{value}\"");
+                                break;
+                        }
+
                         break;
                     case "-dotnetApiCompatibilityLevel":
                         var apiCompatibilityLevelString = arguments[++i];
@@ -272,6 +294,12 @@ namespace Utilities.Editor.BuildPipeline
                                 break;
                         }
 
+                        break;
+                    case "-autoConnectProfiler":
+                        EditorUserBuildSettings.connectProfiler = true;
+                        break;
+                    case "-buildWithDeepProfilingSupport":
+                        EditorUserBuildSettings.buildWithDeepProfilingSupport = true;
                         break;
                 }
             }
