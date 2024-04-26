@@ -114,13 +114,17 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | `-sceneListFile` | Sets the scenes of the application, list as JSON. |
 | `-buildOutputDirectory` | Sets the output directory for the build. |
 | `-acceptExternalModificationsToPlayer` | Sets the build options to accept external modifications to the player. |
+| `-development` | Sets the build options to build a development build of the player. |
 | `-colorSpace` | Sets the color space of the application, if the provided color space string is a valid `ColorSpace` enum value. |
 | `-buildConfiguration` | Sets the build configuration of the application. Can be:  `debug`, `master`, or `release`. |
 | `-export` | Creates a native code project for the target platform. |
 | `-symlinkSources` | Enables the use of symbolic links for the sources. |
-| `-disableDebugging` | Disables the ability to attach remote debuggers to the player. |
+| `-disableDebugging` | :warning: deprecated. Use `allowDebugging`. Disables the ability to attach remote debuggers to the player. |
+| `-allowDebugging` | Enables or disables the ability to attache a remote debugger to the player. Can be: `true` or `false`. |
 | `-dotnetApiCompatibilityLevel` | Sets the dotnet api compatibility level of the player. Can be: `NET_2_0`, `NET_2_0_Subset`, `NET_4_6`, `NET_Unity_4_8`, `NET_Web`, `NET_Micro`, `NET_Standard`, or `NET_Standard_2_0`. |
 | `-scriptingBackend` | Sets the scripting framework of the player. Can be: `Mono2x`, `IL2CPP`, or `WinRTDotNET`. |
+| `-autoConnectProfiler` | Start the player with a connection to the profiler. |
+| `-buildWithDeepProfilingSupport` | Enables deep profiling support in the player. |
 
 #### Platform specific Command Line Arguments
 
