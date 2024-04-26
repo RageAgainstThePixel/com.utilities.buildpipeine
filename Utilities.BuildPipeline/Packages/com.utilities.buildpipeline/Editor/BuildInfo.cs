@@ -297,9 +297,11 @@ namespace Utilities.Editor.BuildPipeline
                         break;
                     case "-autoConnectProfiler":
                         EditorUserBuildSettings.connectProfiler = true;
+                        BuildOptions = BuildOptions.SetFlag(BuildOptions.ConnectWithProfiler);
                         break;
                     case "-buildWithDeepProfilingSupport":
                         EditorUserBuildSettings.buildWithDeepProfilingSupport = true;
+                        BuildOptions = BuildOptions.SetFlag(BuildOptions.EnableDeepProfilingSupport);
                         break;
                 }
             }
