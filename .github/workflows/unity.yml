@@ -60,10 +60,11 @@ jobs:
           # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro/plus activations
 
       - name: Unity Build (${{ matrix.build-target }})
-        uses: RageAgainstThePixel/unity-build@main
+        uses: RageAgainstThePixel/unity-build@development
         with:
           build-target: ${{ matrix.build-target }}
           publish-artifacts: true
+          additional-validation-args: -importTMProEssentialsAsset
           additional-build-args: -export
           output-directory: ${{ github.workspace }}/Artifacts/${{ matrix.build-target }}
           test: false
