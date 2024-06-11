@@ -143,3 +143,9 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | Argument | Description |
 | -------- | ----------- |
 | `-arch` | Sets the build architecture. Can be: `x64`, `arm64`, or `x64arm64`. |
+
+#### Project Validation Command Line Arguments
+
+| Argument | Description |
+| -------- | ----------- |
+| `-importTMProEssentialsAsset` | Imports the TMPro Essential assets if they are not already in the project. |
