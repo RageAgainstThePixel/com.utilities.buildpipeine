@@ -321,7 +321,11 @@ namespace Utilities.Editor.BuildPipeline
 
                 // Copy existing TMP Settings asset to a byte[]
                 settingsFilePath = AssetDatabase.GUIDToAssetPath(settings[0]);
+#if UNITY_2020_1_OR_NEWER
                 settingsBackup = await System.IO.File.ReadAllBytesAsync(settingsFilePath).ConfigureAwait(true);
+#else
+                settingsBackup = System.IO.File.ReadAllBytes(settingsFilePath);
+#endif
             }
 
             AssetDatabase.importPackageCompleted += ImportCallback;

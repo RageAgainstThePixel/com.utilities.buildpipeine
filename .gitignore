@@ -84,7 +84,4 @@ ThirdParty/
 ThirdParty.meta
 StreamingAssets/
 StreamingAssets.meta
-
-# ====================== #
-# Project Symbolic Links #
-# ====================== #
+Utilities.BuildPipeline/Packages/com.unity.asset-store-tools
