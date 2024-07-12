@@ -6,7 +6,6 @@ using System;
 using UnityEditor.OSXStandalone;
 #endif
 
-
 namespace Utilities.Editor.BuildPipeline
 {
     public class MacOSBuildInfo : BuildInfo
@@ -26,7 +25,7 @@ namespace Utilities.Editor.BuildPipeline
         public override string FullOutputPath => UserBuildSettings.createXcodeProject
             ? OutputDirectory
             : base.FullOutputPath;
-            
+
         /// <inheritdoc />
         public override void ParseCommandLineArgs()
         {
@@ -40,6 +39,7 @@ namespace Utilities.Editor.BuildPipeline
                     case "-export":
                         UserBuildSettings.createXcodeProject = true;
                         break;
+#if UNITY_2020_1_OR_NEWER
                     case "-arch":
                         var arch = arguments[++i].ToLower();
                         UserBuildSettings.architecture = arch switch
@@ -52,10 +52,11 @@ namespace Utilities.Editor.BuildPipeline
                             "x64" => MacOSArchitecture.x64,
                             "arm64" => MacOSArchitecture.ARM64,
                             "x64arm64" => MacOSArchitecture.x64ARM64,
-#endif
+#endif // UNITY_2020_1_OR_NEWER
                             _ => throw new Exception($"Unsupported architecture: {arch}"),
                         };
                         break;
+#endif // UNITY_2020_1_OR_NEWER
                 }
             }
         }
