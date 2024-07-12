@@ -398,7 +398,7 @@ namespace Utilities.Editor.BuildPipeline
         }
 
         /// <summary>
-        /// Force Unity To Write Project Files
+        /// Force Unity to update CSProj files and generates solution.
         /// </summary>
         public static void SyncSolution()
         {
@@ -411,14 +411,7 @@ namespace Utilities.Editor.BuildPipeline
         }
 
         /// <summary>
-        /// Start a build using Unity's command line. Valid arguments:<para/>
-        /// -autoIncrement : Increments the build revision number.<para/>
-        /// -sceneList : A list of scenes to include in the build in CSV format.<para/>
-        /// -sceneListFile : A json file with a list of scenes to include in the build.<para/>
-        /// -buildOutput : The target directory you'd like the build to go.<para/>
-        /// -colorSpace : The <see cref="ColorSpace"/> settings for the build.<para/>
-        /// -x86 / -x64 / -ARM / -ARM64 : The target build platform. (Default is x86)<para/>
-        /// -debug / -release / -master : The target build configuration. (Default is master)<para/>
+        /// Start a build using command line arguments.
         /// </summary>
         [UsedImplicitly]
         public static void StartCommandLineBuild()
