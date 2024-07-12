@@ -1,4 +1,4 @@
-#if TMPRO_PRESENT
+#if TEXT_MESH_PRO
 using TMPro;
 using UnityEngine;
 

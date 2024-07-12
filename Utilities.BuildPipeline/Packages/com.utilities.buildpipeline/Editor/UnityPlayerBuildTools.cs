@@ -179,7 +179,7 @@ namespace Utilities.Editor.BuildPipeline
             var oldBuildIdentifier = PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup));
 #else
             var oldBuildIdentifier = PlayerSettings.GetApplicationIdentifier(buildTargetGroup);
-#endif
+#endif // UNITY_2023_1_OR_NEWER
 
             if (!string.IsNullOrWhiteSpace(buildInfo.BundleIdentifier))
             {
@@ -187,14 +187,14 @@ namespace Utilities.Editor.BuildPipeline
                 PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup), buildInfo.BundleIdentifier);
 #else
                 PlayerSettings.SetApplicationIdentifier(buildTargetGroup, buildInfo.BundleIdentifier);
-#endif
+#endif // UNITY_2023_1_OR_NEWER
             }
 
 #if UNITY_2023_1_OR_NEWER
             var playerBuildSymbols = PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup));
 #else
             var playerBuildSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
-#endif
+#endif // UNITY_2023_1_OR_NEWER
 
             if (!string.IsNullOrEmpty(playerBuildSymbols))
             {
@@ -214,7 +214,7 @@ namespace Utilities.Editor.BuildPipeline
                 PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup), buildInfo.BuildSymbols);
 #else
                 PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, buildInfo.BuildSymbols);
-#endif
+#endif // UNITY_2023_1_OR_NEWER
             }
 
             if ((buildInfo.BuildOptions & BuildOptions.Development) == BuildOptions.Development &&
@@ -279,7 +279,7 @@ namespace Utilities.Editor.BuildPipeline
                 {
                     PlayerSettings.SetApplicationIdentifier(buildTargetGroup, oldBuildIdentifier);
                 }
-#endif
+#endif // UNITY_2023_1_OR_NEWER
                 EditorUtility.ClearProgressBar();
             }
 
@@ -347,7 +347,7 @@ namespace Utilities.Editor.BuildPipeline
                 settingsBackup = await System.IO.File.ReadAllBytesAsync(settingsFilePath).ConfigureAwait(true);
 #else
                 settingsBackup = System.IO.File.ReadAllBytes(settingsFilePath);
-#endif
+#endif //  UNITY_2021_1_OR_NEWER
             }
 
             AssetDatabase.importPackageCompleted += ImportCallback;

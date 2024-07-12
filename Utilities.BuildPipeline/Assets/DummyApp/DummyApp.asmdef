@@ -12,14 +12,14 @@
     "defineConstraints": [],
     "versionDefines": [
         {
-            "name": "com.unity.ugui",
-            "expression": "2.0.0",
-            "define": "TMPRO_PRESENT"
-        },
-        {
             "name": "com.unity.textmeshpro",
             "expression": "1.0.0",
-            "define": "TMPRO_PRESENT"
+            "define": "TEXT_MESH_PRO"
+        },
+        {
+            "name": "com.unity.ugui",
+            "expression": "2.0.0",
+            "define": "TEXT_MESH_PRO"
         }
     ],
     "noEngineReferences": false
