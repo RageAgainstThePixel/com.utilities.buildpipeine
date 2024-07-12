@@ -42,14 +42,14 @@ namespace Utilities.Editor.BuildPipeline
                         PlayerSettings.Android.splitApplicationBinary = true;
 #else
                         PlayerSettings.Android.useAPKExpansionFiles = true;
-#endif
+#endif // UNITY_2023_1_OR_NEWER
                         break;
                     case "-keyaliasPass":
 #if UNITY_2023_1_OR_NEWER
                         PlayerSettings.Android.keyaliasPass = arguments[++i];
 #else
                         PlayerSettings.keyaliasPass = arguments[++i];
-#endif
+#endif // UNITY_2023_1_OR_NEWER
                         useCustomKeystore = true;
                         break;
                     case "-keystorePass":
@@ -57,7 +57,7 @@ namespace Utilities.Editor.BuildPipeline
                         PlayerSettings.Android.keystorePass = arguments[++i];
 #else
                         PlayerSettings.keystorePass = arguments[++i];
-#endif
+#endif // UNITY_2023_1_OR_NEWER
                         useCustomKeystore = true;
                         break;
                     case "-export":
@@ -77,10 +77,10 @@ namespace Utilities.Editor.BuildPipeline
 #pragma warning restore CS0618
 #else
                         EditorUserBuildSettings.androidCreateSymbols = symbols;
-#endif
+#endif // UNITY_6000_0_OR_NEWER
 #else
                         EditorUserBuildSettings.androidCreateSymbolsZip = true;
-#endif
+#endif // UNITY_2021_1_OR_NEWER
                         break;
                 }
             }
