@@ -106,7 +106,7 @@ jobs:
 
 ### Executable Methods
 
-These methods can be executed using the `-ExecuteMethod` command line argument to validate, sync, and build the Unity project.
+These methods can be executed using the `-executeMethod` command line argument to validate, sync, and build the Unity project.
 
 | Method | Description |
 | ------ | ----------- |
