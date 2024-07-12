@@ -175,14 +175,26 @@ namespace Utilities.Editor.BuildPipeline
             PlayerSettings.WSA.packageVersion = new Version(version.Major, version.Minor, version.Build, 0);
 
             var buildTargetGroup = UnityEditor.BuildPipeline.GetBuildTargetGroup(buildInfo.BuildTarget);
+#if UNITY_2023_1_OR_NEWER
+            var oldBuildIdentifier = PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup));
+#else
             var oldBuildIdentifier = PlayerSettings.GetApplicationIdentifier(buildTargetGroup);
+#endif
 
             if (!string.IsNullOrWhiteSpace(buildInfo.BundleIdentifier))
             {
+#if UNITY_2023_1_OR_NEWER
+                PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup), buildInfo.BundleIdentifier);
+#else
                 PlayerSettings.SetApplicationIdentifier(buildTargetGroup, buildInfo.BundleIdentifier);
+#endif
             }
 
+#if UNITY_2023_1_OR_NEWER
+            var playerBuildSymbols = PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup));
+#else
             var playerBuildSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
+#endif
 
             if (!string.IsNullOrEmpty(playerBuildSymbols))
             {
@@ -198,7 +210,11 @@ namespace Utilities.Editor.BuildPipeline
 
             if (!string.IsNullOrEmpty(buildInfo.BuildSymbols))
             {
+#if UNITY_2023_1_OR_NEWER
+                PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup), buildInfo.BuildSymbols);
+#else
                 PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, buildInfo.BuildSymbols);
+#endif
             }
 
             if ((buildInfo.BuildOptions & BuildOptions.Development) == BuildOptions.Development &&
@@ -253,11 +269,17 @@ namespace Utilities.Editor.BuildPipeline
             {
                 PlayerSettings.colorSpace = oldColorSpace;
 
+#if UNITY_2023_1_OR_NEWER
+                if (PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup)) != oldBuildIdentifier)
+                {
+                    PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup), oldBuildIdentifier);
+                }
+#else
                 if (PlayerSettings.GetApplicationIdentifier(buildTargetGroup) != oldBuildIdentifier)
                 {
                     PlayerSettings.SetApplicationIdentifier(buildTargetGroup, oldBuildIdentifier);
                 }
-
+#endif
                 EditorUtility.ClearProgressBar();
             }
 
