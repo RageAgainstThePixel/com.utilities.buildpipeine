@@ -85,7 +85,7 @@ namespace Utilities.Editor.BuildPipeline
             var relativeUri = fromUri.MakeRelativeUri(toUri);
             var relativePath = Uri.UnescapeDataString(relativeUri.ToString());
             return relativePath.Replace("\\", "/");
-#endif
+#endif // UNITY_2021_1_OR_NEWER
         }
 
         /// <inheritdoc />
@@ -239,7 +239,7 @@ namespace Utilities.Editor.BuildPipeline
                         EditorUserBuildSettings.symlinkSources = true;
 #else
                         EditorUserBuildSettings.symlinkLibraries = true;
-#endif
+#endif // UNITY_2021_1_OR_NEWER
                         break;
                     case "-disableDebugging":
                         EditorUserBuildSettings.allowDebugging = false;
@@ -267,7 +267,11 @@ namespace Utilities.Editor.BuildPipeline
 
                         if (Enum.TryParse(apiCompatibilityLevelString, true, out ApiCompatibilityLevel apiCompatibility))
                         {
+#if UNITY_2023_1_OR_NEWER
+                            PlayerSettings.SetApiCompatibilityLevel(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), apiCompatibility);
+#else
                             PlayerSettings.SetApiCompatibilityLevel(BuildTargetGroup, apiCompatibility);
+#endif // UNITY_2023_1_OR_NEWER
                         }
                         else
                         {
@@ -281,13 +285,25 @@ namespace Utilities.Editor.BuildPipeline
                         switch (scriptingBackendString)
                         {
                             case "mono":
+#if UNITY_2023_1_OR_NEWER
+                                PlayerSettings.SetScriptingBackend(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), ScriptingImplementation.Mono2x);
+#else
                                 PlayerSettings.SetScriptingBackend(BuildTargetGroup, ScriptingImplementation.Mono2x);
+#endif // UNITY_2023_1_OR_NEWER
                                 break;
                             case "il2cpp":
+#if UNITY_2023_1_OR_NEWER
+                                PlayerSettings.SetScriptingBackend(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), ScriptingImplementation.IL2CPP);
+#else
                                 PlayerSettings.SetScriptingBackend(BuildTargetGroup, ScriptingImplementation.IL2CPP);
+#endif // UNITY_2023_1_OR_NEWER
                                 break;
                             case "winrt":
+#if UNITY_2023_1_OR_NEWER
+                                PlayerSettings.SetScriptingBackend(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), ScriptingImplementation.WinRTDotNET);
+#else
                                 PlayerSettings.SetScriptingBackend(BuildTargetGroup, ScriptingImplementation.WinRTDotNET);
+#endif // UNITY_2023_1_OR_NEWER
                                 break;
                             default:
                                 Debug.LogError($"Unsupported -scriptingBackend: \"{scriptingBackendString}\"");
