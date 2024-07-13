@@ -1,3 +1,4 @@
+#if TEXT_MESH_PRO
 using TMPro;
 using UnityEngine;
 
@@ -21,3 +22,4 @@ public class DummyScript : MonoBehaviour
 
     private void Awake() => OnValidate();
 }
+#endif

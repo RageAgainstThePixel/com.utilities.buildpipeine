@@ -38,14 +38,26 @@ namespace Utilities.Editor.BuildPipeline
                         PlayerSettings.Android.buildApkPerCpuArchitecture = true;
                         break;
                     case "-splitApk":
+#if UNITY_2023_1_OR_NEWER
+                        PlayerSettings.Android.splitApplicationBinary = true;
+#else
                         PlayerSettings.Android.useAPKExpansionFiles = true;
+#endif // UNITY_2023_1_OR_NEWER
                         break;
                     case "-keyaliasPass":
+#if UNITY_2023_1_OR_NEWER
+                        PlayerSettings.Android.keyaliasPass = arguments[++i];
+#else
                         PlayerSettings.keyaliasPass = arguments[++i];
+#endif // UNITY_2023_1_OR_NEWER
                         useCustomKeystore = true;
                         break;
                     case "-keystorePass":
+#if UNITY_2023_1_OR_NEWER
+                        PlayerSettings.Android.keystorePass = arguments[++i];
+#else
                         PlayerSettings.keystorePass = arguments[++i];
+#endif // UNITY_2023_1_OR_NEWER
                         useCustomKeystore = true;
                         break;
                     case "-export":
@@ -59,11 +71,16 @@ namespace Utilities.Editor.BuildPipeline
                             "debugging" => AndroidCreateSymbols.Debugging,
                             _ => AndroidCreateSymbols.Disabled
                         };
-
+#if UNITY_6000_0_OR_NEWER
+#pragma warning disable CS0618 // Type or member is obsolete
                         EditorUserBuildSettings.androidCreateSymbols = symbols;
+#pragma warning restore CS0618
+#else
+                        EditorUserBuildSettings.androidCreateSymbols = symbols;
+#endif // UNITY_6000_0_OR_NEWER
 #else
                         EditorUserBuildSettings.androidCreateSymbolsZip = true;
-#endif
+#endif // UNITY_2021_1_OR_NEWER
                         break;
                 }
             }

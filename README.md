@@ -6,16 +6,21 @@ A Build Pipeline utility package for the [Unity](https://unity.com/) Game Engine
 
 ## Installing
 
+Requires Unity 2019.4 LTS or higher.
+
+The recommended installation method is though the unity package manager and [OpenUPM](https://openupm.com/packages/com.openai.unity).
+
 ### Via Unity Package Manager and OpenUPM
 
 - Open your Unity project settings
-- Select the `Package Manager`
-![scoped-registries](Utilities.BuildPipeline/Packages/com.utilities.buildpipeline/Documentation~/images/package-manager-scopes.png)
 - Add the OpenUPM package registry:
   - Name: `OpenUPM`
   - URL: `https://package.openupm.com`
   - Scope(s):
     - `com.utilities`
+
+![scoped-registries](Utilities.BuildPipeline/Packages/com.utilities.buildpipeline/Documentation~/images/package-manager-scopes.png)
+
 - Open the Unity Package Manager window
 - Change the Registry from Unity to `My Registries`
 - Add the `Utilities.BuildPipeline` package
@@ -99,6 +104,20 @@ jobs:
           build-target: ${{ matrix.build-target }}
 ```
 
+### Executable Methods
+
+These methods can be executed using the `-executeMethod` command line argument to validate, sync, and build the Unity project.
+
+| Method | Description |
+| ------ | ----------- |
+| `Utilities.Editor.BuildPipeline.Validate` | Validates the Unity Project assets by forcing a symbolic link sync and creates solution files. |
+| `Utilities.Editor.BuildPipeline.SyncSolution` | Force Unity to update CSProj files and generates solution. |
+| `Utilities.Editor.BuildPipeline.StartCommandLineBuild` | Start a build using command line arguments. |
+
+```bash
+"/path/to/Unity.exe" -projectPath "/path/to/unity/project/" -quit -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild
+```
+
 ### Additional Custom Command Line Arguments
 
 In addition to any already defined [Unity Editor command line arguments](https://docs.unity3d.com/Manual/EditorCommandLineArguments.html), this plugin offers some additional options:
@@ -143,3 +162,9 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | Argument | Description |
 | -------- | ----------- |
 | `-arch` | Sets the build architecture. Can be: `x64`, `arm64`, or `x64arm64`. |
+
+#### Project Validation Command Line Arguments
+
+| Argument | Description |
+| -------- | ----------- |
+| `-importTMProEssentialsAsset` | Imports the TMPro Essential assets if they are not already in the project. |

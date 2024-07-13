@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -174,14 +175,26 @@ namespace Utilities.Editor.BuildPipeline
             PlayerSettings.WSA.packageVersion = new Version(version.Major, version.Minor, version.Build, 0);
 
             var buildTargetGroup = UnityEditor.BuildPipeline.GetBuildTargetGroup(buildInfo.BuildTarget);
+#if UNITY_2023_1_OR_NEWER
+            var oldBuildIdentifier = PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup));
+#else
             var oldBuildIdentifier = PlayerSettings.GetApplicationIdentifier(buildTargetGroup);
+#endif // UNITY_2023_1_OR_NEWER
 
             if (!string.IsNullOrWhiteSpace(buildInfo.BundleIdentifier))
             {
+#if UNITY_2023_1_OR_NEWER
+                PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup), buildInfo.BundleIdentifier);
+#else
                 PlayerSettings.SetApplicationIdentifier(buildTargetGroup, buildInfo.BundleIdentifier);
+#endif // UNITY_2023_1_OR_NEWER
             }
 
+#if UNITY_2023_1_OR_NEWER
+            var playerBuildSymbols = PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup));
+#else
             var playerBuildSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
+#endif // UNITY_2023_1_OR_NEWER
 
             if (!string.IsNullOrEmpty(playerBuildSymbols))
             {
@@ -197,7 +210,11 @@ namespace Utilities.Editor.BuildPipeline
 
             if (!string.IsNullOrEmpty(buildInfo.BuildSymbols))
             {
+#if UNITY_2023_1_OR_NEWER
+                PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup), buildInfo.BuildSymbols);
+#else
                 PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, buildInfo.BuildSymbols);
+#endif // UNITY_2023_1_OR_NEWER
             }
 
             if ((buildInfo.BuildOptions & BuildOptions.Development) == BuildOptions.Development &&
@@ -252,11 +269,17 @@ namespace Utilities.Editor.BuildPipeline
             {
                 PlayerSettings.colorSpace = oldColorSpace;
 
+#if UNITY_2023_1_OR_NEWER
+                if (PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup)) != oldBuildIdentifier)
+                {
+                    PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup), oldBuildIdentifier);
+                }
+#else
                 if (PlayerSettings.GetApplicationIdentifier(buildTargetGroup) != oldBuildIdentifier)
                 {
                     PlayerSettings.SetApplicationIdentifier(buildTargetGroup, oldBuildIdentifier);
                 }
-
+#endif // UNITY_2023_1_OR_NEWER
                 EditorUtility.ClearProgressBar();
             }
 
@@ -267,13 +290,24 @@ namespace Utilities.Editor.BuildPipeline
         /// Validates the Unity Project assets by forcing a symbolic link sync and creates solution files.
         /// </summary>
         [UsedImplicitly]
-        public static void ValidateProject()
+        public static async void ValidateProject()
         {
             CILoggingUtility.LoggingEnabled = false;
 
             try
             {
-                ImportTMProEssentialAssetsAsync();
+                var arguments = Environment.GetCommandLineArgs();
+
+                for (int i = 0; i < arguments.Length; ++i)
+                {
+                    switch (arguments[i])
+                    {
+                        case "-importTMProEssentialsAsset":
+                            await ImportTMProEssentialAssetsAsync();
+                            break;
+                    }
+                }
+
                 SyncSolution();
             }
             catch (Exception e)
@@ -286,7 +320,7 @@ namespace Utilities.Editor.BuildPipeline
             EditorApplication.Exit(0);
         }
 
-        private static void ImportTMProEssentialAssetsAsync()
+        private static async Task ImportTMProEssentialAssetsAsync()
         {
 #if TEXT_MESH_PRO
             Debug.Log("TextMesh Pro Essentials Import started....");
@@ -294,11 +328,13 @@ namespace Utilities.Editor.BuildPipeline
             // Check if the TextMesh Pro folder already exists
             if (System.IO.Directory.Exists("Assets/TextMesh Pro")) { return; }
 
-            byte[] settingsBackup;
-            string settingsFilePath;
+            byte[] settingsBackup = null;
+            string settingsFilePath = null;
 
             // Check if the TMP Settings asset is already present in the project.
             var settings = AssetDatabase.FindAssets("t:TMP_Settings");
+
+            var tcs = new TaskCompletionSource<bool>();
 
             if (settings.Length > 0)
             {
@@ -307,9 +343,14 @@ namespace Utilities.Editor.BuildPipeline
 
                 // Copy existing TMP Settings asset to a byte[]
                 settingsFilePath = AssetDatabase.GUIDToAssetPath(settings[0]);
+#if UNITY_2021_1_OR_NEWER
+                settingsBackup = await System.IO.File.ReadAllBytesAsync(settingsFilePath).ConfigureAwait(true);
+#else
                 settingsBackup = System.IO.File.ReadAllBytes(settingsFilePath);
-                AssetDatabase.importPackageCompleted += ImportCallback;
+#endif //  UNITY_2021_1_OR_NEWER
             }
+
+            AssetDatabase.importPackageCompleted += ImportCallback;
 
             var packageFullPath = TMPro.EditorUtilities.TMP_EditorUtility.packageFullPath;
             var importPath = $"{packageFullPath}/Package Resources/TMP Essential Resources.unitypackage";
@@ -325,10 +366,18 @@ namespace Utilities.Editor.BuildPipeline
             void ImportCallback(string packageName)
             {
                 Debug.Log("TextMesh Pro Essentials Import::ImportCallback");
-                // Restore backup of TMP Settings from byte[]
-                System.IO.File.WriteAllBytes(settingsFilePath, settingsBackup);
+
+                if (settingsFilePath != null && settingsBackup != null)
+                {
+                    // Restore backup of TMP Settings from byte[]
+                    System.IO.File.WriteAllBytes(settingsFilePath, settingsBackup);
+                }
+
                 AssetDatabase.importPackageCompleted -= ImportCallback;
+                tcs.TrySetResult(true);
             }
+
+            await tcs.Task.ConfigureAwait(true);
 
             if (!System.IO.Directory.Exists("Assets/TextMesh Pro"))
             {
@@ -336,6 +385,8 @@ namespace Utilities.Editor.BuildPipeline
             }
 
             Debug.Log("TextMesh Pro Essentials Import Completed");
+#else
+            await Task.CompletedTask;
 #endif // TEXT_MESH_PRO
         }
 
@@ -347,7 +398,7 @@ namespace Utilities.Editor.BuildPipeline
         }
 
         /// <summary>
-        /// Force Unity To Write Project Files
+        /// Force Unity to update CSProj files and generates solution.
         /// </summary>
         public static void SyncSolution()
         {
@@ -360,14 +411,7 @@ namespace Utilities.Editor.BuildPipeline
         }
 
         /// <summary>
-        /// Start a build using Unity's command line. Valid arguments:<para/>
-        /// -autoIncrement : Increments the build revision number.<para/>
-        /// -sceneList : A list of scenes to include in the build in CSV format.<para/>
-        /// -sceneListFile : A json file with a list of scenes to include in the build.<para/>
-        /// -buildOutput : The target directory you'd like the build to go.<para/>
-        /// -colorSpace : The <see cref="ColorSpace"/> settings for the build.<para/>
-        /// -x86 / -x64 / -ARM / -ARM64 : The target build platform. (Default is x86)<para/>
-        /// -debug / -release / -master : The target build configuration. (Default is master)<para/>
+        /// Start a build using command line arguments.
         /// </summary>
         [UsedImplicitly]
         public static void StartCommandLineBuild()
