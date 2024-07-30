@@ -331,19 +331,19 @@ namespace Utilities.Editor.BuildPipeline
             if (targetSdkVersion == AndroidSdkVersions.AndroidApiLevelAuto) { return; }
             var targetSdk = $"android-{(int)targetSdkVersion}";
 
-            var androidSdkPath = EditorPrefs.GetString("AndroidSdkRoot",
-#if UNITY_EDITOR_WIN
-                "C:\\Program Files (x86)\\Android\\android-sdk"
-#else
-                string.Empty
-#endif
-            );
+            var androidSdkPath = EditorPrefs.GetString("AndroidSdkRoot");
+            Debug.Log($"AndroidSdkRoot: {androidSdkPath}");
+
+            if (string.IsNullOrWhiteSpace(androidSdkPath))
+            {
+                throw new Exception("Android SDK path is not set in the Unity Editor preferences.");
+            }
+
             var sdkManagerPath = Path.Combine(androidSdkPath, "tools", "bin", "sdkmanager");
 
             if (!File.Exists(sdkManagerPath))
             {
-                Debug.LogWarning($"Failed to locate the android sdkmangaer at {sdkManagerPath}");
-                return;
+                throw new Exception($"Failed to locate the android sdkmangaer at {sdkManagerPath}");
             }
 
             var sdkListProcess = new Process
