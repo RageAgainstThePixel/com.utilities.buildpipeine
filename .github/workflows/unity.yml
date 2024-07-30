@@ -49,14 +49,10 @@ jobs:
         # Activates the installation with the provided credentials
         # https://github.com/XRTK/activate-unity-license
       - uses: xrtk/activate-unity-license@v5
-        # if: matrix.os != 'windows' && matrix.os != 'macos'
         with:
-          # Required
+          license-type: 'Personal' # Chooses license type to use [ Personal, Professional ]
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
-          # Optional
-          license-type: 'Personal' # Chooses license type to use [ Personal, Professional ]
-          auth-key: ${{ secrets.UNITY_2FA_KEY }} # Required for personal activations
           # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro/plus activations
 
       - name: Unity Build (${{ matrix.build-target }})
