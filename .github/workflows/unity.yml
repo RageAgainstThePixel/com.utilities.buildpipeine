@@ -27,7 +27,7 @@ jobs:
           - os: ubuntu-latest
             build-target: StandaloneLinux64
           - os: windows-latest
-            build-target: StandaloneWindows64
+            build-target: Android
           - os: macos-13
             build-target: StandaloneOSX
 
