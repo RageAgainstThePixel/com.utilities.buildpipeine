@@ -25,11 +25,11 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            build-target: StandaloneLinux64
+            build-target: Android
           - os: windows-latest
             build-target: Android
           - os: macos-13
-            build-target: StandaloneOSX
+            build-target: Android
 
     steps:
       - uses: actions/checkout@v4
