@@ -362,12 +362,9 @@ namespace Utilities.Editor.BuildPipeline
             }
 
             var targetSdk = $"android-{targetSdkVersion}";
-            var sdkManagerPath = Path.Combine(AndroidBuildInfo.AndroidSDKRoot, "tools", "bin", "sdkmanager");
-
-#if UNITY_EDITOR_WIN
-            sdkManagerPath += ".bat";
-#endif
+            var sdkManagerPath = Path.Combine(AndroidBuildInfo.AndroidSDKRoot, "tools", "bin", "sdkmanager.bat");
             Debug.Log(sdkManagerPath);
+
             if (!File.Exists(sdkManagerPath))
             {
                 throw new Exception($"Failed to locate the android sdkmangaer at {sdkManagerPath}");
