@@ -363,6 +363,7 @@ namespace Utilities.Editor.BuildPipeline
                 sdkListProcess.Start();
                 sdkListProcess.WaitForExit();
                 var output = await sdkListProcess.StandardOutput.ReadToEndAsync();
+                Debug.Log(output);
                 var error = await sdkListProcess.StandardError.ReadToEndAsync();
 
                 if (sdkListProcess.ExitCode != 0)
@@ -383,7 +384,7 @@ namespace Utilities.Editor.BuildPipeline
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = sdkManagerPath,
-                    Arguments = $"\"platform-tools\" \"platforms;{targetSdk}\" \"cmdline-tools;{targetSdk}\" --licenses",
+                    Arguments = $"\"platform-tools\" \"platforms;{targetSdk}\"",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
@@ -396,6 +397,7 @@ namespace Utilities.Editor.BuildPipeline
                 installProcess.Start();
                 installProcess.WaitForExit();
                 var output = await installProcess.StandardOutput.ReadToEndAsync();
+                Debug.Log(output);
                 var error = await installProcess.StandardError.ReadToEndAsync();
 
                 if (sdkListProcess.ExitCode != 0)
