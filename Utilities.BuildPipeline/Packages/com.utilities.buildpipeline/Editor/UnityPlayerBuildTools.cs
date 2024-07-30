@@ -309,7 +309,6 @@ namespace Utilities.Editor.BuildPipeline
                         case "-verifyAndroidSDKInstalled":
                             await VerifyAndroidSDKInstalledAsync();
                             break;
-
                     }
                 }
 
