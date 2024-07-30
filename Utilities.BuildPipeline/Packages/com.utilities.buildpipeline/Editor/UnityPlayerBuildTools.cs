@@ -293,8 +293,7 @@ namespace Utilities.Editor.BuildPipeline
         [UsedImplicitly]
         public static async void ValidateProject()
         {
-            CILoggingUtility.LoggingEnabled = false;
-
+            Debug.Log("Project Validation Started...");
             try
             {
                 var arguments = Environment.GetCommandLineArgs();
@@ -312,6 +311,7 @@ namespace Utilities.Editor.BuildPipeline
                     }
                 }
 
+                CILoggingUtility.LoggingEnabled = false;
                 SyncSolution();
             }
             catch (Exception e)
@@ -328,9 +328,14 @@ namespace Utilities.Editor.BuildPipeline
         {
             Debug.Log("Verifying Android SDK installation...");
             var targetSdkVersion = PlayerSettings.Android.targetSdkVersion;
-            if (targetSdkVersion == AndroidSdkVersions.AndroidApiLevelAuto) { return; }
-            var targetSdk = $"android-{(int)targetSdkVersion}";
 
+            if (targetSdkVersion == AndroidSdkVersions.AndroidApiLevelAuto)
+            {
+                Debug.Log("Android SDK target version is set to Auto. Skipping verification.");
+                return;
+            }
+
+            var targetSdk = $"android-{(int)targetSdkVersion}";
             var androidSdkPath = EditorPrefs.GetString("AndroidSdkRoot");
             Debug.Log($"AndroidSdkRoot: {androidSdkPath}");
 
