@@ -60,7 +60,7 @@ jobs:
           build-target: ${{ matrix.build-target }}
           publish-artifacts: true
           additional-validation-args: '-importTMProEssentialsAsset -verifyAndroidSDKInstalled'
-          additional-build-args: -export
+          #additional-build-args: -export
           output-directory: ${{ github.workspace }}/Artifacts/${{ matrix.build-target }}
           test: false
 
