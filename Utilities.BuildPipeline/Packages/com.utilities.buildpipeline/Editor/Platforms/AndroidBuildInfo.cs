@@ -1,6 +1,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.IO;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
@@ -121,5 +122,8 @@ namespace Utilities.Editor.BuildPipeline
                 PlayerSettings.Android.bundleVersionCode++;
             }
         }
+
+        public static string AndroidSDKRoot
+            => EditorPrefs.GetString(nameof(AndroidSDKRoot), Path.Combine(EditorApplication.applicationPath, "..", "Data", "PlaybackEngines", "AndroidPlayer", "SDK"));
     }
 }

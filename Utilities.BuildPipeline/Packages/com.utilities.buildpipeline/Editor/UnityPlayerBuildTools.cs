@@ -14,6 +14,7 @@ using UnityEditor.Build.Reporting;
 using UnityEngine;
 using Utilities.Editor.BuildPipeline.Logging;
 using Debug = UnityEngine.Debug;
+using Object = UnityEngine.Object;
 
 namespace Utilities.Editor.BuildPipeline
 {
@@ -291,12 +292,22 @@ namespace Utilities.Editor.BuildPipeline
         /// Validates the Unity Project assets by forcing a symbolic link sync and creates solution files.
         /// </summary>
         [UsedImplicitly]
+        [MenuItem("Tools/Validate Project")]
         public static async void ValidateProject()
         {
             Debug.Log("Project Validation Started...");
             try
             {
-                var arguments = Environment.GetCommandLineArgs();
+                string[] arguments;
+
+                if (Application.isBatchMode)
+                {
+                    arguments = Environment.GetCommandLineArgs();
+                }
+                else
+                {
+                    arguments = new[] { "-verifyAndroidSDKInstalled", };
+                }
 
                 for (int i = 0; i < arguments.Length; ++i)
                 {
@@ -311,41 +322,54 @@ namespace Utilities.Editor.BuildPipeline
                     }
                 }
 
-                CILoggingUtility.LoggingEnabled = false;
+                if (Application.isBatchMode)
+                {
+                    CILoggingUtility.LoggingEnabled = false;
+                }
+
                 SyncSolution();
             }
             catch (Exception e)
             {
                 Debug.LogException(e);
-                EditorApplication.Exit(1);
+
+                if (Application.isBatchMode)
+                {
+                    EditorApplication.Exit(1);
+                }
             }
 
             Debug.Log("Project Validation Completed");
-            EditorApplication.Exit(0);
+
+            if (Application.isBatchMode)
+            {
+                EditorApplication.Exit(0);
+            }
         }
 
         private static async Task VerifyAndroidSDKInstalledAsync()
         {
             Debug.Log("Verifying Android SDK installation...");
-            var targetSdkVersion = PlayerSettings.Android.targetSdkVersion;
+            var assets = AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/ProjectSettings.asset");
+            var projectSettings = new SerializedObject(assets[0]);
+            var targetVersionProperty = projectSettings.FindProperty("AndroidTargetSdkVersion");
+            var targetSdkVersion = targetVersionProperty.intValue;
 
-            if (targetSdkVersion == AndroidSdkVersions.AndroidApiLevelAuto)
+            if (targetSdkVersion == 0)
             {
-                Debug.Log("Android SDK target version is set to Auto. Skipping verification.");
+                Debug.Log("Android SDK target version is set to latest installed. Skipping verification.");
                 return;
             }
 
-            var targetSdk = $"android-{(int)targetSdkVersion}";
-            var androidSdkPath = EditorPrefs.GetString("AndroidSdkRoot");
-            Debug.Log($"AndroidSdkRoot: {androidSdkPath}");
+            var targetSdk = $"android-{targetSdkVersion}";
+            var sdkManagerPath = Path.Combine(AndroidBuildInfo.AndroidSDKRoot, "tools", "bin", "sdkmanager");
 
-            if (string.IsNullOrWhiteSpace(androidSdkPath))
-            {
-                throw new Exception("Android SDK path is not set in the Unity Editor preferences.");
-            }
-
-            var sdkManagerPath = Path.Combine(androidSdkPath, "tools", "bin", "sdkmanager");
-
+#if UNITY_EDITOR_WIN
+            sdkManagerPath += ".bat";
+#else
+            sdkManagerPath += ".sh";
+#endif
+            Debug.Log(sdkManagerPath);
             if (!File.Exists(sdkManagerPath))
             {
                 throw new Exception($"Failed to locate the android sdkmangaer at {sdkManagerPath}");
@@ -427,7 +451,7 @@ namespace Utilities.Editor.BuildPipeline
             Debug.Log("TextMesh Pro Essentials Import started....");
 
             // Check if the TextMesh Pro folder already exists
-            if (System.IO.Directory.Exists("Assets/TextMesh Pro")) { return; }
+            if (Directory.Exists("Assets/TextMesh Pro")) { return; }
 
             byte[] settingsBackup = null;
             string settingsFilePath = null;
@@ -445,9 +469,9 @@ namespace Utilities.Editor.BuildPipeline
                 // Copy existing TMP Settings asset to a byte[]
                 settingsFilePath = AssetDatabase.GUIDToAssetPath(settings[0]);
 #if UNITY_2021_1_OR_NEWER
-                settingsBackup = await System.IO.File.ReadAllBytesAsync(settingsFilePath).ConfigureAwait(true);
+                settingsBackup = await File.ReadAllBytesAsync(settingsFilePath).ConfigureAwait(true);
 #else
-                settingsBackup = System.IO.File.ReadAllBytes(settingsFilePath);
+                settingsBackup = File.ReadAllBytes(settingsFilePath);
 #endif //  UNITY_2021_1_OR_NEWER
             }
 
@@ -457,9 +481,9 @@ namespace Utilities.Editor.BuildPipeline
             var importPath = $"{packageFullPath}/Package Resources/TMP Essential Resources.unitypackage";
             Debug.Log($"TextMesh Pro Essentials Import from {importPath}");
 
-            if (!System.IO.File.Exists(importPath))
+            if (!File.Exists(importPath))
             {
-                throw new System.IO.FileNotFoundException($"Unable to find the TextMesh Pro package at {importPath}");
+                throw new FileNotFoundException($"Unable to find the TextMesh Pro package at {importPath}");
             }
 
             ImportPackageImmediately(importPath);
@@ -471,7 +495,7 @@ namespace Utilities.Editor.BuildPipeline
                 if (settingsFilePath != null && settingsBackup != null)
                 {
                     // Restore backup of TMP Settings from byte[]
-                    System.IO.File.WriteAllBytes(settingsFilePath, settingsBackup);
+                    File.WriteAllBytes(settingsFilePath, settingsBackup);
                 }
 
                 AssetDatabase.importPackageCompleted -= ImportCallback;
@@ -480,7 +504,7 @@ namespace Utilities.Editor.BuildPipeline
 
             await tcs.Task.ConfigureAwait(true);
 
-            if (!System.IO.Directory.Exists("Assets/TextMesh Pro"))
+            if (!Directory.Exists("Assets/TextMesh Pro"))
             {
                 throw new Exception("Failed to import TextMeshPro resources!");
             }
@@ -495,7 +519,7 @@ namespace Utilities.Editor.BuildPipeline
         {
             var importImmediate = typeof(AssetDatabase).GetMethod(nameof(ImportPackageImmediately), BindingFlags.NonPublic | BindingFlags.Static);
             Debug.Assert(importImmediate != null);
-            importImmediate.Invoke(null, new object[] { importPath });
+            importImmediate!.Invoke(null, new object[] { importPath });
         }
 
         /// <summary>
@@ -504,11 +528,12 @@ namespace Utilities.Editor.BuildPipeline
         public static void SyncSolution()
         {
             Debug.Log(nameof(SyncSolution));
-            var syncVs = Type.GetType("UnityEditor.SyncVS,UnityEditor");
+            const string sync = "UnityEditor.SyncVS,UnityEditor";
+            var syncVs = Type.GetType(sync);
             Debug.Assert(syncVs != null);
-            var syncSolution = syncVs.GetMethod("SyncSolution", BindingFlags.Public | BindingFlags.Static);
+            var syncSolution = syncVs!.GetMethod(nameof(SyncSolution), BindingFlags.Public | BindingFlags.Static);
             Debug.Assert(syncSolution != null);
-            syncSolution.Invoke(null, null);
+            syncSolution!.Invoke(null, null);
         }
 
         /// <summary>
@@ -530,14 +555,7 @@ namespace Utilities.Editor.BuildPipeline
 
                 if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android)
                 {
-                    var androidSdkPath = EditorPrefs.GetString("AndroidSdkRoot",
-#if UNITY_EDITOR_WIN
-                        "C:\\Program Files (x86)\\Android\\android-sdk"
-#else
-                        string.Empty
-#endif
-                        );
-                    Debug.Log($"AndroidSdkRoot: {androidSdkPath}");
+                    Debug.Log($"AndroidSdkRoot: {AndroidBuildInfo.AndroidSDKRoot}");
                 }
 
                 buildReport = BuildUnityPlayer();
@@ -558,22 +576,6 @@ namespace Utilities.Editor.BuildPipeline
             CILoggingUtility.GenerateBuildReport(buildReport, stopwatch);
             Debug.Log("Exiting command line build...");
             EditorApplication.Exit(buildReport.summary.result == BuildResult.Succeeded ? 0 : 1);
-        }
-
-        internal static bool CheckBuildScenes()
-        {
-            if (EditorBuildSettings.scenes.Length == 0)
-            {
-                return EditorUtility.DisplayDialog(
-                    "Attention!",
-                    "No scenes are present in the build settings.\n" +
-                    "The build requires at least one scene to be defined.\n\n" +
-                    "Do you want to cancel and add one?",
-                    "Continue Anyway",
-                    "Cancel Build");
-            }
-
-            return true;
         }
 
         /// <summary>
