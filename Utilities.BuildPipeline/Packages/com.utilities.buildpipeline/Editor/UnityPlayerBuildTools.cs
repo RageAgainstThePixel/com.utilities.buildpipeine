@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -305,6 +306,10 @@ namespace Utilities.Editor.BuildPipeline
                         case "-importTMProEssentialsAsset":
                             await ImportTMProEssentialAssetsAsync();
                             break;
+                        case "-verifyAndroidSDKInstalled":
+                            await VerifyAndroidSDKInstalledAsync();
+                            break;
+
                     }
                 }
 
@@ -318,6 +323,93 @@ namespace Utilities.Editor.BuildPipeline
 
             Debug.Log("Project Validation Completed");
             EditorApplication.Exit(0);
+        }
+
+        private static async Task VerifyAndroidSDKInstalledAsync()
+        {
+            var targetSdkVersion = PlayerSettings.Android.targetSdkVersion;
+            if (targetSdkVersion == AndroidSdkVersions.AndroidApiLevelAuto) { return; }
+            var targetSdk = $"android-{(int)targetSdkVersion}";
+
+            var androidSdkPath = EditorPrefs.GetString("AndroidSdkRoot",
+#if UNITY_EDITOR_WIN
+                "C:\\Program Files (x86)\\Android\\android-sdk"
+#else
+                string.Empty
+#endif
+            );
+            var sdkManagerPath = Path.Combine(androidSdkPath, "tools", "bin", "sdkmanager");
+
+            if (!File.Exists(sdkManagerPath))
+            {
+                Debug.LogWarning($"Failed to locate the android sdkmangaer at {sdkManagerPath}");
+                return;
+            }
+
+            var sdkListProcess = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = sdkManagerPath,
+                    Arguments = "--list",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+
+            try
+            {
+                sdkListProcess.Start();
+                sdkListProcess.WaitForExit();
+                var output = await sdkListProcess.StandardOutput.ReadToEndAsync();
+                var error = await sdkListProcess.StandardError.ReadToEndAsync();
+
+                if (sdkListProcess.ExitCode != 0)
+                {
+                    throw new Exception($"Failed to list Android SDK: {error}");
+                }
+
+                Debug.Log($"Android SDK list: {output}");
+                if (output.Contains($"platforms;{targetSdk}")) { return; }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to list Android SDK: {e}");
+            }
+
+            var installProcess = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = sdkManagerPath,
+                    Arguments = $"\"platform-tools\" \"platforms;{targetSdk}\" \"cmdline-tools;{targetSdk}\" --licenses",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+
+            try
+            {
+                installProcess.Start();
+                installProcess.WaitForExit();
+                var output = await installProcess.StandardOutput.ReadToEndAsync();
+                var error = await installProcess.StandardError.ReadToEndAsync();
+
+                if (sdkListProcess.ExitCode != 0)
+                {
+                    throw new Exception($"Failed to list Android SDK: {error}");
+                }
+
+                Debug.Log($"Android SDK installed: {output}");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to install Android SDK: {e}");
+            }
         }
 
         private static async Task ImportTMProEssentialAssetsAsync()

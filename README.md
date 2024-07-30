@@ -168,3 +168,4 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | Argument | Description |
 | -------- | ----------- |
 | `-importTMProEssentialsAsset` | Imports the TMPro Essential assets if they are not already in the project. |
+| `-verifyAndroidSDKInstalled` | Verifies that the target android sdk is installed, and installs it if missing. |
