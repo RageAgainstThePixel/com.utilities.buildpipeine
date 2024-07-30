@@ -366,8 +366,6 @@ namespace Utilities.Editor.BuildPipeline
 
 #if UNITY_EDITOR_WIN
             sdkManagerPath += ".bat";
-#else
-            sdkManagerPath += ".sh";
 #endif
             Debug.Log(sdkManagerPath);
             if (!File.Exists(sdkManagerPath))
