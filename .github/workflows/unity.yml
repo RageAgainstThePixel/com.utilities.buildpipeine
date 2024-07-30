@@ -22,7 +22,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
-      # max-parallel: 2 # Use this if you're activating pro license with matrix
       matrix:
         include:
           - os: ubuntu-latest
@@ -48,7 +47,7 @@ jobs:
 
         # Activates the installation with the provided credentials
         # https://github.com/XRTK/activate-unity-license
-      - uses: xrtk/activate-unity-license@v5
+      - uses: xrtk/activate-unity-license@development
         with:
           license-type: 'Personal' # Chooses license type to use [ Personal, Professional ]
           username: ${{ secrets.UNITY_USERNAME }}
