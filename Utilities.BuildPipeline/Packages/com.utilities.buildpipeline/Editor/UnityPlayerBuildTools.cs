@@ -326,6 +326,7 @@ namespace Utilities.Editor.BuildPipeline
 
         private static async Task VerifyAndroidSDKInstalledAsync()
         {
+            Debug.Log("Verifying Android SDK installation...");
             var targetSdkVersion = PlayerSettings.Android.targetSdkVersion;
             if (targetSdkVersion == AndroidSdkVersions.AndroidApiLevelAuto) { return; }
             var targetSdk = $"android-{(int)targetSdkVersion}";
@@ -411,6 +412,8 @@ namespace Utilities.Editor.BuildPipeline
             {
                 Debug.LogError($"Failed to install Android SDK: {e}");
             }
+
+            Debug.Log("Finished Verifying Android SDK installation.");
         }
 
         private static async Task ImportTMProEssentialAssetsAsync()
