@@ -22,15 +22,22 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
-      # max-parallel: 2 # Use this if you're activating pro license with matrix
       matrix:
+        os: [ubuntu-latest, windows-latest, macos-13, macos-latest]
+        unity-versions: [2020.3.48f1 (b805b124c6b7), 2021.3.41f1 (6c5a9e20c022), 2022.3.40f1 (cbdda657d2f0)]
         include:
           - os: ubuntu-latest
-            build-target: StandaloneLinux64
+            build-targets: StandaloneLinux64, Android, iOS
+            modules: linux-server
           - os: windows-latest
-            build-target: StandaloneWindows64
+            build-targets: StandaloneWindows64, Android, WSAPlayer
+            modules: windows-server
           - os: macos-13
-            build-target: StandaloneOSX
+            build-targets: StandaloneOSX, Android, iOS
+            modules: mac-server
+          - os: macos-latest
+            build-targets: StandaloneOSX Android iOS VisionOS
+            modules: mac-server
 
     steps:
       - uses: actions/checkout@v4
@@ -41,32 +48,29 @@ jobs:
         # Installs the Unity Editor based on your project version text file
         # sets -> env.UNITY_EDITOR_PATH
         # sets -> env.UNITY_PROJECT_PATH
-        # https://github.com/XRTK/unity-setup
-      - uses: xrtk/unity-setup@v7
+        # https://github.com/RageAgainstThePixel/unity-setup
+      - uses: RageAgainstThePixel/setup-unity@development
         with:
-          build-targets: ${{ matrix.build-target }}
+          unity_version: ${{ matrix.unity-versions }} # overrides the version in the version file
+          build_targets: ${{ matrix.build-targets }}
+          modules: ${{ matrix.modules }}
 
         # Activates the installation with the provided credentials
         # https://github.com/XRTK/activate-unity-license
       - uses: xrtk/activate-unity-license@v5
-        # if: matrix.os != 'windows' && matrix.os != 'macos'
         with:
-          # Required
+          license-type: 'Personal' # Chooses license type to use [ Personal, Professional ]
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
-          # Optional
-          license-type: 'Personal' # Chooses license type to use [ Personal, Professional ]
-          auth-key: ${{ secrets.UNITY_2FA_KEY }} # Required for personal activations
-          # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro/plus activations
 
-      - name: Unity Build (${{ matrix.build-target }})
-        uses: RageAgainstThePixel/unity-build@development
+      - name: Unity Build (${{ matrix.build-targets }})
+        uses: RageAgainstThePixel/unity-build@main
         with:
-          build-target: ${{ matrix.build-target }}
+          build-target: ${{ matrix.build-targets }}
           publish-artifacts: true
           additional-validation-args: -importTMProEssentialsAsset
           additional-build-args: -export
-          output-directory: ${{ github.workspace }}/Artifacts/${{ matrix.build-target }}
+          output-directory: ${{ github.workspace }}/Artifacts/${{ matrix.build-targets }}
           test: false
 
       - name: Validate Text Mesh Pro Resources
