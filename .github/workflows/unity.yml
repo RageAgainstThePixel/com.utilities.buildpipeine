@@ -38,6 +38,8 @@ jobs:
             build-target: StandaloneWindows64
           - os: macos-latest
             build-target: StandaloneOSX
+          - os: macos-13
+            build-target: StandaloneOSX
 
     steps:
       - uses: actions/checkout@v4
