@@ -67,7 +67,14 @@ jobs:
     strategy:
       # max-parallel: 2 # Use this if you're activating pro license with matrix
       matrix:
-        include:
+        os: [ubuntu-latest, windows-latest, macos-13, macos-latest]
+        unity-versions:
+          - 2019.4.40f1 (ffc62b691db5)
+          - 2020.3.48f1 (b805b124c6b7)
+          - 2021.3.41f1 (6c5a9e20c022)
+          - 2022.3.40f1 (cbdda657d2f0)
+          - 6000.0.13f1 (53a692e3fca9)
+        include: # for each os specify the build targets
           - os: windows-latest
             build-target: StandaloneWindows64
           - os: macos-latest
@@ -81,22 +88,17 @@ jobs:
         # Installs the Unity Editor based on your project version text file
         # sets -> env.UNITY_EDITOR_PATH
         # sets -> env.UNITY_PROJECT_PATH
-        # https://github.com/XRTK/unity-setup
-      - uses: xrtk/unity-setup@v7
+      - uses: RageAgainstThePixel/unity-setup@v1
         with:
-          modules: ${{ matrix.build-target }}
+          build-targets: ${{ matrix.build-target }}
 
         # Activates the installation with the provided credentials
-        # https://github.com/XRTK/activate-unity-license
-      - uses: xrtk/activate-unity-license@v5
+      - uses: RageAgainstThePixel/activate-unity-license@v1
         with:
-          # Required
+          license: 'Personal' # Choose license type to use [ Personal, Professional ]
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
-          # Optional
-          license-type: 'Personal' # Chooses license type to use [ Personal, Professional ]
-          auth-key: ${{ secrets.UNITY_2FA_KEY }} # Required for personal activations
-          # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro/plus activations
+          # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro activations
 
       - name: Unity Build (${{ matrix.build-target }})
         uses: RageAgainstThePixel/unity-build@v7
