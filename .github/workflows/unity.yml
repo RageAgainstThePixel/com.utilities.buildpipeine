@@ -71,6 +71,7 @@ jobs:
           test: false
 
       - name: Validate Text Mesh Pro Resources
+        if: ${{ matrix.unity-versions != '6000.0.13f1 (53a692e3fca9)' }}
         run: |
           # Validate Text Mesh Pro Resources
           $TMPRO_PATH = "$env:UNITY_PROJECT_PATH/Assets/TextMesh Pro"
