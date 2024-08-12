@@ -53,21 +53,18 @@ on:
   pull_request:
     branches:
       - '*'
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
 concurrency:
-  group: ${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       # max-parallel: 2 # Use this if you're activating pro license with matrix
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-13, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-13]
         unity-versions:
           - 2019.4.40f1 (ffc62b691db5)
           - 2020.3.48f1 (b805b124c6b7)
@@ -75,12 +72,12 @@ jobs:
           - 2022.3.40f1 (cbdda657d2f0)
           - 6000.0.13f1 (53a692e3fca9)
         include: # for each os specify the build targets
-          - os: windows-latest
-            build-target: StandaloneWindows64
-          - os: macos-latest
-            build-target: StandaloneOSX
           - os: ubuntu-latest
             build-target: StandaloneLinux64
+          - os: windows-latest
+            build-target: StandaloneWindows64
+          - os: macos-13
+            build-target: StandaloneOSX
 
     steps:
       - uses: actions/checkout@v4
@@ -90,6 +87,7 @@ jobs:
         # sets -> env.UNITY_PROJECT_PATH
       - uses: RageAgainstThePixel/unity-setup@v1
         with:
+          unity-version: ${{ matrix.unity-versions }}
           build-targets: ${{ matrix.build-target }}
 
         # Activates the installation with the provided credentials
@@ -101,7 +99,7 @@ jobs:
           # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro activations
 
       - name: Unity Build (${{ matrix.build-target }})
-        uses: RageAgainstThePixel/unity-build@v7
+        uses: RageAgainstThePixel/unity-build@v8
         with:
           build-target: ${{ matrix.build-target }}
 ```
