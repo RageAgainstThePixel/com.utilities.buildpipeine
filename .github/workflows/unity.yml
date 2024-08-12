@@ -61,7 +61,7 @@ jobs:
           # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro activations
 
       - name: Unity Build (${{ matrix.build-target }})
-        uses: RageAgainstThePixel/unity-build@development
+        uses: RageAgainstThePixel/unity-build@main
         with:
           build-target: ${{ matrix.build-target }}
           publish-artifacts: true
