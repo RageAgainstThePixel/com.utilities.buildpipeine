@@ -32,13 +32,13 @@ jobs:
           - 6000.0.13f1 (53a692e3fca9)
         include: # for each os specify the build targets
           - os: ubuntu-latest
-            build-target: StandaloneLinux64
+            build-target: Android
           - os: windows-latest
-            build-target: StandaloneWindows64
+            build-target: Android
           - os: macos-latest
-            build-target: StandaloneOSX
+            build-target: Android
           - os: macos-13
-            build-target: StandaloneOSX
+            build-target: Android
 
     steps:
       - uses: actions/checkout@v4
