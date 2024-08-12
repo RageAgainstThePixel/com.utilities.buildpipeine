@@ -1,20 +1,19 @@
 name: unity-build-validation
 
 on:
+  schedule:
+    - cron: '0 0 * * 0' # Every Sunday at midnight
   push:
     branches:
       - 'main'
   pull_request:
     branches:
       - '*'
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   build:
     timeout-minutes: 20
@@ -45,12 +44,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           clean: true
-
         # Installs the Unity Editor based on your project version text file
         # sets -> env.UNITY_EDITOR_PATH
         # sets -> env.UNITY_PROJECT_PATH
       - uses: RageAgainstThePixel/unity-setup@v1
         with:
+          unity-version: ${{ matrix.unity-versions }}
           build-targets: ${{ matrix.build-target }}
 
         # Activates the installation with the provided credentials
