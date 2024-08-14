@@ -99,7 +99,7 @@ jobs:
           # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro activations
 
       - name: Unity Build (${{ matrix.build-target }})
-        uses: RageAgainstThePixel/unity-build@v8
+        uses: RageAgainstThePixel/unity-build@v1
         with:
           build-target: ${{ matrix.build-target }}
 ```
@@ -110,12 +110,12 @@ These methods can be executed using the `-executeMethod` command line argument t
 
 | Method | Description |
 | ------ | ----------- |
-| `Utilities.Editor.BuildPipeline.Validate` | Validates the Unity Project assets by forcing a symbolic link sync and creates solution files. |
-| `Utilities.Editor.BuildPipeline.SyncSolution` | Force Unity to update CSProj files and generates solution. |
-| `Utilities.Editor.BuildPipeline.StartCommandLineBuild` | Start a build using command line arguments. |
+| `Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject` | Validates the Unity Project assets by forcing a symbolic link sync and creates solution files. |
+| `Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.SyncSolution` | Force Unity to update CSProj files and generates solution. |
+| `Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild` | Start a build using command line arguments. |
 
 ```bash
-"/path/to/Unity.exe" -projectPath "/path/to/unity/project/" -quit -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild
+"/path/to/Unity.exe" -projectPath "/path/to/unity/project" -quit -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild
 ```
 
 ### Additional Custom Command Line Arguments
