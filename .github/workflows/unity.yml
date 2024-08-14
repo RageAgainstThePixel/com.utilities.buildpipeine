@@ -62,11 +62,11 @@ jobs:
         uses: RageAgainstThePixel/unity-build@main
         with:
           build-target: ${{ matrix.build-target }}
-          artifact-name: ${{ matrix.unity-versions}} ${{ matrix.build-target }}
-          publish-artifacts: true
+          output-directory: ${{ github.workspace }}/Artifacts/${{ matrix.build-target }}
           additional-validation-args: -importTMProEssentialsAsset
           additional-build-args: -export
-          output-directory: ${{ github.workspace }}/Artifacts/${{ matrix.build-target }}
+          publish-artifacts: true
+          artifact-name: ${{ matrix.unity-versions}} ${{ matrix.build-target }}
           test: false
 
       - name: Validate Text Mesh Pro Resources
