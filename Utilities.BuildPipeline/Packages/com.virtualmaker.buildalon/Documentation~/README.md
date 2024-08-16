@@ -21,7 +21,7 @@ The recommended installation method is though the unity package manager and [Ope
   - Scope(s):
     - `com.virtualmaker`
 
-![scoped-registries](Utilities.BuildPipeline/Packages/com.virtualmaker.buildalon/Documentation~/images/package-manager-scopes.png)
+![scoped-registries](images/package-manager-scopes.png)
 
 - Open the Unity Package Manager window
 - Change the Registry from Unity to `My Registries`

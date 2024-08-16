@@ -34,42 +34,57 @@ jobs:
             build-target: Android
           - os: windows-latest
             build-target: Android
-          # - os: macos-latest
-          #   build-target: Android
           - os: macos-13
             build-target: Android
     steps:
       - uses: actions/checkout@v4
-        with:
-          clean: true
+
         # Installs the Unity Editor based on your project version text file
         # sets -> env.UNITY_EDITOR_PATH
         # sets -> env.UNITY_PROJECT_PATH
-      - uses: RageAgainstThePixel/unity-setup@v1
+      - uses: buildalon/unity-setup@v1
         with:
           unity-version: ${{ matrix.unity-versions }}
           build-targets: ${{ matrix.build-target }}
 
         # Activates the installation with the provided credentials
-      - uses: RageAgainstThePixel/activate-unity-license@v1
+      - uses: buildalon/activate-unity-license@v1
         with:
           license: 'Personal' # Choose license type to use [ Personal, Professional ]
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
           # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro activations
 
-      - name: Unity Build (${{ matrix.build-target }})
-        uses: RageAgainstThePixel/unity-build@main
+      - uses: buildalon/unity-action@v1
+        name: Project Validation
         with:
-          build-target: ${{ matrix.build-target }}
-          output-directory: ${{ github.workspace }}/Artifacts/${{ matrix.build-target }}
-          additional-validation-args: -importTMProEssentialsAsset
-          additional-build-args: -export
-          publish-artifacts: true
-          artifact-name: ${{ matrix.unity-versions}} ${{ matrix.build-target }}
-          test: false
+          log-name: 'project-validation'
+          args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset'
+
+      - uses: buildalon/unity-action@v1
+        name: '${{ matrix.build-target }}-Build'
+        with:
+          log-name: '${{ matrix.build-target }}-Build'
+          build-target: '${{ matrix.build-target }}'
+          args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild -export'
+
+      - uses: actions/upload-artifact@v4
+        id: upload-artifact
+        name: 'Upload ${{ matrix.build-target }} Artifacts'
+        if: success() || failure()
+        with:
+          compression-level: 0
+          retention-days: 1
+          name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ matrix.os }} ${{ matrix.unity-versions }} ${{ matrix.build-target }}-Artifacts'
+          path: |
+            ${{ github.workspace }}/**/*.log
+            ${{ env.UNITY_PROJECT_PATH || github.workspace }}/Builds/${{ matrix.build-target }}/**/*
+            !${{ env.UNITY_PROJECT_PATH || github.workspace }}/Library/**/*
+            !/**/*_BackUpThisFolder_ButDontShipItWithYourGame/**
+            !/**/*_BurstDebugInformation_DoNotShip/**
 
       - name: Validate Text Mesh Pro Resources
+        # TMP assets are embedded in Unity 6+
         if: ${{ matrix.unity-versions != '6000.0.13f1 (53a692e3fca9)' }}
         run: |
           # Validate Text Mesh Pro Resources
