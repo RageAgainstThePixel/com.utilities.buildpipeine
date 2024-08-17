@@ -8,7 +8,7 @@ A Build Pipeline utility package for the [Unity](https://unity.com/) Game Engine
 
 Requires Unity 2019.4 LTS or higher.
 
-The recommended installation method is though the unity package manager and [OpenUPM](https://openupm.com/packages/com.openai.unity).
+The recommended installation method is though the unity package manager and [OpenUPM](https://openupm.com/packages/com.utilities.buildpipeine).
 
 ### Via Unity Package Manager and OpenUPM
 
