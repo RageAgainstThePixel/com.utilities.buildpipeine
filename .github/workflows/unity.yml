@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ ( github.event_name == 'pull_request' || github.event.action == 'synchronize' ) }}
 jobs:
   build:
     env:
@@ -23,12 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-13]
-        unity-versions:
-          - 2019.4.40f1 (ffc62b691db5)
-          - 2020.3.48f1 (b805b124c6b7)
-          - 2021.3.41f1 (6c5a9e20c022)
-          - 2022.3.40f1 (cbdda657d2f0)
-          - 6000.0.13f1 (53a692e3fca9)
+        unity-versions: [2019.x, 2020.x, 2021.x, 2022.x, 6000.x]
         include: # for each os specify the build targets
           - os: ubuntu-latest
             build-target: Android
@@ -66,7 +61,7 @@ jobs:
           additional-validation-args: -importTMProEssentialsAsset
           additional-build-args: -export
           publish-artifacts: true
-          artifact-name: ${{ matrix.unity-versions}} ${{ matrix.build-target }}
+          artifact-name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.unity-versions }}-${{ matrix.build-target }}-Artifacts'
           test: false
 
       - name: Validate Text Mesh Pro Resources
