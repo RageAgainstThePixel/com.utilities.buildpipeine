@@ -65,7 +65,7 @@ namespace Utilities.Editor.BuildPipeline
                 : outputDirectory;
             set
             {
-                var projectRoot = Directory.GetParent(EditorPreferences.ApplicationDataPath).FullName.Replace("\\", "/");
+                var projectRoot = Directory.GetParent(EditorPreferences.ApplicationDataPath)!.FullName.Replace("\\", "/");
                 var newValue = value?.Replace("\\", "/");
                 outputDirectory = !string.IsNullOrWhiteSpace(newValue) && Path.IsPathRooted(newValue)
                     ? newValue.Contains(projectRoot)
@@ -318,6 +318,16 @@ namespace Utilities.Editor.BuildPipeline
                     case "-buildWithDeepProfilingSupport":
                         EditorUserBuildSettings.buildWithDeepProfilingSupport = true;
                         BuildOptions = BuildOptions.SetFlag(BuildOptions.EnableDeepProfilingSupport);
+                        break;
+                    case "-appleTeamId":
+                        var teamId = arguments[++i];
+                        PlayerSettings.iOS.appleDeveloperTeamID = teamId;
+                        break;
+                    case "-enableAppleAutomaticSigning":
+                        PlayerSettings.iOS.appleEnableAutomaticSigning = true;
+                        break;
+                    case "-disableAppleAutomaticSigning":
+                        PlayerSettings.iOS.appleEnableAutomaticSigning = false;
                         break;
                 }
             }
