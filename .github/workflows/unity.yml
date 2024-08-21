@@ -45,7 +45,7 @@ jobs:
         # Installs the Unity Editor based on your project version text file
         # sets -> env.UNITY_EDITOR_PATH
         # sets -> env.UNITY_PROJECT_PATH
-      - uses: RageAgainstThePixel/unity-setup@development
+      - uses: RageAgainstThePixel/unity-setup@v1
         with:
           unity-version: ${{ matrix.unity-version }}
           build-targets: ${{ matrix.build-target }}
