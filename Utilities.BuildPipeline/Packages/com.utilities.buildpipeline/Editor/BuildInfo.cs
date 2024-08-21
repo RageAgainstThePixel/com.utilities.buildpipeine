@@ -118,13 +118,13 @@ namespace Utilities.Editor.BuildPipeline
                     case BuildTarget.StandaloneWindows:
                     case BuildTarget.StandaloneWindows64:
 #if PLATFORM_STANDALONE_WIN
-                        return UnityEditor.WindowsStandalone.UserBuildSettings.createSolution ? $"{Path.DirectorySeparatorChar}{BundleIdentifier}" : ".exe";
+                        return UnityEditor.WindowsStandalone.UserBuildSettings.createSolution ? $"{Path.DirectorySeparatorChar}{Application.productName}" : ".exe";
 #else
                         return ".exe";
 #endif
                     case BuildTarget.StandaloneOSX:
 #if PLATFORM_STANDALONE_OSX
-                        return UnityEditor.OSXStandalone.UserBuildSettings.createXcodeProject ? $"{Path.DirectorySeparatorChar}{Application.productName}.xcodeproj" : ".app";
+                        return UnityEditor.OSXStandalone.UserBuildSettings.createXcodeProject ? $"{Path.DirectorySeparatorChar}{Application.productName}" : ".app";
 #else
                         return ".app";
 #endif
