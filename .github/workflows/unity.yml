@@ -32,6 +32,9 @@ jobs:
           - os: windows-latest
             unity-version: 2021.x
             build-target: StandaloneWindows64
+          - os: windows-latest
+            unity-version: 2021.x
+            build-target: WSAPlayer
           - os: macos-13
             unity-version: 2021.x
             build-target: iOS
