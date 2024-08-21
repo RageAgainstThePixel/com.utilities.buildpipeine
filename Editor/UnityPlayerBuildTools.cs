@@ -49,9 +49,6 @@ namespace Utilities.Editor.BuildPipeline
                         case BuildTarget.Android:
                             buildInfoInstance = new AndroidBuildInfo();
                             break;
-                        case BuildTarget.StandaloneOSX:
-                            buildInfoInstance = new MacOSBuildInfo();
-                            break;
                         // TODO: Add additional platform specific build info classes as needed
                         //case BuildTarget.StandaloneWindows:
                         //case BuildTarget.StandaloneWindows64:
