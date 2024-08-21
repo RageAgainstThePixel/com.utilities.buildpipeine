@@ -24,17 +24,12 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-13]
         unity-versions: [2019.x, 2020.x, 2021.x, 2022.x, 6000.x]
+        build-target: [Android]
         include: # for each os specify the build targets
           - os: ubuntu-latest
             build-target: StandaloneLinux64
-          - os: ubuntu-latest
-            build-target: Android
-          - os: windows-latest
-            build-target: Android
           - os: windows-latest
             build-target: StandaloneWindows64
-          - os: macos-13
-            build-target: Android
           - os: macos-13
             build-target: iOS
           - os: macos-13
