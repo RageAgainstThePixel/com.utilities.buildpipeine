@@ -1,5 +1,4 @@
 name: unity-build-validation
-
 on:
   schedule:
     - cron: '0 0 * * 0' # Every Sunday at midnight
@@ -19,20 +18,29 @@ jobs:
     env:
       UNITY_PROJECT_PATH: ''
     runs-on: ${{ matrix.os }}
+    name: build (${{ matrix.os }}, ${{ matrix.unity-version }}, ${{ matrix.build-target }})
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-13]
-        unity-versions: [2019.x, 2020.x, 2021.x, 2022.x, 6000.x]
+        unity-version: [2019.x, 2020.x, 2021.x, 2022.x, 6000.x]
+        build-target: [Android]
         include: # for each os specify the build targets
           - os: ubuntu-latest
-            build-target: Android
+            unity-version: 2021.x
+            build-target: StandaloneLinux64
           - os: windows-latest
-            build-target: Android
-          # - os: macos-latest
-          #   build-target: Android
+            unity-version: 2021.x
+            build-target: StandaloneWindows64
+          - os: windows-latest
+            unity-version: 2021.x
+            build-target: WSAPlayer
           - os: macos-13
-            build-target: Android
+            unity-version: 2021.x
+            build-target: iOS
+          - os: macos-13
+            unity-version: 2021.x
+            build-target: StandaloneOSX
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,7 +50,7 @@ jobs:
         # sets -> env.UNITY_PROJECT_PATH
       - uses: RageAgainstThePixel/unity-setup@v1
         with:
-          unity-version: ${{ matrix.unity-versions }}
+          unity-version: ${{ matrix.unity-version }}
           build-targets: ${{ matrix.build-target }}
 
         # Activates the installation with the provided credentials
@@ -61,11 +69,11 @@ jobs:
           additional-validation-args: -importTMProEssentialsAsset
           additional-build-args: -export
           publish-artifacts: true
-          artifact-name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.unity-versions }}-${{ matrix.build-target }}-Artifacts'
+          artifact-name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.unity-version }}-${{ matrix.build-target }}-Artifacts'
           test: false
 
       - name: Validate Text Mesh Pro Resources
-        if: ${{ matrix.unity-versions != '6000.x' }}
+        if: ${{ matrix.unity-version != '6000.x' }}
         run: |
           # Validate Text Mesh Pro Resources
           $TMPRO_PATH = "$env:UNITY_PROJECT_PATH/Assets/TextMesh Pro"
