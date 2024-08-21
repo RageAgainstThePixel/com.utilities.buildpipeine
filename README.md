@@ -161,8 +161,10 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | -------- | ----------- |
 | `-splitBinary` | Builds an APK per CPU architecture. |
 | `-splitApk` | Uses APK expansion files. |
-| `-keyaliasPass` | Sets the key alias password. |
+| `-keystorePath` | Path to the keystore. |
 | `-keystorePass` | Sets the keystore password. |
+| `-keyaliasName` | Name of the key to use when signing. |
+| `-keyaliasPass` | Sets the key alias password. |
 | `-symbols` | Sets the symbol creation mode. Can be: `public`, `debugging`, or `disabled`. |
 
 ##### Apple Device Command Line Args
