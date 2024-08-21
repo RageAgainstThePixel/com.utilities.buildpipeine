@@ -379,6 +379,22 @@ namespace Utilities.Editor.BuildPipeline
                             }
                         }
                         break;
+                    case "-appleSdkVersion":
+                        var sdk = arguments[++i].ToLower();
+
+                        switch (sdk)
+                        {
+                            case "device":
+                                PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
+                                break;
+                            case "simulator":
+                                PlayerSettings.iOS.sdkVersion = iOSSdkVersion.SimulatorSDK;
+                                break;
+                            default:
+                                Debug.LogError($"Unsupported -appleSdk: \"{sdk}\"");
+                                break;
+                        }
+                        break;
                 }
             }
         }
