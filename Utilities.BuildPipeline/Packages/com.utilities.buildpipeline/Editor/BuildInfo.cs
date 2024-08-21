@@ -117,9 +117,17 @@ namespace Utilities.Editor.BuildPipeline
                 {
                     case BuildTarget.StandaloneWindows:
                     case BuildTarget.StandaloneWindows64:
+#if PLATFORM_STANDALONE_WIN
+                        return UnityEditor.WindowsStandalone.UserBuildSettings.createSolution ? Path.DirectorySeparatorChar.ToString() : ".exe";
+#else
                         return ".exe";
+#endif
                     case BuildTarget.StandaloneOSX:
+#if PLATFORM_STANDALONE_OSX
+                        return UnityEditor.OSXStandalone.UserBuildSettings.createXcodeProject ? $"{Path.DirectorySeparatorChar}{Application.productName}.xcodeproj" : ".app";
+#else
                         return ".app";
+#endif
                     case BuildTarget.StandaloneLinux64:
                         return string.Empty;
                     default:
@@ -232,6 +240,8 @@ namespace Utilities.Editor.BuildPipeline
                     case "-export":
 #if PLATFORM_STANDALONE_WIN
                         UnityEditor.WindowsStandalone.UserBuildSettings.createSolution = true;
+#elif PLATFORM_STANDALONE_OSX
+                        UnityEditor.OSXStandalone.UserBuildSettings.createXcodeProject = true;
 #endif
                         break;
                     case "-symlinkSources":

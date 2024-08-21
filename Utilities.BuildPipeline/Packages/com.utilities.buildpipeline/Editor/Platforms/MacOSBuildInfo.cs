@@ -16,15 +16,7 @@ namespace Utilities.Editor.BuildPipeline
         /// <inheritdoc />
         public override BuildTargetGroup BuildTargetGroup => BuildTargetGroup.Standalone;
 
-        /// <inheritdoc />
-        public override string ExecutableFileExtension => ".app";
-
 #if UNITY_STANDALONE_OSX
-
-        /// <inheritdoc />
-        public override string FullOutputPath => UserBuildSettings.createXcodeProject
-            ? OutputDirectory
-            : base.FullOutputPath;
 
         /// <inheritdoc />
         public override void ParseCommandLineArgs()
@@ -36,9 +28,6 @@ namespace Utilities.Editor.BuildPipeline
             {
                 switch (arguments[i])
                 {
-                    case "-export":
-                        UserBuildSettings.createXcodeProject = true;
-                        break;
 #if UNITY_2020_1_OR_NEWER
                     case "-arch":
                         var arch = arguments[++i].ToLower();
