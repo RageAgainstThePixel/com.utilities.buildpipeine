@@ -405,6 +405,24 @@ namespace Utilities.Editor.BuildPipeline
                                 break;
                         }
                         break;
+#if PLATFORM_STANDALONE_OSX && UNITY_2020_1_OR_NEWER
+                    case "-arch":
+                        var arch = arguments[++i].ToLower();
+                        UnityEditor.OSXStandalone.UserBuildSettings.architecture = arch switch
+                        {
+#if UNITY_2022_1_OR_NEWER
+                            "x64" => UnityEditor.Build.OSArchitecture.x64,
+                            "arm64" => UnityEditor.Build.OSArchitecture.ARM64,
+                            "x64arm64" => UnityEditor.Build.OSArchitecture.x64ARM64,
+#else
+                            "x64" => UnityEditor.OSXStandalone.MacOSArchitecture.x64,
+                            "arm64" => UnityEditor.OSXStandalone.MacOSArchitecture.ARM64,
+                            "x64arm64" => UnityEditor.OSXStandalone.MacOSArchitecture.x64ARM64,
+#endif // UNITY_2020_1_OR_NEWER
+                            _ => throw new Exception($"Unsupported architecture: {arch}"),
+                        };
+                        break;
+#endif // PLATFORM_STANDALONE_OSX && UNITY_2020_1_OR_NEWER
                 }
             }
         }
