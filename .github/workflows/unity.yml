@@ -24,20 +24,21 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-13]
         unity-version: [2019.x, 2020.x, 2021.x, 2022.x, 6000.x]
-        build-target: [Android]
         include: # for each os specify the build targets
           - os: ubuntu-latest
-            unity-version: 2019.x
             build-target: StandaloneLinux64
+          - os: ubuntu-latest
+            build-target: Android
           - os: windows-latest
-            unity-version: 2019.x
             build-target: StandaloneWindows64
+          - os: windows-latest
+            build-target: Android
           - os: macos-13
-            unity-version: 2019.x
             build-target: iOS
           - os: macos-13
-            unity-version: 2019.x
             build-target: StandaloneOSX
+          - os: macos-13
+            build-target: Android
     steps:
       - uses: actions/checkout@v4
         with:
