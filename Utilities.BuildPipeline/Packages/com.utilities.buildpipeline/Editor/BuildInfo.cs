@@ -65,7 +65,7 @@ namespace Utilities.Editor.BuildPipeline
                 : outputDirectory;
             set
             {
-                var projectRoot = Directory.GetParent(EditorPreferences.ApplicationDataPath)!.FullName.Replace("\\", "/");
+                var projectRoot = Directory.GetParent(EditorPreferences.ApplicationDataPath).FullName.Replace("\\", "/");
                 var newValue = value?.Replace("\\", "/");
                 outputDirectory = !string.IsNullOrWhiteSpace(newValue) && Path.IsPathRooted(newValue)
                     ? newValue.Contains(projectRoot)
@@ -328,6 +328,56 @@ namespace Utilities.Editor.BuildPipeline
                         break;
                     case "-disableAppleAutomaticSigning":
                         PlayerSettings.iOS.appleEnableAutomaticSigning = false;
+                        break;
+                    case "-appleProvisioningProfileId":
+                        var profileId = arguments[++i];
+                        if (BuildTarget == BuildTarget.tvOS)
+                        {
+                            PlayerSettings.iOS.tvOSManualProvisioningProfileID = profileId;
+                        }
+                        else
+                        {
+                            PlayerSettings.iOS.iOSManualProvisioningProfileID = profileId;
+                        }
+                        break;
+                    case "-appleProvisioningProfileType":
+                        var profileType = arguments[++i].ToLower();
+                        if (BuildTarget == BuildTarget.tvOS)
+                        {
+                            switch (profileType)
+                            {
+                                case "automatic":
+                                    PlayerSettings.iOS.tvOSManualProvisioningProfileType = ProvisioningProfileType.Automatic;
+                                    break;
+                                case "development":
+                                    PlayerSettings.iOS.tvOSManualProvisioningProfileType = ProvisioningProfileType.Development;
+                                    break;
+                                case "distribution":
+                                    PlayerSettings.iOS.tvOSManualProvisioningProfileType = ProvisioningProfileType.Distribution;
+                                    break;
+                                default:
+                                    Debug.LogError($"Unsupported -appleProvisioningProfileType: \"{profileType}\"");
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            switch (profileType)
+                            {
+                                case "automatic":
+                                    PlayerSettings.iOS.iOSManualProvisioningProfileType = ProvisioningProfileType.Automatic;
+                                    break;
+                                case "development":
+                                    PlayerSettings.iOS.iOSManualProvisioningProfileType = ProvisioningProfileType.Development;
+                                    break;
+                                case "distribution":
+                                    PlayerSettings.iOS.iOSManualProvisioningProfileType = ProvisioningProfileType.Distribution;
+                                    break;
+                                default:
+                                    Debug.LogError($"Unsupported -appleProvisioningProfileType: \"{profileType}\"");
+                                    break;
+                            }
+                        }
                         break;
                 }
             }
