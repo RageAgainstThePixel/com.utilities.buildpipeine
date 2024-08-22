@@ -44,20 +44,20 @@ namespace Buildalon.Editor.BuildPipeline
                         PlayerSettings.Android.useAPKExpansionFiles = true;
 #endif // UNITY_2023_1_OR_NEWER
                         break;
-                    case "-keyaliasPass":
-#if UNITY_2023_1_OR_NEWER
-                        PlayerSettings.Android.keyaliasPass = arguments[++i];
-#else
-                        PlayerSettings.keyaliasPass = arguments[++i];
-#endif // UNITY_2023_1_OR_NEWER
+                    case "-keystorePath":
+                        PlayerSettings.Android.keystoreName = arguments[++i];
                         useCustomKeystore = true;
                         break;
                     case "-keystorePass":
-#if UNITY_2023_1_OR_NEWER
                         PlayerSettings.Android.keystorePass = arguments[++i];
-#else
-                        PlayerSettings.keystorePass = arguments[++i];
-#endif // UNITY_2023_1_OR_NEWER
+                        useCustomKeystore = true;
+                        break;
+                    case "-keyaliasName":
+                        PlayerSettings.Android.keyaliasName = arguments[++i];
+                        useCustomKeystore = true;
+                        break;
+                    case "-keyaliasPass":
+                        PlayerSettings.Android.keyaliasPass = arguments[++i];
                         useCustomKeystore = true;
                         break;
                     case "-export":

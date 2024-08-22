@@ -117,9 +117,17 @@ namespace Buildalon.Editor.BuildPipeline
                 {
                     case BuildTarget.StandaloneWindows:
                     case BuildTarget.StandaloneWindows64:
+#if PLATFORM_STANDALONE_WIN
+                        return UnityEditor.WindowsStandalone.UserBuildSettings.createSolution ? $"{Path.DirectorySeparatorChar}{Application.productName}" : ".exe";
+#else
                         return ".exe";
+#endif
                     case BuildTarget.StandaloneOSX:
+#if PLATFORM_STANDALONE_OSX
+                        return UnityEditor.OSXStandalone.UserBuildSettings.createXcodeProject ? $"{Path.DirectorySeparatorChar}{Application.productName}" : ".app";
+#else
                         return ".app";
+#endif
                     case BuildTarget.StandaloneLinux64:
                         return string.Empty;
                     default:
@@ -232,6 +240,8 @@ namespace Buildalon.Editor.BuildPipeline
                     case "-export":
 #if PLATFORM_STANDALONE_WIN
                         UnityEditor.WindowsStandalone.UserBuildSettings.createSolution = true;
+#elif PLATFORM_STANDALONE_OSX
+                        UnityEditor.OSXStandalone.UserBuildSettings.createXcodeProject = true;
 #endif
                         break;
                     case "-symlinkSources":
@@ -319,6 +329,100 @@ namespace Buildalon.Editor.BuildPipeline
                         EditorUserBuildSettings.buildWithDeepProfilingSupport = true;
                         BuildOptions = BuildOptions.SetFlag(BuildOptions.EnableDeepProfilingSupport);
                         break;
+                    case "-appleTeamId":
+                        var teamId = arguments[++i];
+                        PlayerSettings.iOS.appleDeveloperTeamID = teamId;
+                        break;
+                    case "-enableAppleAutomaticSigning":
+                        PlayerSettings.iOS.appleEnableAutomaticSigning = true;
+                        break;
+                    case "-disableAppleAutomaticSigning":
+                        PlayerSettings.iOS.appleEnableAutomaticSigning = false;
+                        break;
+                    case "-appleProvisioningProfileId":
+                        var profileId = arguments[++i];
+                        if (BuildTarget == BuildTarget.tvOS)
+                        {
+                            PlayerSettings.iOS.tvOSManualProvisioningProfileID = profileId;
+                        }
+                        else
+                        {
+                            PlayerSettings.iOS.iOSManualProvisioningProfileID = profileId;
+                        }
+                        break;
+                    case "-appleProvisioningProfileType":
+                        var profileType = arguments[++i].ToLower();
+                        if (BuildTarget == BuildTarget.tvOS)
+                        {
+                            switch (profileType)
+                            {
+                                case "automatic":
+                                    PlayerSettings.iOS.tvOSManualProvisioningProfileType = ProvisioningProfileType.Automatic;
+                                    break;
+                                case "development":
+                                    PlayerSettings.iOS.tvOSManualProvisioningProfileType = ProvisioningProfileType.Development;
+                                    break;
+                                case "distribution":
+                                    PlayerSettings.iOS.tvOSManualProvisioningProfileType = ProvisioningProfileType.Distribution;
+                                    break;
+                                default:
+                                    Debug.LogError($"Unsupported -appleProvisioningProfileType: \"{profileType}\"");
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            switch (profileType)
+                            {
+                                case "automatic":
+                                    PlayerSettings.iOS.iOSManualProvisioningProfileType = ProvisioningProfileType.Automatic;
+                                    break;
+                                case "development":
+                                    PlayerSettings.iOS.iOSManualProvisioningProfileType = ProvisioningProfileType.Development;
+                                    break;
+                                case "distribution":
+                                    PlayerSettings.iOS.iOSManualProvisioningProfileType = ProvisioningProfileType.Distribution;
+                                    break;
+                                default:
+                                    Debug.LogError($"Unsupported -appleProvisioningProfileType: \"{profileType}\"");
+                                    break;
+                            }
+                        }
+                        break;
+                    case "-appleSdkVersion":
+                        var sdk = arguments[++i].ToLower();
+
+                        switch (sdk)
+                        {
+                            case "device":
+                                PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
+                                break;
+                            case "simulator":
+                                PlayerSettings.iOS.sdkVersion = iOSSdkVersion.SimulatorSDK;
+                                break;
+                            default:
+                                Debug.LogError($"Unsupported -appleSdk: \"{sdk}\"");
+                                break;
+                        }
+                        break;
+#if PLATFORM_STANDALONE_OSX && UNITY_2020_1_OR_NEWER
+                    case "-arch":
+                        var arch = arguments[++i].ToLower();
+                        UnityEditor.OSXStandalone.UserBuildSettings.architecture = arch switch
+                        {
+#if UNITY_2022_1_OR_NEWER
+                            "x64" => UnityEditor.Build.OSArchitecture.x64,
+                            "arm64" => UnityEditor.Build.OSArchitecture.ARM64,
+                            "x64arm64" => UnityEditor.Build.OSArchitecture.x64ARM64,
+#else
+                            "x64" => UnityEditor.OSXStandalone.MacOSArchitecture.x64,
+                            "arm64" => UnityEditor.OSXStandalone.MacOSArchitecture.ARM64,
+                            "x64arm64" => UnityEditor.OSXStandalone.MacOSArchitecture.x64ARM64,
+#endif // UNITY_2020_1_OR_NEWER
+                            _ => throw new Exception($"Unsupported architecture: {arch}"),
+                        };
+                        break;
+#endif // PLATFORM_STANDALONE_OSX && UNITY_2020_1_OR_NEWER
                 }
             }
         }

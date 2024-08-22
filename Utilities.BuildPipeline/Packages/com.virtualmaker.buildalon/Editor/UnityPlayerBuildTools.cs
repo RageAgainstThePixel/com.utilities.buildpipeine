@@ -49,15 +49,12 @@ namespace Buildalon.Editor.BuildPipeline
                         case BuildTarget.Android:
                             buildInfoInstance = new AndroidBuildInfo();
                             break;
-                        case BuildTarget.StandaloneOSX:
-                            buildInfoInstance = new MacOSBuildInfo();
+                        case BuildTarget.iOS:
+                            buildInfoInstance = new IOSBuildInfo();
                             break;
                         // TODO: Add additional platform specific build info classes as needed
                         //case BuildTarget.StandaloneWindows:
                         //case BuildTarget.StandaloneWindows64:
-                        //    break;
-                        //case BuildTarget.iOS:
-                        //    break;
                         //    break;
                         //case BuildTarget.WebGL:
                         //    break;

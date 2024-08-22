@@ -1,5 +1,4 @@
 name: unity-build-validation
-
 on:
   schedule:
     - cron: '0 0 * * 0' # Every Sunday at midnight
@@ -13,29 +12,35 @@ on:
   workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ ( github.event_name == 'pull_request' || github.event.action == 'synchronize' ) }}
 jobs:
   build:
     env:
       UNITY_PROJECT_PATH: ''
     runs-on: ${{ matrix.os }}
+    name: build (${{ matrix.os }}, ${{ matrix.unity-version }}, ${{ matrix.build-target }})
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-13]
-        unity-versions:
-          - 2019.4.40f1 (ffc62b691db5)
-          - 2020.3.48f1 (b805b124c6b7)
-          - 2021.3.41f1 (6c5a9e20c022)
-          - 2022.3.40f1 (cbdda657d2f0)
-          - 6000.0.13f1 (53a692e3fca9)
+        unity-version: [2019.x, 2020.x, 2021.x, 2022.x, 6000.x]
+        build-target: [Android]
         include: # for each os specify the build targets
           - os: ubuntu-latest
-            build-target: Android
+            unity-version: 2021.x
+            build-target: StandaloneLinux64
           - os: windows-latest
-            build-target: Android
+            unity-version: 2021.x
+            build-target: StandaloneWindows64
+          - os: windows-latest
+            unity-version: 2021.x
+            build-target: WSAPlayer
           - os: macos-13
-            build-target: Android
+            unity-version: 2021.x
+            build-target: iOS
+          - os: macos-13
+            unity-version: 2021.x
+            build-target: StandaloneOSX
     steps:
       - uses: actions/checkout@v4
 
@@ -44,7 +49,7 @@ jobs:
         # sets -> env.UNITY_PROJECT_PATH
       - uses: buildalon/unity-setup@v1
         with:
-          unity-version: ${{ matrix.unity-versions }}
+          unity-version: ${{ matrix.unity-version }}
           build-targets: ${{ matrix.build-target }}
 
         # Activates the installation with the provided credentials
@@ -75,7 +80,7 @@ jobs:
         with:
           compression-level: 0
           retention-days: 1
-          name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ matrix.os }} ${{ matrix.unity-versions }} ${{ matrix.build-target }}-Artifacts'
+          name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ matrix.os }} ${{ matrix.unity-version }} ${{ matrix.build-target }}-Artifacts'
           path: |
             ${{ github.workspace }}/**/*.log
             ${{ env.UNITY_PROJECT_PATH || github.workspace }}/Builds/${{ matrix.build-target }}/**/*
@@ -85,7 +90,7 @@ jobs:
 
       - name: Validate Text Mesh Pro Resources
         # TMP assets are embedded in Unity 6+
-        if: ${{ matrix.unity-versions != '6000.0.13f1 (53a692e3fca9)' }}
+        if: ${{ matrix.unity-version != '6000.x' }}
         run: |
           # Validate Text Mesh Pro Resources
           $TMPRO_PATH = "$env:UNITY_PROJECT_PATH/Assets/TextMesh Pro"

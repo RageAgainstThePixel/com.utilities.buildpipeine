@@ -63,12 +63,7 @@ jobs:
       # max-parallel: 2 # Use this if you're activating pro license with matrix
       matrix:
         os: [ubuntu-latest, windows-latest, macos-13]
-        unity-versions:
-          - 2019.4.40f1 (ffc62b691db5)
-          - 2020.3.48f1 (b805b124c6b7)
-          - 2021.3.41f1 (6c5a9e20c022)
-          - 2022.3.40f1 (cbdda657d2f0)
-          - 6000.0.13f1 (53a692e3fca9)
+        unity-version: [2019.x, 2020.x, 2021.x, 2022.x, 6000.x]
         include: # for each os specify the build targets
           - os: ubuntu-latest
             build-target: StandaloneLinux64
@@ -84,7 +79,7 @@ jobs:
         # sets -> env.UNITY_PROJECT_PATH
       - uses: buildalon/unity-setup@v1
         with:
-          unity-version: ${{ matrix.unity-versions }}
+          unity-version: ${{ matrix.unity-version }}
           build-targets: ${{ matrix.build-target }}
 
         # Activates the installation with the provided credentials
@@ -115,7 +110,7 @@ jobs:
         with:
           compression-level: 0
           retention-days: 1
-          name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ matrix.os }} ${{ matrix.unity-versions }} ${{ matrix.build-target }}-Artifacts'
+          name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ matrix.os }} ${{ matrix.unity-version }} ${{ matrix.build-target }}-Artifacts'
           path: |
             ${{ github.workspace }}/**/*.log
             ${{ env.UNITY_PROJECT_PATH || github.workspace }}/Builds/${{ matrix.build-target }}/**/*
@@ -136,6 +131,19 @@ These methods can be executed using the `-executeMethod` command line argument t
 
 ```bash
 "/path/to/Unity.exe" -projectPath "/path/to/unity/project" -quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild
+```
+
+#### Project Validation Command Line Arguments
+
+> [!NOTE]
+> No longer required in Unity 6+
+
+| Argument | Description |
+| -------- | ----------- |
+| `-importTMProEssentialsAsset` | Imports the TMPro Essential assets if they are not already in the project. |
+
+```bash
+"/path/to/Unity.exe" -projectPath "/path/to/unity/project" -quit -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
 ```
 
 ### Additional Custom Command Line Arguments
@@ -173,18 +181,27 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | -------- | ----------- |
 | `-splitBinary` | Builds an APK per CPU architecture. |
 | `-splitApk` | Uses APK expansion files. |
-| `-keyaliasPass` | Sets the key alias password. |
+| `-keystorePath` | Path to the keystore. |
 | `-keystorePass` | Sets the keystore password. |
+| `-keyaliasName` | Name of the key to use when signing. |
+| `-keyaliasPass` | Sets the key alias password. |
 | `-symbols` | Sets the symbol creation mode. Can be: `public`, `debugging`, or `disabled`. |
 
-##### MacOS COmmand Line Arguments
+##### Apple Device Command Line Args
+
+Works for any Apple Platform Target: MacOS, iOS, tvOS, and visionOS.
+
+| Argument | Description |
+| -------- | ----------- |
+| `-appleTeamId` | The team id used for signing. |
+| `-enableAppleAutomaticSigning` | Enables automatic signing. |
+| `-disableAppleAutomaticSigning` | Disables automatic signing. |
+| `-appleProvisioningProfileId` | Sets the provisioning profile UUID. |
+| `-appleProvisioningProfileType` | Sets the provisioning profile type. Can be `Automatic`, `Development`, or `Distribution`. |
+| `-appleSdkVersion` | Sets the apple sdk version. Can be `Device` or `Simulator`. |
+
+###### MacOS Command Line Arguments
 
 | Argument | Description |
 | -------- | ----------- |
 | `-arch` | Sets the build architecture. Can be: `x64`, `arm64`, or `x64arm64`. |
-
-#### Project Validation Command Line Arguments
-
-| Argument | Description |
-| -------- | ----------- |
-| `-importTMProEssentialsAsset` | Imports the TMPro Essential assets if they are not already in the project. |
