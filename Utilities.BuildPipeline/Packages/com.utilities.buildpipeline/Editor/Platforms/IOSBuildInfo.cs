@@ -16,19 +16,21 @@ namespace Utilities.Editor.BuildPipeline
             if (EditorUserBuildSettings.activeBuildTarget != BuildTarget) { return; }
 #if PLATFORM_IOS
 #if !UNITY_2021_1_OR_NEWER
-            // https://support.unity.com/hc/en-us/articles/207942813-How-can-I-disable-Bitcode-support
+            // https://discussions.unity.com/t/bitcode-bundle-could-not-be-generated-issue/792591/4
             var projectPath = $"{report.summary.outputPath}/Unity-iPhone.xcodeproj/project.pbxproj";
             var pbxProject = new UnityEditor.iOS.Xcode.PBXProject();
             pbxProject.ReadFromFile(projectPath);
-            var target = pbxProject.GetUnityMainTargetGuid();
-            // ReSharper disable once InconsistentNaming
-            const string ENABLE_BITCODE = nameof(ENABLE_BITCODE);
-            pbxProject.SetBuildProperty(target, ENABLE_BITCODE, "NO");
-            target = pbxProject.TargetGuidByName(UnityEditor.iOS.Xcode.PBXProject.GetUnityTestTargetName());
-            pbxProject.SetBuildProperty(target, ENABLE_BITCODE, "NO");
-            target = pbxProject.GetUnityFrameworkTargetGuid();
-            pbxProject.SetBuildProperty(target, ENABLE_BITCODE, "NO");
+#if UNITY_2019_3_OR_NEWER
+            var targetGuid = pbxProject.GetUnityMainTargetGuid();
+#else
+            var targetName = PBXProject.GetUnityTargetName();
+            var targetGuid = pbxProject.TargetGuidByName(targetName);
+#endif
+            pbxProject.SetBuildProperty(targetGuid, "ENABLE_BITCODE", "NO");
             pbxProject.WriteToFile(projectPath);
+            var projectInString = System.IO.File.ReadAllText(projectPath);
+            projectInString = projectInString.Replace("ENABLE_BITCODE = YES;", "ENABLE_BITCODE = NO;");
+            System.IO.File.WriteAllText(projectPath, projectInString);
 #endif
 #endif
         }
