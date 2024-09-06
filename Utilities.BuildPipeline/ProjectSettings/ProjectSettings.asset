@@ -177,6 +177,7 @@ PlayerSettings:
     Android: com.utilities.buildpipeline
     Lumin: com.utilities.BuildPipeline
     Standalone: com.utilities.buildpipeline
+    Windows Store Apps: com.utilities.buildpipeline
     iPhone: com.utilities.buildpipeline
   buildNumber:
     Standalone: 0
@@ -792,7 +793,7 @@ PlayerSettings:
     Windows Store Apps: 6
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: com.utilties.dummy
+  metroPackageName: com.utilities.buildpipeline
   metroPackageVersion: 1.0.0.0
   metroCertificatePath: 
   metroCertificatePassword: 
