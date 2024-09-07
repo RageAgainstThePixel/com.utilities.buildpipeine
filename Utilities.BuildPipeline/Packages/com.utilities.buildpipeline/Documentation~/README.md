@@ -185,3 +185,14 @@ Works for any Apple Platform Target: MacOS, iOS, tvOS, and visionOS.
 | Argument | Description |
 | -------- | ----------- |
 | `-arch` | Sets the build architecture. Can be: `x64`, `arm64`, or `x64arm64`. |
+
+##### Windows Universal Platform Command Line Arguments
+
+| Argument | Description |
+| -------- | ----------- |
+| `-arch` | Sets the build architecture. Can be: `x64`, `x86`, `ARM`, or `ARM64`. |
+| `-wsaUWPBuildType` | Sets the output build type when building to Universal Windows Platform. Can be: `XAML`, `D3D`, or `ExecutableOnly`. |
+| `-wsaSetDeviceFamily` | Sets the device family. Can be: `Desktop`, `Mobile`, `Xbox`, `Holographic`, `Team`, `IOT`, or `IoTHeadless`. |
+| `-wsaUWPSDK` | Sets the UWP SDK Version to build for. |
+| `-wsaMinUWPSDK` | Sets the min UWP SDK to build for. |
+| `-wsaCertificate` | Sets the signing certificate. Must pass the path and password together. `-wsaCertificate "path/to/cert.pfx" myP@55w0rd` |
