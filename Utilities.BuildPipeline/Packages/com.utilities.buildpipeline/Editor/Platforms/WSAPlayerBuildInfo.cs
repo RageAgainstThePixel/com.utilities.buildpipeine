@@ -39,6 +39,7 @@ namespace Utilities.Editor.BuildPipeline
                             Debug.LogError($"Failed to parse -arch \"{arguments[i]}\"");
                         }
                         break;
+#if !UNITY_2021_1_OR_NEWER
                     case "-wsaSubtarget":
                         if (Enum.TryParse<WSASubtarget>(arguments[++i], out var subTarget))
                         {
@@ -49,6 +50,7 @@ namespace Utilities.Editor.BuildPipeline
                             Debug.LogError($"Failed to parse -wsaSubtarget \"{arguments[i]}\"");
                         }
                         break;
+#endif
                     case "-wsaUWPBuildType":
                         if (Enum.TryParse<WSAUWPBuildType>(arguments[++i], out var buildType))
                         {

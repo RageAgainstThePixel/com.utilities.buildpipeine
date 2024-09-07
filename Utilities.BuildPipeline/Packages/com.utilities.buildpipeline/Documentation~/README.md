@@ -191,7 +191,6 @@ Works for any Apple Platform Target: MacOS, iOS, tvOS, and visionOS.
 | Argument | Description |
 | -------- | ----------- |
 | `-arch` | Sets the build architecture. Can be: `x64`, `x86`, `ARM`, or `ARM64`. |
-| `-wsaSubtarget` | Sets the target device type for the application to run on. Can be: `AnyDevice`, `PC`, `Mobile`, or `HoloLens`. |
 | `-wsaUWPBuildType` | Sets the output build type when building to Universal Windows Platform. Can be: `XAML`, `D3D`, or `ExecutableOnly`. |
 | `-wsaSetDeviceFamily` | Sets the device family. Can be: `Desktop`, `Mobile`, `Xbox`, `Holographic`, `Team`, `IOT`, or `IoTHeadless`. |
 | `-wsaUWPSDK` | Sets the UWP SDK Version to build for. |
