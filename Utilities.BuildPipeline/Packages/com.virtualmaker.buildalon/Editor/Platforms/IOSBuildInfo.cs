@@ -15,7 +15,7 @@ namespace Buildalon.Editor.BuildPipeline
         {
             if (EditorUserBuildSettings.activeBuildTarget != BuildTarget) { return; }
 #if PLATFORM_IOS
-#if !UNITY_2021_1_OR_NEWER
+#if !UNITY_2022_1_OR_NEWER
             // https://discussions.unity.com/t/bitcode-bundle-could-not-be-generated-issue/792591/4
             var projectPath = $"{report.summary.outputPath}/Unity-iPhone.xcodeproj/project.pbxproj";
             var pbxProject = new UnityEditor.iOS.Xcode.PBXProject();
@@ -25,14 +25,14 @@ namespace Buildalon.Editor.BuildPipeline
 #else
             var targetName = PBXProject.GetUnityTargetName();
             var targetGuid = pbxProject.TargetGuidByName(targetName);
-#endif
+#endif // UNITY_2019_3_OR_NEWER
             pbxProject.SetBuildProperty(targetGuid, "ENABLE_BITCODE", "NO");
             pbxProject.WriteToFile(projectPath);
             var projectInString = System.IO.File.ReadAllText(projectPath);
             projectInString = projectInString.Replace("ENABLE_BITCODE = YES;", "ENABLE_BITCODE = NO;");
             System.IO.File.WriteAllText(projectPath, projectInString);
-#endif
-#endif
+#endif // !UNITY_2022_1_OR_NEWER
+#endif // PLATFORM_IOS
         }
     }
 }

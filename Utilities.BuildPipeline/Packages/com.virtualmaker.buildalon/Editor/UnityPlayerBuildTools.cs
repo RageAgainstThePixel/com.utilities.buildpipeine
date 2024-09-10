@@ -52,34 +52,10 @@ namespace Buildalon.Editor.BuildPipeline
                         case BuildTarget.iOS:
                             buildInfoInstance = new IOSBuildInfo();
                             break;
+                        case BuildTarget.WSAPlayer:
+                            buildInfoInstance = new WSAPlayerBuildInfo();
+                            break;
                         // TODO: Add additional platform specific build info classes as needed
-                        //case BuildTarget.StandaloneWindows:
-                        //case BuildTarget.StandaloneWindows64:
-                        //    break;
-                        //case BuildTarget.WebGL:
-                        //    break;
-                        //case BuildTarget.WSAPlayer:
-                        //    break;
-                        //case BuildTarget.StandaloneLinux64:
-                        //    break;
-                        //case BuildTarget.PS4:
-                        //    break;
-                        //case BuildTarget.XboxOne:
-                        //    break;
-                        //case BuildTarget.tvOS:
-                        //    break;
-                        //case BuildTarget.Switch:
-                        //    break;
-                        //case BuildTarget.Lumin:
-                        //    break;
-                        //case BuildTarget.Stadia:
-                        //    break;
-                        //case BuildTarget.GameCoreXboxOne:
-                        //    break;
-                        //case BuildTarget.PS5:
-                        //    break;
-                        //case BuildTarget.EmbeddedLinux:
-                        //    break;
                         default:
                             buildInfoInstance = new BuildInfo();
                             break;

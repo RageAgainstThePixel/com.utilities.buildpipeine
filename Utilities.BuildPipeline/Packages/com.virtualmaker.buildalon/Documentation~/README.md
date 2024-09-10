@@ -146,6 +146,19 @@ These methods can be executed using the `-executeMethod` command line argument t
 "/path/to/Unity.exe" -projectPath "/path/to/unity/project" -quit -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
 ```
 
+#### Project Validation Command Line Arguments
+
+> [!NOTE]
+> No longer required in Unity 6+
+
+| Argument | Description |
+| -------- | ----------- |
+| `-importTMProEssentialsAsset` | Imports the TMPro Essential assets if they are not already in the project. |
+
+```bash
+"/path/to/Unity.exe" -projectPath "/path/to/unity/project" -quit -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
+```
+
 ### Additional Custom Command Line Arguments
 
 In addition to any already defined [Unity Editor command line arguments](https://docs.unity3d.com/Manual/EditorCommandLineArguments.html), this plugin offers some additional options:
@@ -205,3 +218,14 @@ Works for any Apple Platform Target: MacOS, iOS, tvOS, and visionOS.
 | Argument | Description |
 | -------- | ----------- |
 | `-arch` | Sets the build architecture. Can be: `x64`, `arm64`, or `x64arm64`. |
+
+##### Windows Universal Platform Command Line Arguments
+
+| Argument | Description |
+| -------- | ----------- |
+| `-arch` | Sets the build architecture. Can be: `x64`, `x86`, `ARM`, or `ARM64`. |
+| `-wsaUWPBuildType` | Sets the output build type when building to Universal Windows Platform. Can be: `XAML`, `D3D`, or `ExecutableOnly`. |
+| `-wsaSetDeviceFamily` | Sets the device family. Can be: `Desktop`, `Mobile`, `Xbox`, `Holographic`, `Team`, `IOT`, or `IoTHeadless`. |
+| `-wsaUWPSDK` | Sets the UWP SDK Version to build for. |
+| `-wsaMinUWPSDK` | Sets the min UWP SDK to build for. |
+| `-wsaCertificate` | Sets the signing certificate. Must pass the path and password together. `-wsaCertificate "path/to/cert.pfx" myP@55w0rd` |

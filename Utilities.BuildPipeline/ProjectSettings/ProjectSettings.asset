@@ -177,6 +177,8 @@ PlayerSettings:
     Android: com.virtualmaker.buildalon
     Lumin: com.virtualmaker.buildalon
     Standalone: com.virtualmaker.buildalon
+    Windows Store Apps: com.virtualmaker.buildalon
+    iPhone: com.virtualmaker.buildalon
   buildNumber:
     Standalone: 0
     iPhone: 0
@@ -791,7 +793,7 @@ PlayerSettings:
     Windows Store Apps: 6
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: com.utilties.dummy
+  metroPackageName: com.virtualmaker.buildalon
   metroPackageVersion: 1.0.0.0
   metroCertificatePath:
   metroCertificatePassword:
