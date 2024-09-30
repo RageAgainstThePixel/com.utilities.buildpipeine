@@ -146,19 +146,6 @@ These methods can be executed using the `-executeMethod` command line argument t
 "/path/to/Unity.exe" -projectPath "/path/to/unity/project" -quit -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
 ```
 
-#### Project Validation Command Line Arguments
-
-> [!NOTE]
-> No longer required in Unity 6+
-
-| Argument | Description |
-| -------- | ----------- |
-| `-importTMProEssentialsAsset` | Imports the TMPro Essential assets if they are not already in the project. |
-
-```bash
-"/path/to/Unity.exe" -projectPath "/path/to/unity/project" -quit -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
-```
-
 ### Additional Custom Command Line Arguments
 
 In addition to any already defined [Unity Editor command line arguments](https://docs.unity3d.com/Manual/EditorCommandLineArguments.html), this plugin offers some additional options:
