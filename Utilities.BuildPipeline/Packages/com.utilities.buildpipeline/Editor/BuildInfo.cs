@@ -467,11 +467,9 @@ namespace Utilities.Editor.BuildPipeline
         {
             var defaultIcons = PlayerSettings.GetIconsForTargetGroup(BuildTargetGroup.Unknown, IconKind.Any);
 
-            if (defaultIcons.Length == 0)
+            if (defaultIcons.Length == 0 || defaultIcons[0] == null)
             {
-                Debug.Log("No app icon set, setting a default...");
-                // <package>/Editor/Icons/UnityLogo.png
-                // load icon from package path
+                Debug.LogWarning("No app icon set, setting a default...");
                 var icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.utilities.buildpipeline/Editor/Icons/UnityLogo.png");
 
                 if (icon == null)
