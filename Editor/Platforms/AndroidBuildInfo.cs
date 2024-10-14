@@ -94,6 +94,8 @@ namespace Utilities.Editor.BuildPipeline
         /// <inheritdoc />
         public override void OnPreProcessBuild(BuildReport report)
         {
+            base.OnPreProcessBuild(report);
+
             if (EditorUserBuildSettings.activeBuildTarget != BuildTarget)
             {
                 return;
