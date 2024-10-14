@@ -465,6 +465,27 @@ namespace Utilities.Editor.BuildPipeline
         /// <inheritdoc />
         public virtual void OnPreProcessBuild(BuildReport report)
         {
+#if UNITY_6000_0_OR_NEWER
+            var defaultIcons = PlayerSettings.GetIcons(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup.Unknown), IconKind.Any);
+#else
+            var defaultIcons = PlayerSettings.GetIconsForTargetGroup(BuildTargetGroup.Unknown, IconKind.Any);
+#endif
+            if (defaultIcons.Length == 0 || defaultIcons[0] == null)
+            {
+                Debug.LogWarning("No app icon set, setting a default...");
+                var icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.utilities.buildpipeline/Editor/Icons/UnityLogo.png");
+
+                if (icon == null)
+                {
+                    throw new MissingReferenceException(nameof(icon));
+                }
+#if UNITY_6000_0_OR_NEWER
+                PlayerSettings.SetIcons(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup.Unknown), new[] { icon }, IconKind.Any);
+#else
+                PlayerSettings.SetIconsForTargetGroup(BuildTargetGroup.Unknown, new[] { icon });
+#endif
+                AssetDatabase.SaveAssets();
+            }
         }
 
         /// <inheritdoc />
