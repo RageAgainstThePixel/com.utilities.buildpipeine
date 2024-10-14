@@ -465,6 +465,23 @@ namespace Utilities.Editor.BuildPipeline
         /// <inheritdoc />
         public virtual void OnPreProcessBuild(BuildReport report)
         {
+            var defaultIcons = PlayerSettings.GetIconsForTargetGroup(BuildTargetGroup.Unknown, IconKind.Any);
+
+            if (defaultIcons.Length == 0)
+            {
+                Debug.Log("No app icon set, setting a default...");
+                // <package>/Editor/Icons/UnityLogo.png
+                // load icon from package path
+                var icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.utilities.buildpipeline/Editor/Icons/UnityLogo.png");
+
+                if (icon == null)
+                {
+                    throw new MissingReferenceException(nameof(icon));
+                }
+
+                PlayerSettings.SetIconsForTargetGroup(BuildTargetGroup.Unknown, new[] { icon });
+                AssetDatabase.SaveAssets();
+            }
         }
 
         /// <inheritdoc />
