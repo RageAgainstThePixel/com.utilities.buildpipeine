@@ -469,11 +469,12 @@ namespace Utilities.Editor.BuildPipeline
             var defaultIcons = PlayerSettings.GetIcons(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup.Unknown), IconKind.Any);
 #else
             var defaultIcons = PlayerSettings.GetIconsForTargetGroup(BuildTargetGroup.Unknown, IconKind.Any);
-#endif
+#endif // UNITY_6000_0_OR_NEWER
+            var icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.utilities.buildpipeline/Editor/Icons/UnityLogo.png");
+
             if (defaultIcons.Length == 0 || defaultIcons[0] == null)
             {
-                Debug.LogWarning("No app icon set, setting a default...");
-                var icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.utilities.buildpipeline/Editor/Icons/UnityLogo.png");
+                Debug.LogWarning("No app icons set, setting a default...");
 
                 if (icon == null)
                 {
@@ -481,11 +482,40 @@ namespace Utilities.Editor.BuildPipeline
                 }
 #if UNITY_6000_0_OR_NEWER
                 PlayerSettings.SetIcons(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup.Unknown), new[] { icon }, IconKind.Any);
-#else
+#else // UNITY_6000_0_OR_NEWER
                 PlayerSettings.SetIconsForTargetGroup(BuildTargetGroup.Unknown, new[] { icon });
-#endif
-                AssetDatabase.SaveAssets();
+#endif // UNITY_6000_0_OR_NEWER
             }
+            else
+            {
+                icon = defaultIcons[0];
+            }
+
+#if UNITY_6000_0_OR_NEWER
+            var platformIconKinds = PlayerSettings.GetSupportedIconKinds(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup));
+#else
+            var platformIconKinds = PlayerSettings.GetSupportedIconKindsForPlatform(BuildTargetGroup);
+#endif // UNITY_6000_0_OR_NEWER
+
+            foreach (var platformIconKind in platformIconKinds)
+            {
+                var platformIcons = PlayerSettings.GetPlatformIcons(BuildTargetGroup, platformIconKind);
+
+                foreach (var platformIcon in platformIcons)
+                {
+                    var texture = platformIcon.GetTexture();
+
+                    if (texture == null)
+                    {
+                        Debug.LogWarning($"Setting {platformIcon.kind} to default icon texture");
+                        platformIcon.SetTexture(icon);
+                    }
+                }
+
+                PlayerSettings.SetPlatformIcons(BuildTargetGroup, platformIconKind, platformIcons);
+            }
+
+            AssetDatabase.SaveAssets();
         }
 
         /// <inheritdoc />

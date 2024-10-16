@@ -13,6 +13,7 @@ namespace Utilities.Editor.BuildPipeline
 
         public override void OnPostProcessBuild(BuildReport report)
         {
+            base.OnPostProcessBuild(report);
             if (EditorUserBuildSettings.activeBuildTarget != BuildTarget) { return; }
 #if PLATFORM_IOS
             var projectPath = $"{report.summary.outputPath}/Unity-iPhone.xcodeproj/project.pbxproj";
