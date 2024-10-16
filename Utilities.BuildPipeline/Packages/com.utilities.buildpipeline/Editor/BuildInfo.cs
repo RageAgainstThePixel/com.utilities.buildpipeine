@@ -499,7 +499,11 @@ namespace Utilities.Editor.BuildPipeline
 
             foreach (var platformIconKind in platformIconKinds)
             {
+#if UNITY_6000_0_OR_NEWER
+                var platformIcons = PlayerSettings.GetPlatformIcons(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), platformIconKind);
+#else
                 var platformIcons = PlayerSettings.GetPlatformIcons(BuildTargetGroup, platformIconKind);
+#endif // UNITY_6000_0_OR_NEWER
 
                 foreach (var platformIcon in platformIcons)
                 {
@@ -512,7 +516,11 @@ namespace Utilities.Editor.BuildPipeline
                     }
                 }
 
+#if UNITY_6000_0_OR_NEWER
+                PlayerSettings.SetPlatformIcons(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), platformIconKind, platformIcons);
+#else
                 PlayerSettings.SetPlatformIcons(BuildTargetGroup, platformIconKind, platformIcons);
+#endif // UNITY_6000_0_OR_NEWER
             }
 
             AssetDatabase.SaveAssets();
