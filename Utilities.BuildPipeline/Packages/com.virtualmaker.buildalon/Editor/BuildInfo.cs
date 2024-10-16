@@ -465,6 +465,65 @@ namespace Buildalon.Editor.BuildPipeline
         /// <inheritdoc />
         public virtual void OnPreProcessBuild(BuildReport report)
         {
+#if UNITY_6000_0_OR_NEWER
+            var defaultIcons = PlayerSettings.GetIcons(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup.Unknown), IconKind.Any);
+#else
+            var defaultIcons = PlayerSettings.GetIconsForTargetGroup(BuildTargetGroup.Unknown, IconKind.Any);
+#endif // UNITY_6000_0_OR_NEWER
+            var icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.utilities.buildpipeline/Editor/Icons/UnityLogo.png");
+
+            if (defaultIcons.Length == 0 || defaultIcons[0] == null)
+            {
+                Debug.LogWarning("No app icons set, setting a default...");
+
+                if (icon == null)
+                {
+                    throw new MissingReferenceException(nameof(icon));
+                }
+#if UNITY_6000_0_OR_NEWER
+                PlayerSettings.SetIcons(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup.Unknown), new[] { icon }, IconKind.Any);
+#else // UNITY_6000_0_OR_NEWER
+                PlayerSettings.SetIconsForTargetGroup(BuildTargetGroup.Unknown, new[] { icon });
+#endif // UNITY_6000_0_OR_NEWER
+            }
+            else
+            {
+                icon = defaultIcons[0];
+            }
+
+#if UNITY_6000_0_OR_NEWER
+            var platformIconKinds = PlayerSettings.GetSupportedIconKinds(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup));
+#else
+            var platformIconKinds = PlayerSettings.GetSupportedIconKindsForPlatform(BuildTargetGroup);
+#endif // UNITY_6000_0_OR_NEWER
+
+            foreach (var platformIconKind in platformIconKinds)
+            {
+#if UNITY_6000_0_OR_NEWER
+                var platformIcons = PlayerSettings.GetPlatformIcons(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), platformIconKind);
+#else
+                var platformIcons = PlayerSettings.GetPlatformIcons(BuildTargetGroup, platformIconKind);
+#endif // UNITY_6000_0_OR_NEWER);
+
+                foreach (var platformIcon in platformIcons)
+                {
+                    var texture = platformIcon.GetTexture();
+
+                    if (texture == null)
+                    {
+                        Debug.LogWarning($"Setting {platformIcon.kind} to default icon texture");
+                        platformIcon.SetTexture(icon);
+                    }
+                }
+
+#if UNITY_6000_0_OR_NEWER
+                PlayerSettings.SetPlatformIcons(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), platformIconKind, platformIcons);
+#else
+                PlayerSettings.SetPlatformIcons(BuildTargetGroup, platformIconKind, platformIcons);
+#endif // UNITY_6000_0_OR_NEWER
+            }
+
+            AssetDatabase.SaveAssets();
         }
 
         /// <inheritdoc />
