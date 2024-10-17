@@ -470,7 +470,8 @@ namespace Buildalon.Editor.BuildPipeline
 #else
             var defaultIcons = PlayerSettings.GetIconsForTargetGroup(BuildTargetGroup.Unknown, IconKind.Any);
 #endif // UNITY_6000_0_OR_NEWER
-            var icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.utilities.buildpipeline/Editor/Icons/UnityLogo.png");
+            var icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.virtualmaker.buildalon/Editor/Icons/UnityLogo.png");
+            var background = AssetDatabase.GetBuiltinExtraResource<Texture2D>("Default-Checker-Gray.png");
 
             if (defaultIcons.Length == 0 || defaultIcons[0] == null)
             {
@@ -503,16 +504,37 @@ namespace Buildalon.Editor.BuildPipeline
                 var platformIcons = PlayerSettings.GetPlatformIcons(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), platformIconKind);
 #else
                 var platformIcons = PlayerSettings.GetPlatformIcons(BuildTargetGroup, platformIconKind);
-#endif // UNITY_6000_0_OR_NEWER);
+#endif // UNITY_6000_0_OR_NEWER
 
                 foreach (var platformIcon in platformIcons)
                 {
-                    var texture = platformIcon.GetTexture();
-
-                    if (texture == null)
+                    for (var i = 0; i < platformIcon.maxLayerCount; i++)
                     {
-                        Debug.LogWarning($"Setting {platformIcon.kind} to default icon texture");
-                        platformIcon.SetTexture(icon);
+                        var texture = platformIcon.GetTexture(i);
+
+                        if (texture != null) { continue; }
+#if PLATFORM_VISIONOS
+                        var isBack = i == platformIcon.maxLayerCount - 1;
+#else
+                        var isBack = i == 0;
+#endif
+                        if (isBack && platformIcon.maxLayerCount > 1)
+                        {
+                            try
+                            {
+                                Debug.LogWarning($"Setting {platformIcon.kind}:{platformIcon} to Default-Checker-Gray");
+                                platformIcon.SetTexture(background, i);
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.LogError(e);
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Setting {platformIcon.kind}:{platformIcon} to default icon texture");
+                            platformIcon.SetTexture(icon, i);
+                        }
                     }
                 }
 
