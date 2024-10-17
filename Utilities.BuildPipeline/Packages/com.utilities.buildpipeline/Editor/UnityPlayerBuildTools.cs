@@ -146,6 +146,9 @@ namespace Utilities.Editor.BuildPipeline
             PlayerSettings.Lumin.versionName = PlayerSettings.bundleVersion;
             // Update WSA bc the Application.version isn't synced like Android & iOS
             PlayerSettings.WSA.packageVersion = new Version(version.Major, version.Minor, version.Build, 0);
+#if UNITY_6000_0_OR_NEWER
+            PlayerSettings.visionOSBundleVersion = PlayerSettings.bundleVersion;
+#endif // UNITY_6000_0_OR_NEWER
 
             var buildTargetGroup = UnityEditor.BuildPipeline.GetBuildTargetGroup(buildInfo.BuildTarget);
 #if UNITY_2023_1_OR_NEWER
