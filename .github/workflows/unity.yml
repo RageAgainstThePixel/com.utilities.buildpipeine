@@ -22,24 +22,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-13]
+        os: [ubuntu-latest, windows-latest, macos-15]
         unity-version: [2019.x, 2020.x, 2021.x, 2022.x, 6000.x]
         build-target: [Android]
         include: # for each os specify the build targets
           - os: ubuntu-latest
-            unity-version: 2021.x
+            unity-version: 6000.x
             build-target: StandaloneLinux64
           - os: windows-latest
-            unity-version: 2021.x
+            unity-version: 6000.x
             build-target: StandaloneWindows64
           - os: windows-latest
-            unity-version: 2021.x
+            unity-version: 6000.x
             build-target: WSAPlayer
-          - os: macos-13
-            unity-version: 2021.x
+          - os: macos-15
+            unity-version: 6000.x
             build-target: iOS
-          - os: macos-13
-            unity-version: 2021.x
+          - os: macos-15
+            unity-version: 6000.x
             build-target: StandaloneOSX
     steps:
       - uses: actions/checkout@v4
@@ -52,7 +52,6 @@ jobs:
         with:
           unity-version: ${{ matrix.unity-version }}
           build-targets: ${{ matrix.build-target }}
-
         # Activates the installation with the provided credentials
       - uses: buildalon/activate-unity-license@v1
         with:
@@ -60,20 +59,17 @@ jobs:
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
           # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro activations
-
       - uses: buildalon/unity-action@v1
         name: Project Validation
         with:
           log-name: 'project-validation'
           args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset'
-
       - uses: buildalon/unity-action@v1
         name: '${{ matrix.build-target }}-Build'
         with:
           log-name: '${{ matrix.build-target }}-Build'
           build-target: '${{ matrix.build-target }}'
           args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild -export'
-
       - uses: actions/upload-artifact@v4
         id: upload-artifact
         name: 'Upload ${{ matrix.build-target }} Artifacts'
@@ -88,7 +84,6 @@ jobs:
             !${{ env.UNITY_PROJECT_PATH || github.workspace }}/Library/**/*
             !/**/*_BackUpThisFolder_ButDontShipItWithYourGame/**
             !/**/*_BurstDebugInformation_DoNotShip/**
-
       - name: Validate Text Mesh Pro Resources
         if: ${{ matrix.unity-version != '6000.x' }}
         run: |

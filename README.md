@@ -62,14 +62,14 @@ jobs:
     strategy:
       # max-parallel: 2 # Use this if you're activating pro license with matrix
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-13]
+        os: [ubuntu-latest, windows-latest, macos-15]
         unity-version: [2019.x, 2020.x, 2021.x, 2022.x, 6000.x]
         include: # for each os specify the build targets
           - os: ubuntu-latest
             build-target: StandaloneLinux64
           - os: windows-latest
             build-target: StandaloneWindows64
-          - os: macos-13
+          - os: macos-15
             build-target: StandaloneOSX
     steps:
       - uses: actions/checkout@v4
@@ -94,6 +94,7 @@ jobs:
         name: Project Validation
         with:
           log-name: 'project-validation'
+          build-target: '${{ matrix.build-target }}'
           args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset'
 
       - uses: buildalon/unity-action@v1
@@ -179,6 +180,7 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 
 | Argument | Description |
 | -------- | ----------- |
+| `-appBundle` | Builds an .abb for Google Play Store |
 | `-splitBinary` | Builds an APK per CPU architecture. |
 | `-splitApk` | Uses APK expansion files. |
 | `-keystorePath` | Path to the keystore. |

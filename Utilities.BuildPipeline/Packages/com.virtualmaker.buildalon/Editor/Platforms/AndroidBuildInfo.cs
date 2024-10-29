@@ -34,6 +34,9 @@ namespace Buildalon.Editor.BuildPipeline
             {
                 switch (arguments[i])
                 {
+                    case "-appBundle":
+                        EditorUserBuildSettings.buildAppBundle = true;
+                        break;
                     case "-splitBinary":
                         PlayerSettings.Android.buildApkPerCpuArchitecture = true;
                         break;
@@ -103,7 +106,7 @@ namespace Buildalon.Editor.BuildPipeline
 
             if (Application.isBatchMode)
             {
-                // Disable to prevent gradle form killing parallel builds
+                // Disable to prevent gradle form killing parallel builds on same build machine
                 EditorPrefs.SetBool("AndroidGradleStopDaemonsOnExit", false);
             }
 
