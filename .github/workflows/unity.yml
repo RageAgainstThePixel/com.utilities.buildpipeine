@@ -23,23 +23,23 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-13]
-        unity-version: [2019.x, 2020.x, 2021.x, 2022.x, 6000.x]
+        unity-version: [2020.x, 2021.x, 2022.x, 6000.x]
         build-target: [Android]
         include: # for each os specify the build targets
           - os: ubuntu-latest
-            unity-version: 2021.x
+            unity-version: 6000.x
             build-target: StandaloneLinux64
           - os: windows-latest
-            unity-version: 2021.x
+            unity-version: 6000.x
             build-target: StandaloneWindows64
           - os: windows-latest
-            unity-version: 2021.x
+            unity-version: 6000.x
             build-target: WSAPlayer
-          - os: macos-13
-            unity-version: 2021.x
+          - os: macos-15
+            unity-version: 6000.x
             build-target: iOS
-          - os: macos-13
-            unity-version: 2021.x
+          - os: macos-15
+            unity-version: 6000.x
             build-target: StandaloneOSX
     steps:
       - uses: actions/checkout@v4
@@ -52,7 +52,6 @@ jobs:
         with:
           unity-version: ${{ matrix.unity-version }}
           build-targets: ${{ matrix.build-target }}
-
         # Activates the installation with the provided credentials
       - uses: RageAgainstThePixel/activate-unity-license@v1
         with:
@@ -60,7 +59,6 @@ jobs:
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
           # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro activations
-
       - name: Unity Build (${{ matrix.build-target }})
         uses: RageAgainstThePixel/unity-build@main
         with:
@@ -71,7 +69,6 @@ jobs:
           publish-artifacts: true
           artifact-name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.unity-version }}-${{ matrix.build-target }}-Artifacts'
           test: false
-
       - name: Validate Text Mesh Pro Resources
         if: ${{ matrix.unity-version != '6000.x' }}
         run: |
