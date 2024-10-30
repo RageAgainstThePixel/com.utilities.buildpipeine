@@ -233,12 +233,29 @@ namespace Utilities.Editor.BuildPipeline
                 foreach (var editorSettingsBuildScene in buildInfo.Scenes)
                 {
                     var scene = SceneManager.GetSceneByPath(editorSettingsBuildScene.path);
-                    var sceneLightmapSettings = Lightmapping.GetLightingSettingsForScene(scene);
-                    sceneLightmapSettings.autoGenerate = false;
-                    EditorUtility.SetDirty(sceneLightmapSettings);
-                    AssetDatabase.SaveAssetIfDirty(sceneLightmapSettings);
-                }
+                    var op = SceneManager.LoadSceneAsync(scene.path);
 
+                    while (!op?.isDone ?? false)
+                    {
+                        Task.Yield();
+                    }
+
+                    var sceneLightmapSettings = Lightmapping.GetLightingSettingsForScene(scene);
+
+                    if (sceneLightmapSettings != null)
+                    {
+                        sceneLightmapSettings.autoGenerate = false;
+                        EditorUtility.SetDirty(sceneLightmapSettings);
+                        AssetDatabase.SaveAssetIfDirty(sceneLightmapSettings);
+                    }
+
+                    op = SceneManager.UnloadSceneAsync(scene);
+
+                    while (!op?.isDone ?? false)
+                    {
+                        Task.Yield();
+                    }
+                }
                 Debug.Log($"Scenes in build:\n{string.Join("\n    ", scenes)}");
             }
 
