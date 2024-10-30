@@ -11,6 +11,7 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Utilities.Editor.BuildPipeline.Logging;
 using Debug = UnityEngine.Debug;
 
@@ -226,7 +227,19 @@ namespace Utilities.Editor.BuildPipeline
                 Debug.Log($"Build Target: {buildInfo.BuildTarget}");
                 Debug.Log($"Build Options: {buildInfo.BuildOptions}");
                 Debug.Log($"Target output: \"{buildInfo.FullOutputPath}\"");
-                Debug.Log($"Scenes in build:\n{string.Join("\n    ", buildInfo.Scenes.Select(scene => scene.path))}");
+                var scenes = buildInfo.Scenes.Select(scene => scene.path).ToArray();
+
+                // get the lightmapping settings for each scene in the build and disable auto lightmap generation
+                foreach (var editorSettingsBuildScene in buildInfo.Scenes)
+                {
+                    var scene = SceneManager.GetSceneByPath(editorSettingsBuildScene.path);
+                    var sceneLightmapSettings = Lightmapping.GetLightingSettingsForScene(scene);
+                    sceneLightmapSettings.autoGenerate = false;
+                    EditorUtility.SetDirty(sceneLightmapSettings);
+                    AssetDatabase.SaveAssetIfDirty(sceneLightmapSettings);
+                }
+
+                Debug.Log($"Scenes in build:\n{string.Join("\n    ", scenes)}");
             }
 
             try
