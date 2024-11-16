@@ -56,7 +56,7 @@ jobs:
       - name: Validate Android Build
         run: |
           # Validate Android Build
-          $bundlePath = "${{ github.workspace }}/Artifacts/${{ matrix.build-target }}/**/*.abb"
+          $bundlePath = "${{ github.workspace }}/Artifacts/**/*.abb"
           if (Test-Path $bundlePath) {
             Write-Host "Android Build found at $bundlePath"
           } else {
