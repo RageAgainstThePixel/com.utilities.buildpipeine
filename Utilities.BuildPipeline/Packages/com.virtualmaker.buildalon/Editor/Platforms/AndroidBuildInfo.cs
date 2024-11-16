@@ -16,7 +16,7 @@ namespace Buildalon.Editor.BuildPipeline
         public override BuildTargetGroup BuildTargetGroup => BuildTargetGroup.Android;
 
         /// <inheritdoc />
-        public override string ExecutableFileExtension => ".apk";
+        public override string ExecutableFileExtension => EditorUserBuildSettings.buildAppBundle ? ".abb" : ".apk";
 
         /// <inheritdoc />
         public override string FullOutputPath => PlayerSettings.Android.buildApkPerCpuArchitecture || EditorUserBuildSettings.exportAsGoogleAndroidProject
