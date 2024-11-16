@@ -56,11 +56,11 @@ jobs:
       - name: Validate Android Build
         run: |
           # Validate Android Build
-          $APK_PATH = "$env:UNITY_PROJECT_PATH/Builds/**/*.abb"
+          $bundlePath = "${{ github.workspace }}/Artifacts/${{ matrix.build-target }}/**/*.abb"
           if (Test-Path $APK_PATH) {
-            Write-Host "Android Build found at $APK_PATH"
+            Write-Host "Android Build found at $bundlePath"
           } else {
-            Write-Host "Android Build not found at $APK_PATH"
+            Write-Host "Android Build not found at $bundlePath"
             exit 1
           }
         shell: pwsh
