@@ -53,6 +53,17 @@ jobs:
           publish-artifacts: true
           artifact-name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.unity-version }}-${{ matrix.build-target }}-Artifacts'
           test: false
+      - name: Validate Android Build
+        run: |
+          # Validate Android Build
+          $APK_PATH = "$env:UNITY_PROJECT_PATH/Builds/**/*.abb"
+          if (Test-Path $APK_PATH) {
+            Write-Host "Android Build found at $APK_PATH"
+          } else {
+            Write-Host "Android Build not found at $APK_PATH"
+            exit 1
+          }
+        shell: pwsh
       - name: Validate Text Mesh Pro Resources
         run: |
           # Validate Text Mesh Pro Resources
@@ -63,18 +74,6 @@ jobs:
             Write-Host "Text Mesh Pro Resources not found at $TMPRO_PATH"
             # list the folders in the Assets directory
             Get-ChildItem -Path $env:UNITY_PROJECT_PATH/Assets -Directory | Select-Object Name | Format-Table -AutoSize
-            exit 1
-          }
-        shell: pwsh
-      - name: Validate Android Build
-        if: ${{ matrix.build-target == 'Android' }}
-        run: |
-          # Validate Android Build
-          $APK_PATH = "$env:UNITY_PROJECT_PATH/Builds/**/*.abb"
-          if (Test-Path $APK_PATH) {
-            Write-Host "Android Build found at $APK_PATH"
-          } else {
-            Write-Host "Android Build not found at $APK_PATH"
             exit 1
           }
         shell: pwsh
