@@ -25,22 +25,6 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-15]
         unity-version: [2020.x, 2021.x, 2022.x, 6000.x]
         build-target: [Android]
-        include: # for each os specify the build targets
-          - os: ubuntu-latest
-            unity-version: 6000.x
-            build-target: StandaloneLinux64
-          - os: windows-latest
-            unity-version: 6000.x
-            build-target: StandaloneWindows64
-          - os: windows-latest
-            unity-version: 6000.x
-            build-target: WSAPlayer
-          - os: macos-15
-            unity-version: 6000.x
-            build-target: iOS
-          - os: macos-15
-            unity-version: 6000.x
-            build-target: StandaloneOSX
     steps:
       - uses: actions/checkout@v4
         with:
@@ -65,12 +49,11 @@ jobs:
           build-target: ${{ matrix.build-target }}
           output-directory: ${{ github.workspace }}/Artifacts/${{ matrix.build-target }}
           additional-validation-args: -importTMProEssentialsAsset
-          additional-build-args: -export
+          additional-build-args: -appBundle
           publish-artifacts: true
           artifact-name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.unity-version }}-${{ matrix.build-target }}-Artifacts'
           test: false
       - name: Validate Text Mesh Pro Resources
-        if: ${{ matrix.unity-version != '6000.x' }}
         run: |
           # Validate Text Mesh Pro Resources
           $TMPRO_PATH = "$env:UNITY_PROJECT_PATH/Assets/TextMesh Pro"
@@ -80,6 +63,18 @@ jobs:
             Write-Host "Text Mesh Pro Resources not found at $TMPRO_PATH"
             # list the folders in the Assets directory
             Get-ChildItem -Path $env:UNITY_PROJECT_PATH/Assets -Directory | Select-Object Name | Format-Table -AutoSize
+            exit 1
+          }
+        shell: pwsh
+      - name: Validate Android Build
+        if: ${{ matrix.build-target == 'Android' }}
+        run: |
+          # Validate Android Build
+          $APK_PATH = "$env:UNITY_PROJECT_PATH/Builds/**/*.abb"
+          if (Test-Path $APK_PATH) {
+            Write-Host "Android Build found at $APK_PATH"
+          } else {
+            Write-Host "Android Build not found at $APK_PATH"
             exit 1
           }
         shell: pwsh
