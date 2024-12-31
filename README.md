@@ -1,10 +1,14 @@
 # com.virtualmaker.buildalon
 
+**[buildalon.com](https://www.buildalon.com?utm_source=plugin_readme) | [Documentation](https://www.buildalon.com/docs/?utm_source=plugin_readme)**
+
 [![Discord](https://img.shields.io/discord/939721153688264824.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/VM9cWJ9rjH) [![openupm](https://img.shields.io/npm/v/com.virtualmaker.buildalon?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.virtualmaker.buildalon/) [![openupm](https://img.shields.io/badge/dynamic/json?color=brightgreen&label=downloads&query=%24.downloads&suffix=%2Fmonth&url=https%3A%2F%2Fpackage.openupm.com%2Fdownloads%2Fpoint%2Flast-month%2Fcom.virtualmaker.buildalon)](https://openupm.com/packages/com.virtualmaker.buildalon/) [![marketplace](https://img.shields.io/static/v1?label=&labelColor=505050&message=Buildalon%20Actions&color=FF1E6F&logo=github-actions&logoColor=0076D6)](https://github.com/marketplace?query=buildalon)
 
-A Build Pipeline utility package for the [Unity](https://unity.com/) Game Engine.
+**Buildalon** is an end-to-end CI/CD solution designed for [Unity](https://unity.com/) developers.
 
-This package is designed to be use in conjunction with the [Buildalon GitHub Actions](https://github.com/marketplace?query=buildalon).
+This package extends Unity with command line arguments that are equivalent to the options in the Unity build window. You can use it to automate building Unity in any continuous integration and continuous deployment (CI/CD) environments. Use the [Buildalon GitHub Actions](https://buildalon.com/docs/actions?utm_source=plugin_readme) with this package to get setup build automation with clear logging and summary.
+
+If you're new to CI/CD, you can **learn how to setup build automation in 1 minute at [buildalon.com](https://www.buildalon.com/?utm_source=plugin_readme).**
 
 ## Installing
 
