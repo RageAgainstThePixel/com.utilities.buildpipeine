@@ -29,33 +29,18 @@ jobs:
           - os: ubuntu-latest
             unity-version: 6000.x
             build-target: StandaloneLinux64
-          - os: ubuntu-latest
-            unity-version: 6000.x
-            build-target: Android
-          - os: ubuntu-latest
-            unity-version: 6000.x
-            build-target: WebGL
           - os: windows-latest
             unity-version: 6000.x
             build-target: StandaloneWindows64
           - os: windows-latest
             unity-version: 6000.x
             build-target: WSAPlayer
-          - os: windows-latest
-            unity-version: 6000.x
-            build-target: Android
-          - os: windows-latest
-            unity-version: 6000.x
-            build-target: WebGL
           - os: macos-latest
             unity-version: 6000.x
             build-target: iOS
           - os: macos-latest
             unity-version: 6000.x
             build-target: StandaloneOSX
-          - os: macos-latest
-            unity-version: 6000.x
-            build-target: Android
     steps:
       - uses: actions/checkout@v4
         with:
