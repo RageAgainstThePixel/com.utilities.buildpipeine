@@ -18,7 +18,7 @@ jobs:
     env:
       UNITY_PROJECT_PATH: ''
     runs-on: ${{ matrix.os }}
-    name: ${{ matrix.os }} ${{ matrix.unity-version }} ${{ matrix.build-target }}
+    name: ${{ matrix.unity-version }} ${{ matrix.build-target }} ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
