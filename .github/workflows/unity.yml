@@ -22,25 +22,29 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-15]
-        unity-version: [2020.x, 2021.x, 2022.x, 6000.x]
-        build-target: [Android]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        unity-version: [2022.x, 6000.x]
         include: # for each os specify the build targets
           - os: ubuntu-latest
-            unity-version: 6000.x
             build-target: StandaloneLinux64
+          - os: ubuntu-latest
+            build-target: Android
+          - os: ubuntu-latest
+            build-target: WebGL
           - os: windows-latest
-            unity-version: 6000.x
             build-target: StandaloneWindows64
           - os: windows-latest
-            unity-version: 6000.x
             build-target: WSAPlayer
-          - os: macos-15
-            unity-version: 6000.x
+          - os: windows-latest
+            build-target: Android
+          - os: windows-latest
+            build-target: WebGL
+          - os: macos-latest
             build-target: iOS
-          - os: macos-15
-            unity-version: 6000.x
+          - os: macos-latest
             build-target: StandaloneOSX
+          - os: macos-latest
+            build-target: Android
     steps:
       - uses: actions/checkout@v4
         with:
