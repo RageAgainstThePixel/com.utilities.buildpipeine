@@ -18,12 +18,13 @@ jobs:
     env:
       UNITY_PROJECT_PATH: ''
     runs-on: ${{ matrix.os }}
-    name: build (${{ matrix.os }}, ${{ matrix.unity-version }}, ${{ matrix.build-target }})
+    name: ${{ matrix.os }} ${{ matrix.unity-version }} ${{ matrix.build-target }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
         unity-version: [2022.x, 6000.x]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        build-target: [Android, WebGL]
         include: # for each os specify the build targets
           - os: ubuntu-latest
             build-target: StandaloneLinux64
