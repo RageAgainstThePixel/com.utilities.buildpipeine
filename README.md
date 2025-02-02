@@ -168,6 +168,7 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | `-acceptExternalModificationsToPlayer` | Sets the build options to accept external modifications to the player. |
 | `-development` | Sets the build options to build a development build of the player. |
 | `-colorSpace` | Sets the color space of the application, if the provided color space string is a valid `ColorSpace` enum value. |
+| `-textureCompression` | Set the build texture compression. Can be: `LZ4`, `LZ4HC` |
 | `-buildConfiguration` | Sets the build configuration of the application. Can be:  `debug`, `master`, or `release`. |
 | `-export` | Creates a native code project for the target platform. |
 | `-symlinkSources` | Enables the use of symbolic links for the sources. |
