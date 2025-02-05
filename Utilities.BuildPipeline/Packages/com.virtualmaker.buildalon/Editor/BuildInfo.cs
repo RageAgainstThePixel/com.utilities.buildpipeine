@@ -221,18 +221,18 @@ namespace Buildalon.Editor.BuildPipeline
                     case "-colorSpace":
                         ColorSpace = (ColorSpace)Enum.Parse(typeof(ColorSpace), arguments[++i]);
                         break;
-                    case "-textureCompression":
-                        var textureCompression = arguments[++i].ToLower();
-                        switch (textureCompression.ToUpper())
+                    case "-compressionMethod":
+                        var compressionMethod = arguments[++i].ToLower();
+                        switch (compressionMethod.ToUpper())
                         {
-                            case "LZ4":
-                                BuildOptions.SetFlag(BuildOptions.CompressWithLz4);
-                                break;
                             case "LZ4HC":
-                                BuildOptions.SetFlag(BuildOptions.CompressWithLz4HC);
+                                BuildOptions = BuildOptions.SetFlag(BuildOptions.CompressWithLz4HC);
+                                break;
+                            case "LZ4":
+                                BuildOptions = BuildOptions.SetFlag(BuildOptions.CompressWithLz4);
                                 break;
                             default:
-                                Debug.LogError($"Failed to parse -textureCompression: \"{textureCompression}\"");
+                                Debug.LogError($"Failed to parse -compressionMethod: \"{compressionMethod}\"");
                                 break;
                         }
                         break;
