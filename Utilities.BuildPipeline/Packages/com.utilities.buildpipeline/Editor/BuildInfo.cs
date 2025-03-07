@@ -293,13 +293,25 @@ namespace Utilities.Editor.BuildPipeline
                         switch (il2cppCompilerConfiguration)
                         {
                             case "debug":
+#if UNITY_2021_2_OR_NEWER
+                                PlayerSettings.SetIl2CppCompilerConfiguration(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), Il2CppCompilerConfiguration.Debug);
+#else
                                 PlayerSettings.SetIl2CppCompilerConfiguration(BuildTargetGroup, Il2CppCompilerConfiguration.Debug);
+#endif // UNITY_2021_2_OR_NEWER
                                 break;
                             case "release":
+#if UNITY_2021_2_OR_NEWER
+                                PlayerSettings.SetIl2CppCompilerConfiguration(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), Il2CppCompilerConfiguration.Release);
+#else
                                 PlayerSettings.SetIl2CppCompilerConfiguration(BuildTargetGroup, Il2CppCompilerConfiguration.Release);
+#endif // UNITY_2021_2_OR_NEWER
                                 break;
                             case "master":
+#if UNITY_2021_2_OR_NEWER
+                                PlayerSettings.SetIl2CppCompilerConfiguration(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), Il2CppCompilerConfiguration.Master);
+#else
                                 PlayerSettings.SetIl2CppCompilerConfiguration(BuildTargetGroup, Il2CppCompilerConfiguration.Master);
+#endif // UNITY_2021_2_OR_NEWER
                                 break;
                             default:
                                 Debug.LogError($"Failed to parse -il2cppCompilerConfiguration: \"{il2cppCompilerConfiguration}\"");
