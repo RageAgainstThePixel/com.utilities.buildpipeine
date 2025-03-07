@@ -318,7 +318,7 @@ namespace Utilities.Editor.BuildPipeline
                         }
 
                         break;
-#endif // UNITY_2021_2_OR_NEWER
+#endif // UNITY_2022_1_OR_NEWER
                     case "-dotnetApiCompatibilityLevel":
                         var apiCompatibilityLevelString = arguments[++i];
 
