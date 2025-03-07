@@ -12,6 +12,14 @@ The recommended installation method is though the unity package manager and [Ope
 
 ### Via Unity Package Manager and OpenUPM
 
+#### Terminal
+
+```bash
+openupm add com.utilities.buildpipeline
+```
+
+#### Manual
+
 - Open your Unity project settings
 - Add the OpenUPM package registry:
   - Name: `OpenUPM`
