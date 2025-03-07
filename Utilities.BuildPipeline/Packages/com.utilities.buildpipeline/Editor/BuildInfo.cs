@@ -287,6 +287,45 @@ namespace Utilities.Editor.BuildPipeline
                         }
 
                         break;
+                    case "-il2cppCompilerConfiguration":
+                        var il2cppCompilerConfiguration = arguments[++i].ToLower();
+
+                        switch (il2cppCompilerConfiguration)
+                        {
+                            case "debug":
+                                PlayerSettings.SetIl2CppCompilerConfiguration(BuildTargetGroup, Il2CppCompilerConfiguration.Debug);
+                                break;
+                            case "release":
+                                PlayerSettings.SetIl2CppCompilerConfiguration(BuildTargetGroup, Il2CppCompilerConfiguration.Release);
+                                break;
+                            case "master":
+                                PlayerSettings.SetIl2CppCompilerConfiguration(BuildTargetGroup, Il2CppCompilerConfiguration.Master);
+                                break;
+                            default:
+                                Debug.LogError($"Failed to parse -il2cppCompilerConfiguration: \"{il2cppCompilerConfiguration}\"");
+                                break;
+                        }
+
+                        break;
+#if UNITY_2021_2_OR_NEWER
+                    case "-il2cppCodeGeneration":
+                        var il2cppCodeGeneration = arguments[++i].ToLower();
+
+                        switch (il2cppCodeGeneration)
+                        {
+                            case "speed":
+                                PlayerSettings.SetIl2CppCodeGeneration(BuildTargetGroup, Il2CppCodeGeneration.OptimizeSpeed);
+                                break;
+                            case "size":
+                                PlayerSettings.SetIl2CppCodeGeneration(BuildTargetGroup, Il2CppCompilerConfiguration.OptimizeSize);
+                                break;
+                            default:
+                                Debug.LogError($"Failed to parse -il2cppCodeGeneration: \"{il2cppCodeGeneration}\"");
+                                break;
+                        }
+
+                        break;
+#endif // UNITY_2021_2_OR_NEWER
                     case "-dotnetApiCompatibilityLevel":
                         var apiCompatibilityLevelString = arguments[++i];
 
