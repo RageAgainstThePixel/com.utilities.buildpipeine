@@ -291,11 +291,9 @@ namespace Utilities.Editor.BuildPipeline
                 Debug.LogException(e);
                 EditorApplication.Exit(1);
             }
-            finally
-            {
-                Debug.Log("Project Validation Completed");
-                EditorApplication.Exit(0);
-            }
+
+            Debug.Log("Project Validation Completed");
+            EditorApplication.Exit(0);
         }
 
         private static async Task ImportTMProEssentialAssetsAsync()
