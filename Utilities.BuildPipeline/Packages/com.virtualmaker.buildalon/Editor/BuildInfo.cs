@@ -287,6 +287,38 @@ namespace Buildalon.Editor.BuildPipeline
                         }
 
                         break;
+                    case "-il2cppCompilerConfiguration":
+                        var il2CppCompilerConfigurationString = arguments[++i];
+
+                        if (Enum.TryParse(il2CppCompilerConfigurationString, true, out Il2CppCompilerConfiguration config))
+                        {
+#if UNITY_6000_0_OR_NEWER
+                            PlayerSettings.SetIl2CppCompilerConfiguration(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), config);
+#else
+                            PlayerSettings.SetIl2CppCompilerConfiguration(BuildTargetGroup, config);
+#endif // UNITY_6000_0_OR_NEWER
+                        }
+                        else
+                        {
+                            Debug.LogError($"Failed to parse -il2cppCompilerConfiguration: \"{il2CppCompilerConfigurationString}\"");
+                        }
+
+                        break;
+#if UNITY_2022_1_OR_NEWER
+                    case "-il2cppCodeGeneration":
+                        var il2CppCodeGenerationString = arguments[++i];
+
+                        if (Enum.TryParse(il2CppCodeGenerationString, true, out UnityEditor.Build.Il2CppCodeGeneration apiCompatibilityLevel))
+                        {
+                            PlayerSettings.SetIl2CppCodeGeneration(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), apiCompatibilityLevel);
+                        }
+                        else
+                        {
+                            Debug.LogError($"Failed to parse -il2cppCodeGeneration: \"{il2CppCodeGenerationString}\"");
+                        }
+
+                        break;
+#endif // UNITY_2022_1_OR_NEWER
                     case "-dotnetApiCompatibilityLevel":
                         var apiCompatibilityLevelString = arguments[++i];
 
@@ -356,6 +388,7 @@ namespace Buildalon.Editor.BuildPipeline
                         break;
                     case "-appleProvisioningProfileId":
                         var profileId = arguments[++i];
+
                         if (BuildTarget == BuildTarget.tvOS)
                         {
                             PlayerSettings.iOS.tvOSManualProvisioningProfileID = profileId;
@@ -367,6 +400,7 @@ namespace Buildalon.Editor.BuildPipeline
                         break;
                     case "-appleProvisioningProfileType":
                         var profileType = arguments[++i].ToLower();
+
                         if (BuildTarget == BuildTarget.tvOS)
                         {
                             switch (profileType)

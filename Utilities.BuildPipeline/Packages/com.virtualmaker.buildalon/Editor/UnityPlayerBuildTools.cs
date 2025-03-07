@@ -219,7 +219,7 @@ namespace Buildalon.Editor.BuildPipeline
                 PlayerSettings.colorSpace = buildInfo.ColorSpace.Value;
             }
 
-            BuildReport buildReport = default;
+            BuildReport buildReport = null;
 
             if (Application.isBatchMode)
             {
@@ -268,18 +268,18 @@ namespace Buildalon.Editor.BuildPipeline
         [UsedImplicitly]
         public static async void ValidateProject()
         {
-            CILoggingUtility.LoggingEnabled = false;
-
             try
             {
+                CILoggingUtility.LoggingEnabled = false;
                 var arguments = Environment.GetCommandLineArgs();
 
-                for (int i = 0; i < arguments.Length; ++i)
+                foreach (var arg in arguments)
                 {
-                    switch (arguments[i])
+                    switch (arg)
                     {
                         case "-importTMProEssentialsAsset":
                             await ImportTMProEssentialAssetsAsync();
+
                             break;
                     }
                 }

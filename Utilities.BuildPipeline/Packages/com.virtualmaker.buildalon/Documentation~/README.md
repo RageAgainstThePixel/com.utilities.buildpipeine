@@ -174,6 +174,8 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | `-scriptingBackend` | Sets the scripting framework of the player. Can be: `Mono2x`, `IL2CPP`, or `WinRTDotNET`. |
 | `-autoConnectProfiler` | Start the player with a connection to the profiler. |
 | `-buildWithDeepProfilingSupport` | Enables deep profiling support in the player. |
+| `-il2cppCompilerConfiguration` | C++ compiler configuration used when compiling IL2CPP. Can be: `Debug`, `Release`, or `Master` |
+| `-il2cppCodeGeneration` | Control code generation for IL2CPP. Can be: `OptimizeSpeed` or `OptimizeSize` |
 
 #### Platform specific Command Line Arguments
 

@@ -67,23 +67,30 @@ namespace Buildalon.Editor.BuildPipeline
                         EditorUserBuildSettings.exportAsGoogleAndroidProject = true;
                         break;
                     case "-symbols":
-#if UNITY_2021_1_OR_NEWER
+#if UNITY_6000_0_OR_NEWER
+#if PLATFORM_ANDROID
+                        var symbols = arguments[++i] switch
+                        {
+                            "public" => Unity.Android.Types.DebugSymbolLevel.SymbolTable,
+                            "debugging" => Unity.Android.Types.DebugSymbolLevel.Full,
+                            _ => Unity.Android.Types.DebugSymbolLevel.None
+                        };
+
+                        UnityEditor.Android.UserBuildSettings.DebugSymbols.level = symbols;
+                        UnityEditor.Android.UserBuildSettings.DebugSymbols.format = Unity.Android.Types.DebugSymbolFormat.Zip;
+#endif // PLATFORM_ANDROID
+#else
                         var symbols = arguments[++i] switch
                         {
                             "public" => AndroidCreateSymbols.Public,
                             "debugging" => AndroidCreateSymbols.Debugging,
                             _ => AndroidCreateSymbols.Disabled
                         };
-#if UNITY_6000_0_OR_NEWER
+                        EditorUserBuildSettings.androidCreateSymbols = symbols;
 #pragma warning disable CS0618 // Type or member is obsolete
-                        EditorUserBuildSettings.androidCreateSymbols = symbols;
-#pragma warning restore CS0618
-#else
-                        EditorUserBuildSettings.androidCreateSymbols = symbols;
-#endif // UNITY_6000_0_OR_NEWER
-#else
                         EditorUserBuildSettings.androidCreateSymbolsZip = true;
-#endif // UNITY_2021_1_OR_NEWER
+#pragma warning restore CS0618 // Type or member is obsolete
+#endif // UNITY_6000_0_OR_NEWER
                         break;
                 }
             }
