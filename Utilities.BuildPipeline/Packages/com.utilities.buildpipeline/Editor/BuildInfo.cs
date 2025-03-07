@@ -295,9 +295,7 @@ namespace Utilities.Editor.BuildPipeline
 #if UNITY_6000_0_OR_NEWER
                             PlayerSettings.SetIl2CppCompilerConfiguration(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), config);
 #else
-#pragma warning disable CS0618 // Type or member is obsolete
                             PlayerSettings.SetIl2CppCompilerConfiguration(BuildTargetGroup, config);
-#pragma warning restore CS0618 // Type or member is obsolete
 #endif // UNITY_6000_0_OR_NEWER
                         }
                         else

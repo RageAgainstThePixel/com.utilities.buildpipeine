@@ -78,7 +78,6 @@ namespace Utilities.Editor.BuildPipeline
                         UnityEditor.Android.UserBuildSettings.DebugSymbols.level = symbols;
                         UnityEditor.Android.UserBuildSettings.DebugSymbols.format = Unity.Android.Types.DebugSymbolFormat.Zip;
 #else
-#pragma warning disable CS0618 // Type or member is obsolete
                         var symbols = arguments[++i] switch
                         {
                             "public" => AndroidCreateSymbols.Public,
@@ -86,6 +85,7 @@ namespace Utilities.Editor.BuildPipeline
                             _ => AndroidCreateSymbols.Disabled
                         };
                         EditorUserBuildSettings.androidCreateSymbols = symbols;
+#pragma warning disable CS0618 // Type or member is obsolete
                         EditorUserBuildSettings.androidCreateSymbolsZip = true;
 #pragma warning restore CS0618 // Type or member is obsolete
 #endif // UNITY_6000_1_OR_NEWER
