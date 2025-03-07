@@ -313,11 +313,19 @@ namespace Utilities.Editor.BuildPipeline
 
                         switch (il2cppCodeGeneration)
                         {
-                            case "speed":
-                                PlayerSettings.SetIl2CppCodeGeneration(BuildTargetGroup, Il2CppCodeGeneration.OptimizeSpeed);
+                            case "optimizespeed":
+#if UNITY_2022_1_OR_NEWER
+                                PlayerSettings.SetIl2CppCodeGeneration(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), UnityEditor.Build.Il2CppCodeGeneration.OptimizeSpeed);
+#else
+                                EditorUserBuildSettings.il2CppCodeGeneration = UnityEditor.Build.Il2CppCodeGeneration.OptimizeSpeed;
+#endif // UNITY_2022_1_OR_NEWER
                                 break;
-                            case "size":
-                                PlayerSettings.SetIl2CppCodeGeneration(BuildTargetGroup, Il2CppCompilerConfiguration.OptimizeSize);
+                            case "optimizesize":
+#if UNITY_2022_1_OR_NEWER
+                                PlayerSettings.SetIl2CppCodeGeneration(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize);
+#else
+                                EditorUserBuildSettings.il2CppCodeGeneration = UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize;
+#endif // UNITY_2022_1_OR_NEWER
                                 break;
                             default:
                                 Debug.LogError($"Failed to parse -il2cppCodeGeneration: \"{il2cppCodeGeneration}\"");
