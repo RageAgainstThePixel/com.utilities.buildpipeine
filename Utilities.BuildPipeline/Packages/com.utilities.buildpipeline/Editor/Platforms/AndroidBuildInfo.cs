@@ -88,7 +88,7 @@ namespace Utilities.Editor.BuildPipeline
 #pragma warning disable CS0618 // Type or member is obsolete
                         EditorUserBuildSettings.androidCreateSymbolsZip = true;
 #pragma warning restore CS0618 // Type or member is obsolete
-#endif // UNITY_6000_1_OR_NEWER
+#endif // UNITY_6000_0_OR_NEWER
                         break;
                 }
             }
