@@ -1,6 +1,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Unity.Android.Types;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
@@ -67,23 +68,28 @@ namespace Utilities.Editor.BuildPipeline
                         EditorUserBuildSettings.exportAsGoogleAndroidProject = true;
                         break;
                     case "-symbols":
-#if UNITY_2021_1_OR_NEWER
+#if UNITY_6000_1_OR_NEWER
+                        var symbols = arguments[++i] switch
+                        {
+                            "public" => DebugSymbolLevel.SymbolTable,
+                            "debugging" => DebugSymbolLevel.Full,
+                            _ => DebugSymbolLevel.None
+                        };
+
+                        UnityEditor.Android.UserBuildSettings.DebugSymbols.level = symbols;
+                        UnityEditor.Android.UserBuildSettings.DebugSymbols.format = DebugSymbolFormat.Zip;
+#else
+#pragma warning disable CS0618 // Type or member is obsolete
                         var symbols = arguments[++i] switch
                         {
                             "public" => AndroidCreateSymbols.Public,
                             "debugging" => AndroidCreateSymbols.Debugging,
                             _ => AndroidCreateSymbols.Disabled
                         };
-#if UNITY_6000_0_OR_NEWER
-#pragma warning disable CS0618 // Type or member is obsolete
                         EditorUserBuildSettings.androidCreateSymbols = symbols;
-#pragma warning restore CS0618
-#else
-                        EditorUserBuildSettings.androidCreateSymbols = symbols;
-#endif // UNITY_6000_0_OR_NEWER
-#else
                         EditorUserBuildSettings.androidCreateSymbolsZip = true;
-#endif // UNITY_2021_1_OR_NEWER
+#pragma warning restore CS0618 // Type or member is obsolete
+#endif // UNITY_6000_1_OR_NEWER
                         break;
                 }
             }

@@ -288,60 +288,43 @@ namespace Utilities.Editor.BuildPipeline
 
                         break;
                     case "-il2cppCompilerConfiguration":
-                        var il2cppCompilerConfiguration = arguments[++i].ToLower();
+                        var il2cppCompilerConfigurationString = arguments[++i];
 
-                        switch (il2cppCompilerConfiguration)
+#if UNITY_6000_1_OR_NEWER
+                        if (Enum.TryParse(il2cppCompilerConfigurationString, true, out Il2CppCompilerConfiguration config))
                         {
-                            case "debug":
-#if UNITY_2021_2_OR_NEWER
-                                PlayerSettings.SetIl2CppCompilerConfiguration(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), Il2CppCompilerConfiguration.Debug);
+                            PlayerSettings.SetIl2CppCompilerConfiguration(BuildTargetGroup, config);
 #else
-                                PlayerSettings.SetIl2CppCompilerConfiguration(BuildTargetGroup, Il2CppCompilerConfiguration.Debug);
-#endif // UNITY_2021_2_OR_NEWER
-                                break;
-                            case "release":
-#if UNITY_2021_2_OR_NEWER
-                                PlayerSettings.SetIl2CppCompilerConfiguration(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), Il2CppCompilerConfiguration.Release);
-#else
-                                PlayerSettings.SetIl2CppCompilerConfiguration(BuildTargetGroup, Il2CppCompilerConfiguration.Release);
-#endif // UNITY_2021_2_OR_NEWER
-                                break;
-                            case "master":
-#if UNITY_2021_2_OR_NEWER
-                                PlayerSettings.SetIl2CppCompilerConfiguration(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), Il2CppCompilerConfiguration.Master);
-#else
-                                PlayerSettings.SetIl2CppCompilerConfiguration(BuildTargetGroup, Il2CppCompilerConfiguration.Master);
-#endif // UNITY_2021_2_OR_NEWER
-                                break;
-                            default:
-                                Debug.LogError($"Failed to parse -il2cppCompilerConfiguration: \"{il2cppCompilerConfiguration}\"");
-                                break;
+                        if (Enum.TryParse(il2cppCompilerConfigurationString, true, out Il2CppCompilerConfiguration config))
+                        {
+#pragma warning disable CS0618 // Type or member is obsolete
+                            PlayerSettings.SetIl2CppCompilerConfiguration(BuildTargetGroup, config);
+#pragma warning restore CS0618 // Type or member is obsolete
+#endif // UNITY_6000_1_OR_NEWER
+                        }
+                        else
+                        {
+                            Debug.LogError($"Failed to parse -il2cppCompilerConfiguration: \"{il2cppCompilerConfigurationString}\"");
                         }
 
                         break;
-#if UNITY_2021_2_OR_NEWER
+#if UNITY_2022_1_OR_NEWER
                     case "-il2cppCodeGeneration":
-                        var il2cppCodeGeneration = arguments[++i].ToLower();
+                        var il2CppCodeGenerationString = arguments[++i];
 
-                        switch (il2cppCodeGeneration)
+#if UNITY_6000_1_OR_NEWER
+                        if (Enum.TryParse(il2CppCodeGenerationString, true, out UnityEditor.Build.Il2CppCodeGeneration apiCompatibilityLevel))
                         {
-                            case "optimizespeed":
-#if UNITY_2022_1_OR_NEWER
-                                PlayerSettings.SetIl2CppCodeGeneration(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), UnityEditor.Build.Il2CppCodeGeneration.OptimizeSpeed);
+                            PlayerSettings.SetIl2CppCodeGeneration(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), apiCompatibilityLevel);
 #else
-                                EditorUserBuildSettings.il2CppCodeGeneration = UnityEditor.Build.Il2CppCodeGeneration.OptimizeSpeed;
-#endif // UNITY_2022_1_OR_NEWER
-                                break;
-                            case "optimizesize":
-#if UNITY_2022_1_OR_NEWER
-                                PlayerSettings.SetIl2CppCodeGeneration(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize);
-#else
-                                EditorUserBuildSettings.il2CppCodeGeneration = UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize;
-#endif // UNITY_2022_1_OR_NEWER
-                                break;
-                            default:
-                                Debug.LogError($"Failed to parse -il2cppCodeGeneration: \"{il2cppCodeGeneration}\"");
-                                break;
+                        if (Enum.TryParse(il2CppCodeGenerationString, true, out UnityEditor.Build.Il2CppCodeGeneration apiCompatibilityLevel))
+                        {
+                            PlayerSettings.SetIl2CppCodeGeneration(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), apiCompatibilityLevel);
+#endif // UNITY_6000_1_OR_NEWER
+                        }
+                        else
+                        {
+                            Debug.LogError($"Failed to parse -il2cppCodeGeneration: \"{il2CppCodeGenerationString}\"");
                         }
 
                         break;
