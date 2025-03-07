@@ -288,23 +288,21 @@ namespace Utilities.Editor.BuildPipeline
 
                         break;
                     case "-il2cppCompilerConfiguration":
-                        var il2cppCompilerConfigurationString = arguments[++i];
+                        var il2CppCompilerConfigurationString = arguments[++i];
 
-#if UNITY_6000_1_OR_NEWER
-                        if (Enum.TryParse(il2cppCompilerConfigurationString, true, out Il2CppCompilerConfiguration config))
+                        if (Enum.TryParse(il2CppCompilerConfigurationString, true, out Il2CppCompilerConfiguration config))
                         {
-                            PlayerSettings.SetIl2CppCompilerConfiguration(BuildTargetGroup, config);
+#if UNITY_6000_0_OR_NEWER
+                            PlayerSettings.SetIl2CppCompilerConfiguration(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), config);
 #else
-                        if (Enum.TryParse(il2cppCompilerConfigurationString, true, out Il2CppCompilerConfiguration config))
-                        {
 #pragma warning disable CS0618 // Type or member is obsolete
                             PlayerSettings.SetIl2CppCompilerConfiguration(BuildTargetGroup, config);
 #pragma warning restore CS0618 // Type or member is obsolete
-#endif // UNITY_6000_1_OR_NEWER
+#endif // UNITY_6000_0_OR_NEWER
                         }
                         else
                         {
-                            Debug.LogError($"Failed to parse -il2cppCompilerConfiguration: \"{il2cppCompilerConfigurationString}\"");
+                            Debug.LogError($"Failed to parse -il2cppCompilerConfiguration: \"{il2CppCompilerConfigurationString}\"");
                         }
 
                         break;
@@ -312,15 +310,9 @@ namespace Utilities.Editor.BuildPipeline
                     case "-il2cppCodeGeneration":
                         var il2CppCodeGenerationString = arguments[++i];
 
-#if UNITY_6000_1_OR_NEWER
                         if (Enum.TryParse(il2CppCodeGenerationString, true, out UnityEditor.Build.Il2CppCodeGeneration apiCompatibilityLevel))
                         {
                             PlayerSettings.SetIl2CppCodeGeneration(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), apiCompatibilityLevel);
-#else
-                        if (Enum.TryParse(il2CppCodeGenerationString, true, out UnityEditor.Build.Il2CppCodeGeneration apiCompatibilityLevel))
-                        {
-                            PlayerSettings.SetIl2CppCodeGeneration(UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(BuildTargetGroup), apiCompatibilityLevel);
-#endif // UNITY_6000_1_OR_NEWER
                         }
                         else
                         {
@@ -398,6 +390,7 @@ namespace Utilities.Editor.BuildPipeline
                         break;
                     case "-appleProvisioningProfileId":
                         var profileId = arguments[++i];
+
                         if (BuildTarget == BuildTarget.tvOS)
                         {
                             PlayerSettings.iOS.tvOSManualProvisioningProfileID = profileId;
@@ -409,6 +402,7 @@ namespace Utilities.Editor.BuildPipeline
                         break;
                     case "-appleProvisioningProfileType":
                         var profileType = arguments[++i].ToLower();
+
                         if (BuildTarget == BuildTarget.tvOS)
                         {
                             switch (profileType)
