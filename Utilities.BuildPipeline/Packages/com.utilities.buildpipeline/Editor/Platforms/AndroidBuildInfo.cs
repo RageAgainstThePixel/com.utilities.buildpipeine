@@ -68,6 +68,7 @@ namespace Utilities.Editor.BuildPipeline
                         break;
                     case "-symbols":
 #if UNITY_6000_0_OR_NEWER
+#if PLATFORM_ANDROID
                         var symbols = arguments[++i] switch
                         {
                             "public" => Unity.Android.Types.DebugSymbolLevel.SymbolTable,
@@ -77,6 +78,7 @@ namespace Utilities.Editor.BuildPipeline
 
                         UnityEditor.Android.UserBuildSettings.DebugSymbols.level = symbols;
                         UnityEditor.Android.UserBuildSettings.DebugSymbols.format = Unity.Android.Types.DebugSymbolFormat.Zip;
+#endif // PLATFORM_ANDROID
 #else
                         var symbols = arguments[++i] switch
                         {
