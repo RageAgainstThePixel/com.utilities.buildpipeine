@@ -146,9 +146,35 @@ namespace Buildalon.Editor.BuildPipeline
             PlayerSettings.Lumin.versionName = PlayerSettings.bundleVersion;
             // Update WSA bc the Application.version isn't synced like Android & iOS
             PlayerSettings.WSA.packageVersion = new Version(version.Major, version.Minor, version.Build, 0);
-#if UNITY_2023_3_OR_NEWER
+#if UNITY_2022_3_OR_NEWER
             PlayerSettings.visionOSBundleVersion = PlayerSettings.bundleVersion;
 #endif // UNITY_2023_3_OR_NEWER
+
+            // set build number
+            if (!string.IsNullOrWhiteSpace(buildInfo.BuildNumber))
+            {
+#if PLATFORM_ANDROID
+                if (int.TryParse(buildInfo.BuildNumber, out var code))
+                {
+                    PlayerSettings.Android.bundleVersionCode = code;
+                }
+                else
+                {
+                    Debug.LogError($"Failed to parse versionCode \"{buildInfo.BuildNumber}\"");
+                }
+            }
+            else if (buildInfo.AutoIncrement)
+            {
+                PlayerSettings.Android.bundleVersionCode++;
+#else
+                PlayerSettings.iOS.buildNumber = buildInfo.BuildNumber;
+                PlayerSettings.macOS.buildNumber = buildInfo.BuildNumber;
+                PlayerSettings.tvOS.buildNumber = buildInfo.BuildNumber;
+#if UNITY_2022_3_OR_NEWER
+                PlayerSettings.VisionOS.buildNumber = buildInfo.BuildNumber;
+#endif // UNITY_2022_3_OR_NEWER
+#endif // PLATFORM_ANDROID
+            }
 
             var buildTargetGroup = UnityEditor.BuildPipeline.GetBuildTargetGroup(buildInfo.BuildTarget);
 #if UNITY_2023_1_OR_NEWER

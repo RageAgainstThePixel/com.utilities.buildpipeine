@@ -44,7 +44,7 @@ namespace Buildalon.Editor.BuildPipeline
         public virtual Version Version { get; set; }
 
         /// <inheritdoc />
-        public int? VersionCode { get; set; }
+        public virtual string BuildNumber { get; set; } = null;
 
         /// <inheritdoc />
         public virtual BuildTarget BuildTarget { get; } = EditorUserBuildSettings.activeBuildTarget;
@@ -189,15 +189,8 @@ namespace Buildalon.Editor.BuildPipeline
                             Debug.LogError($"Failed to parse -versionName \"{arguments[i]}\"");
                         }
                         break;
-                    case "-versionCode":
-                        if (int.TryParse(arguments[++i], out var versionCode))
-                        {
-                            VersionCode = versionCode;
-                        }
-                        else
-                        {
-                            Debug.LogError($"Failed to parse -versionCode \"{arguments[i]}\"");
-                        }
+                    case "-buildNumber":
+                        BuildNumber = arguments[++i];
                         break;
                     case "-bundleIdentifier":
                         BundleIdentifier = arguments[++i];

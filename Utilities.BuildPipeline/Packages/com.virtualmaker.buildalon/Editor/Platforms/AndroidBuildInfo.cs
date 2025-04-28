@@ -92,6 +92,9 @@ namespace Buildalon.Editor.BuildPipeline
 #pragma warning restore CS0618 // Type or member is obsolete
 #endif // UNITY_6000_0_OR_NEWER
                         break;
+                    case "-versionCode":
+                        BuildNumber = arguments[++i];
+                        break;
                 }
             }
 
@@ -115,22 +118,6 @@ namespace Buildalon.Editor.BuildPipeline
             {
                 // Disable to prevent gradle form killing parallel builds on same build machine
                 EditorPrefs.SetBool("AndroidGradleStopDaemonsOnExit", false);
-            }
-
-            if (VersionCode.HasValue)
-            {
-                PlayerSettings.Android.bundleVersionCode = VersionCode.Value;
-            }
-            else if (AutoIncrement)
-            {
-                // Usually version codes are unique and not tied to the usual semver versions
-                // see https://developer.android.com/studio/publish/versioning#appversioning
-                // versionCode - A positive integer used as an internal version number.
-                // This number is used only to determine whether one version is more recent than another,
-                // with higher numbers indicating more recent versions. The Android system uses the
-                // versionCode value to protect against downgrades by preventing users from installing
-                // an APK with a lower versionCode than the version currently installed on their device.
-                PlayerSettings.Android.bundleVersionCode++;
             }
         }
     }

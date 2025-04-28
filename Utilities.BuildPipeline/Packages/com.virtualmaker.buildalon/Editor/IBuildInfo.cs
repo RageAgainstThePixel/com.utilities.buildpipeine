@@ -27,7 +27,7 @@ namespace Buildalon.Editor.BuildPipeline
         string BundleIdentifier { get; set; }
 
         /// <summary>
-        /// The build version number
+        /// The build version number.
         /// </summary>
         /// <remarks>
         /// If set will override <see cref="AutoIncrement"/>
@@ -35,9 +35,9 @@ namespace Buildalon.Editor.BuildPipeline
         Version Version { get; set; }
 
         /// <summary>
-        /// The version code (usually a single integer for platforms like iOS, and Android).
+        /// The build version number.
         /// </summary>
-        int? VersionCode { get; set; }
+        string BuildNumber { get; set; }
 
         /// <summary>
         /// Is this build being issued from the command line?

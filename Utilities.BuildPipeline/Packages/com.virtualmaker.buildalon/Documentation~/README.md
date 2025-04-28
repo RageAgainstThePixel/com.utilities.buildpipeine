@@ -14,6 +14,14 @@ The recommended installation method is though the unity package manager and [Ope
 
 ### Via Unity Package Manager and OpenUPM
 
+#### Terminal
+
+```bash
+openupm add com.virtualmaker.buildalon
+```
+
+#### Manual
+
 - Open your Unity project settings
 - Add the OpenUPM package registry:
   - Name: `OpenUPM`
@@ -62,14 +70,14 @@ jobs:
     strategy:
       # max-parallel: 2 # Use this if you're activating pro license with matrix
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-15]
-        unity-version: [2019.x, 2020.x, 2021.x, 2022.x, 6000.x]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        unity-versions: [2019.x, 2020.x, 2021.x, 2022.x, 6000.x]
         include: # for each os specify the build targets
           - os: ubuntu-latest
             build-target: StandaloneLinux64
           - os: windows-latest
             build-target: StandaloneWindows64
-          - os: macos-15
+          - os: macos-latest
             build-target: StandaloneOSX
     steps:
       - uses: actions/checkout@v4
@@ -79,7 +87,7 @@ jobs:
         # sets -> env.UNITY_PROJECT_PATH
       - uses: buildalon/unity-setup@v1
         with:
-          unity-version: ${{ matrix.unity-version }}
+          unity-version: ${{ matrix.unity-versions }}
           build-targets: ${{ matrix.build-target }}
 
         # Activates the installation with the provided credentials
@@ -156,7 +164,7 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | `-ignoreCompilerErrors` | Disables logging. |
 | `-autoIncrement` | Enables auto incrementing. |
 | `-versionName` | Sets the version of the application. Value must be string. |
-| `-versionCode` | Sets the version code of the application. Value must be an integer. |
+| `-buildNumber` | Sets the version build number of the application. (For Android, this must be an integer.) |
 | `-bundleIdentifier` | Sets the bundle identifier of the application. |
 | `-sceneList` | Sets the scenes of the application, list as CSV. |
 | `-sceneListFile` | Sets the scenes of the application, list as JSON. |
@@ -191,6 +199,7 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | `-keyaliasName` | Name of the key to use when signing. |
 | `-keyaliasPass` | Sets the key alias password. |
 | `-symbols` | Sets the symbol creation mode. Can be: `public`, `debugging`, or `disabled`. |
+| `-versionCode` | Sets the version code of the application. Must be an integer. ***Deprecated, use `buildNumber` instead*** |
 
 ##### Apple Device Command Line Args
 
