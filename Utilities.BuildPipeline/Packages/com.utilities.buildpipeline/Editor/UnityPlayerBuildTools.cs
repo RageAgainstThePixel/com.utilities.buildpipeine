@@ -160,7 +160,7 @@ namespace Utilities.Editor.BuildPipeline
                 }
                 else
                 {
-                    Debug.LogError($"Failed to parse versionCode \"{BuildNumber}\"");
+                    Debug.LogError($"Failed to parse versionCode \"{buildInfo.BuildNumber}\"");
                 }
             }
             else if (buildInfo.AutoIncrement)
