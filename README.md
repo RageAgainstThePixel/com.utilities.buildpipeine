@@ -72,14 +72,14 @@ jobs:
     strategy:
       # max-parallel: 2 # Use this if you're activating pro license with matrix
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-13]
-        unity-version: [2019.x, 2020.x, 2021.x, 2022.x, 6000.x]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        unity-versions: [2019.x, 2020.x, 2021.x, 2022.x, 6000.x]
         include: # for each os specify the build targets
           - os: ubuntu-latest
             build-target: StandaloneLinux64
           - os: windows-latest
             build-target: StandaloneWindows64
-          - os: macos-13
+          - os: macos-latest
             build-target: StandaloneOSX
 
     steps:
@@ -90,7 +90,7 @@ jobs:
         # sets -> env.UNITY_PROJECT_PATH
       - uses: RageAgainstThePixel/unity-setup@v1
         with:
-          unity-version: ${{ matrix.unity-version }}
+          unity-version: ${{ matrix.unity-versions }}
           build-targets: ${{ matrix.build-target }}
 
         # Activates the installation with the provided credentials
