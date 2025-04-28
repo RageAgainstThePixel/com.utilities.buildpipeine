@@ -148,33 +148,7 @@ namespace Buildalon.Editor.BuildPipeline
             PlayerSettings.WSA.packageVersion = new Version(version.Major, version.Minor, version.Build, 0);
 #if UNITY_2022_3_OR_NEWER
             PlayerSettings.visionOSBundleVersion = PlayerSettings.bundleVersion;
-#endif // UNITY_2023_3_OR_NEWER
-
-            // set build number
-            if (!string.IsNullOrWhiteSpace(buildInfo.BuildNumber))
-            {
-#if PLATFORM_ANDROID
-                if (int.TryParse(buildInfo.BuildNumber, out var code))
-                {
-                    PlayerSettings.Android.bundleVersionCode = code;
-                }
-                else
-                {
-                    Debug.LogError($"Failed to parse versionCode \"{buildInfo.BuildNumber}\"");
-                }
-            }
-            else if (buildInfo.AutoIncrement)
-            {
-                PlayerSettings.Android.bundleVersionCode++;
-#else
-                PlayerSettings.iOS.buildNumber = buildInfo.BuildNumber;
-                PlayerSettings.macOS.buildNumber = buildInfo.BuildNumber;
-                PlayerSettings.tvOS.buildNumber = buildInfo.BuildNumber;
-#if UNITY_2022_3_OR_NEWER
-                PlayerSettings.VisionOS.buildNumber = buildInfo.BuildNumber;
 #endif // UNITY_2022_3_OR_NEWER
-#endif // PLATFORM_ANDROID
-            }
 
             var buildTargetGroup = UnityEditor.BuildPipeline.GetBuildTargetGroup(buildInfo.BuildTarget);
 #if UNITY_2023_1_OR_NEWER
@@ -496,7 +470,38 @@ namespace Buildalon.Editor.BuildPipeline
         public int callbackOrder { get; }
 
         /// <inheritdoc />
-        public void OnPreprocessBuild(BuildReport report) => buildInfo?.OnPreProcessBuild(report);
+        public void OnPreprocessBuild(BuildReport report)
+        {
+            if (buildInfo == null) { return; }
+
+            // set build number
+            if (!string.IsNullOrWhiteSpace(buildInfo.BuildNumber))
+            {
+#if PLATFORM_ANDROID
+                if (int.TryParse(buildInfo.BuildNumber, out var code))
+                {
+                    PlayerSettings.Android.bundleVersionCode = code;
+                }
+                else
+                {
+                    Debug.LogError($"Failed to parse versionCode \"{buildInfo.BuildNumber}\"");
+                }
+            }
+            else if (buildInfo.AutoIncrement)
+            {
+                PlayerSettings.Android.bundleVersionCode++;
+#else // ANY OTHER PLATFORM
+                PlayerSettings.iOS.buildNumber = buildInfo.BuildNumber;
+                PlayerSettings.macOS.buildNumber = buildInfo.BuildNumber;
+                PlayerSettings.tvOS.buildNumber = buildInfo.BuildNumber;
+#if UNITY_2022_3_OR_NEWER
+                PlayerSettings.VisionOS.buildNumber = buildInfo.BuildNumber;
+#endif // UNITY_2022_3_OR_NEWER
+#endif // ANY OTHER PLATFORM
+            }
+
+            buildInfo.OnPreProcessBuild(report);
+        }
 
         /// <inheritdoc />
         public void OnPostprocessBuild(BuildReport report) => buildInfo?.OnPostProcessBuild(report);
