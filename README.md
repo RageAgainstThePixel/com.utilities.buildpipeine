@@ -143,7 +143,7 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | `-ignoreCompilerErrors` | Disables logging. |
 | `-autoIncrement` | Enables auto incrementing. |
 | `-versionName` | Sets the version of the application. Value must be string. |
-| `-versionCode` | Sets the version code of the application. Value must be an integer. |
+| `-buildNumber` | Sets the version build number of the application. (For Android, this must be an integer.) |
 | `-bundleIdentifier` | Sets the bundle identifier of the application. |
 | `-sceneList` | Sets the scenes of the application, list as CSV. |
 | `-sceneListFile` | Sets the scenes of the application, list as JSON. |
@@ -178,6 +178,7 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | `-keyaliasName` | Name of the key to use when signing. |
 | `-keyaliasPass` | Sets the key alias password. |
 | `-symbols` | Sets the symbol creation mode. Can be: `public`, `debugging`, or `disabled`. |
+| `-versionCode` | Sets the version code of the application. Must be an integer. |
 
 ##### Apple Device Command Line Args
 
