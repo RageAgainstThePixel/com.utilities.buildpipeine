@@ -178,7 +178,7 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | `-keyaliasName` | Name of the key to use when signing. |
 | `-keyaliasPass` | Sets the key alias password. |
 | `-symbols` | Sets the symbol creation mode. Can be: `public`, `debugging`, or `disabled`. |
-| `-versionCode` | Sets the version code of the application. Must be an integer. ***Deprecated, use `versionNumber` instead*** |
+| `-versionCode` | Sets the version code of the application. Must be an integer. ***Deprecated, use `buildNumber` instead*** |
 
 ##### Apple Device Command Line Args
 
