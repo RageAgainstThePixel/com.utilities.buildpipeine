@@ -396,7 +396,7 @@ namespace Buildalon.Editor.BuildPipeline
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             Debug.Log($"Starting command line build for {EditorPreferences.ApplicationProductName}...");
 
-            BuildReport buildReport = default;
+            BuildReport buildReport = null;
             var stopwatch = Stopwatch.StartNew();
 
             try
@@ -407,11 +407,12 @@ namespace Buildalon.Editor.BuildPipeline
                 {
                     var androidSdkPath = EditorPrefs.GetString("AndroidSdkRoot",
 #if UNITY_EDITOR_WIN
-                        "C:\\Program Files (x86)\\Android\\android-sdk"
+                        @"C:\Program Files (x86)\Android\android-sdk"
 #else
                         string.Empty
 #endif
-                        );
+                    );
+
                     Debug.Log($"AndroidSdkRoot: {androidSdkPath}");
                 }
 
@@ -421,6 +422,11 @@ namespace Buildalon.Editor.BuildPipeline
             {
                 Debug.LogError($"Build Failed!\n{e.Message}\n{e.StackTrace}");
             }
+            finally
+            {
+                stopwatch.Stop();
+                CILoggingUtility.GenerateBuildReport(buildReport, stopwatch);
+            }
 
             if (buildReport == null)
             {
@@ -429,8 +435,6 @@ namespace Buildalon.Editor.BuildPipeline
                 return;
             }
 
-            stopwatch.Stop();
-            CILoggingUtility.GenerateBuildReport(buildReport, stopwatch);
             Debug.Log("Exiting command line build...");
             EditorApplication.Exit(buildReport.summary.result == BuildResult.Succeeded ? 0 : 1);
         }

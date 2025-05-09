@@ -80,6 +80,7 @@ namespace Buildalon.Editor.BuildPipeline
                         UnityEditor.Android.UserBuildSettings.DebugSymbols.format = Unity.Android.Types.DebugSymbolFormat.Zip;
 #endif // PLATFORM_ANDROID
 #else
+#if UNITY_2020_1_OR_NEWER
                         var symbols = arguments[++i] switch
                         {
                             "public" => AndroidCreateSymbols.Public,
@@ -87,6 +88,7 @@ namespace Buildalon.Editor.BuildPipeline
                             _ => AndroidCreateSymbols.Disabled
                         };
                         EditorUserBuildSettings.androidCreateSymbols = symbols;
+#endif
 #pragma warning disable CS0618 // Type or member is obsolete
                         EditorUserBuildSettings.androidCreateSymbolsZip = true;
 #pragma warning restore CS0618 // Type or member is obsolete
