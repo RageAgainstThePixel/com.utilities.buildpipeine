@@ -43,6 +43,12 @@ namespace Utilities.Editor.BuildPipeline.Logging
         /// <inheritdoc />
         public override void GenerateBuildSummary(BuildReport buildReport, Stopwatch stopwatch)
         {
+            if (buildReport == null)
+            {
+                Debug.LogError("Build report is null. Cannot generate Git Hub Build Summary!");
+                return;
+            }
+
             // temp disable logging to get the right messages sent.
             CILoggingUtility.LoggingEnabled = false;
             var summary = Environment.GetEnvironmentVariable("GITHUB_STEP_SUMMARY");
