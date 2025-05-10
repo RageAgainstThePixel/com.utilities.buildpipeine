@@ -195,7 +195,7 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 
 | Argument | Description |
 | -------- | ----------- |
-| `-appBundle` | Builds an .abb for Google Play Store |
+| `-appBundle` | Builds an .aab for Google Play Store |
 | `-splitBinary` | Builds an APK per CPU architecture. |
 | `-splitApk` | Uses APK expansion files. |
 | `-keystorePath` | Path to the keystore. |

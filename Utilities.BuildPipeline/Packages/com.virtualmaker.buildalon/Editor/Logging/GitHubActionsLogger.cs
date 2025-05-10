@@ -78,74 +78,65 @@ namespace Buildalon.Editor.BuildPipeline.Logging
                     summaryWriter.WriteLine("");
 
                     var totalBuildTime = TimeSpan.Zero;
-                    var logs = new List<string>();
+                    var errorLogs = new List<BuildStepMessage>();
+                    var warningLogs = new List<BuildStepMessage>();
+                    var infoLogs = new List<BuildStepMessage>();
 
                     foreach (var step in buildReport.steps)
                     {
                         totalBuildTime += step.duration;
                         var hasMessages = step.messages.Length > 0;
 
-                        if (!hasMessages)
+                        if (!hasMessages) { continue; }
+
+                        errorLogs.AddRange(step.messages.Where(message => message.type == LogType.Error || message.type == LogType.Assert || message.type == LogType.Exception));
+                        warningLogs.AddRange(step.messages.Where(message => message.type == LogType.Warning));
+                        infoLogs.AddRange(step.messages.Where(message => message.type == LogType.Log));
+                    }
+
+                    string ProcessLogMessage(BuildStepMessage message)
+                    {
+                        var logMessage = message.content.Replace("\n", string.Empty);
+                        logMessage = logMessage.Replace("\r", string.Empty);
+                        logMessage = logMessage.Replace(Error, string.Empty);
+                        logMessage = logMessage.Replace(Warning, string.Empty);
+                        logMessage = logMessage.Replace(ErrorColor, string.Empty);
+                        logMessage = logMessage.Replace(WarningColor, string.Empty);
+                        logMessage = logMessage.Replace(ResetColor, string.Empty);
+                        logMessage = logMessage.Replace(LogColor, string.Empty);
+
+                        switch (message.type)
                         {
-                            continue;
-                        }
-
-                        var errorMessages = step.messages
-                            .Where(message => message.type == LogType.Error || message.type == LogType.Assert || message.type == LogType.Exception)
-                            .ToList();
-
-                        var warningMessages = step.messages
-                            .Where(message => message.type == LogType.Warning)
-                            .ToList();
-
-                        var logMessages = step.messages
-                            .Where(message => message.type == LogType.Log)
-                            .ToList();
-
-                        var sortedMessages = new List<BuildStepMessage>();
-                        sortedMessages.AddRange(errorMessages);
-                        sortedMessages.AddRange(warningMessages);
-                        sortedMessages.AddRange(logMessages);
-
-                        foreach (var message in sortedMessages)
-                        {
-                            var logMessage = message.content.Replace("\n", string.Empty);
-                            logMessage = logMessage.Replace("\r", string.Empty);
-                            logMessage = logMessage.Replace(Error, string.Empty);
-                            logMessage = logMessage.Replace(Warning, string.Empty);
-                            logMessage = logMessage.Replace(ErrorColor, string.Empty);
-                            logMessage = logMessage.Replace(WarningColor, string.Empty);
-                            logMessage = logMessage.Replace(ResetColor, string.Empty);
-                            logMessage = logMessage.Replace(LogColor, string.Empty);
-
-                            switch (message.type)
-                            {
-                                case LogType.Error:
-                                case LogType.Assert:
-                                case LogType.Exception:
-                                    logs.Add($"| :boom: {message.type} | {logMessage} |");
-
-                                    break;
-                                case LogType.Warning:
-                                    logs.Add($"| :warning: {message.type} | {logMessage} |");
-
-                                    break;
-                                case LogType.Log:
-                                default:
-                                    logs.Add($"| {message.type} | {logMessage} |");
-
-                                    break;
-                            }
+                            case LogType.Error:
+                            case LogType.Assert:
+                            case LogType.Exception:
+                                return $"| :boom: {message.type} | {logMessage} |";
+                            case LogType.Warning:
+                                return $"| :warning: {message.type} | {logMessage} |";
+                            case LogType.Log:
+                            default:
+                                return $"| {message.type} | {logMessage} |";
                         }
                     }
 
-                    if (logs.Count > 0)
+                    void WriteLogSummary(List<BuildStepMessage> logs)
                     {
-                        var hasErrors = logs.Any(log => log.Contains($"| :boom: {LogType.Error} |"));
+                        if (logs.Count == 0) { return; }
+                        var isErrorMessages = logs.Any(log => log.type == LogType.Error || log.type == LogType.Assert || log.type == LogType.Exception);
+                        var isWarningMessages = logs.Any(log => log.type == LogType.Warning);
 
-                        summaryWriter.WriteLine(hasErrors
-                            ? "<details open><summary>Logs</summary>"
-                            : "<details><summary>Logs</summary>");
+                        if (isErrorMessages)
+                        {
+                            summaryWriter.WriteLine($"<details open><summary>Errors ({logs.Count})</summary>");
+                        }
+                        else if (isWarningMessages)
+                        {
+                            summaryWriter.WriteLine($"<details><summary>Warnings ({logs.Count})</summary>");
+                        }
+                        else
+                        {
+                            summaryWriter.WriteLine($"<details><summary>Logs ({logs.Count})</summary>");
+                        }
 
                         summaryWriter.WriteLine("");
                         summaryWriter.WriteLine("| log type | message |");
@@ -153,12 +144,16 @@ namespace Buildalon.Editor.BuildPipeline.Logging
 
                         foreach (var log in logs)
                         {
-                            summaryWriter.WriteLine(log);
+                            summaryWriter.WriteLine(ProcessLogMessage(log));
                         }
 
                         summaryWriter.WriteLine("</details>");
                         summaryWriter.WriteLine("");
                     }
+
+                    WriteLogSummary(errorLogs);
+                    WriteLogSummary(warningLogs);
+                    WriteLogSummary(infoLogs);
 
                     switch (buildReport.summary.result)
                     {
