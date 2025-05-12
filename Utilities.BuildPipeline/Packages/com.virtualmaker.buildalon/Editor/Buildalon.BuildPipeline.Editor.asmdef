@@ -1,7 +1,8 @@
 {
     "name": "Buildalon.BuildPipeline.Editor",
     "references": [
-        "GUID:6546d7765b4165b40850b3667f981c26"
+        "GUID:6546d7765b4165b40850b3667f981c26",
+        "GUID:69448af7b92c7f342b298e06a37122aa"
     ],
     "includePlatforms": [
         "Editor"
@@ -22,6 +23,16 @@
             "name": "com.unity.ugui",
             "expression": "2.0.0",
             "define": "TEXT_MESH_PRO"
+        },
+        {
+            "name": "com.unity.ugui",
+            "expression": "2.0.0",
+            "define": "TEXT_MESH_PRO"
+        },
+        {
+            "name": "com.unity.addressables",
+            "expression": "2.0.0",
+            "define": "UNITY_ADDRESSABLES"
         }
     ],
     "noEngineReferences": false

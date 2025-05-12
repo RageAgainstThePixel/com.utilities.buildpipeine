@@ -231,6 +231,9 @@ namespace Buildalon.Editor.BuildPipeline
 
             try
             {
+#if UNITY_ADDRESSABLES
+                UnityEditor.AddressableAssets.Build.BuildScript.buildCompleted += OnAddressableBuildResult;
+#endif
                 buildReport = UnityEditor.BuildPipeline.BuildPlayer(
                     buildInfo.Scenes.ToArray(),
                     buildInfo.FullOutputPath,
@@ -243,6 +246,9 @@ namespace Buildalon.Editor.BuildPipeline
             }
             finally
             {
+#if UNITY_ADDRESSABLES
+                UnityEditor.AddressableAssets.Build.BuildScript.buildCompleted -= OnAddressableBuildResult;
+#endif
                 PlayerSettings.colorSpace = oldColorSpace;
 
 #if UNITY_2023_1_OR_NEWER
@@ -261,6 +267,16 @@ namespace Buildalon.Editor.BuildPipeline
 
             return buildReport;
         }
+
+#if UNITY_ADDRESSABLES
+        private static void OnAddressableBuildResult(UnityEditor.AddressableAssets.Build.AddressableAssetBuildResult addressablesBuildResult)
+        {
+            if (!string.IsNullOrWhiteSpace(addressablesBuildResult.Error))
+            {
+                throw new Exception(addressablesBuildResult.Error);
+            }
+        }
+#endif
 
         /// <summary>
         /// Validates the Unity Project assets by forcing a symbolic link sync and creates solution files.
