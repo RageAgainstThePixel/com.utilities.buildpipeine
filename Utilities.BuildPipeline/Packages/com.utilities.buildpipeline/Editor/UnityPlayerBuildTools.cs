@@ -298,6 +298,7 @@ namespace Utilities.Editor.BuildPipeline
             }
             finally
             {
+                EditorUtility.ClearProgressBar();
 #if UNITY_ADDRESSABLES
                 UnityEditor.AddressableAssets.Build.BuildScript.buildCompleted -= OnAddressableBuildResult;
 #endif
@@ -314,7 +315,6 @@ namespace Utilities.Editor.BuildPipeline
                     PlayerSettings.SetApplicationIdentifier(buildTargetGroup, oldBuildIdentifier);
                 }
 #endif // UNITY_2023_1_OR_NEWER
-                EditorUtility.ClearProgressBar();
             }
 
             return buildReport;
