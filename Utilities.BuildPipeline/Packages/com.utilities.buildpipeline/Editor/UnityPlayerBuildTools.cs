@@ -124,7 +124,10 @@ namespace Utilities.Editor.BuildPipeline
             finally
             {
                 OnBuildCompletedWithSummary -= OnBuildCompleted;
-                OnBuildCompleted(finalBuildReport);
+                if (finalBuildReport != null)
+                {
+                    OnBuildCompleted(finalBuildReport);
+                }
 
                 foreach (var buildReport in buildReports)
                 {
