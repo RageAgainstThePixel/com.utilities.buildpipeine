@@ -69,7 +69,7 @@ namespace Utilities.Editor.BuildPipeline.Logging
                 try
                 {
                     var buildResultMessage = $"Unity {buildReport.summary.platform} " +
-#if UNITY_2022_1_OR_NEWER
+#if UNITY_6000_0_OR_NEWER
                                              $"${buildReport.summary.buildType} " +
 #endif
                                              $"Build {buildReport.summary.result}!";
