@@ -109,7 +109,7 @@ namespace Utilities.Editor.BuildPipeline
             void OnBuildCompleted(BuildReport buildReport)
             {
                 var message = $"Unity {buildReport.summary.platform} " +
-#if UNITY_2020_1_OR_NEWER
+#if UNITY_2022_1_OR_NEWER
                               $"{buildReport.summary.buildType} Build " +
 #endif
                               $"{buildReport.summary.result}!\n";
@@ -123,10 +123,10 @@ namespace Utilities.Editor.BuildPipeline
                     case BuildResult.Cancelled:
                     default:
                         Debug.LogError($"{message}"
-#if UNITY_2020_1_OR_NEWER
-                                       + $"{buildReport.SummarizeErrors()}"
+#if UNITY_2022_1_OR_NEWER
+                            + $"{buildReport.SummarizeErrors()}"
 #endif
-                                       );
+                        );
                         break;
                 }
             }
