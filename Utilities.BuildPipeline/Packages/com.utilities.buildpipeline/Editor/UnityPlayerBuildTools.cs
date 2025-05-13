@@ -124,6 +124,7 @@ namespace Utilities.Editor.BuildPipeline
             finally
             {
                 OnBuildCompletedWithSummary -= OnBuildCompleted;
+
                 if (finalBuildReport != null)
                 {
                     OnBuildCompleted(finalBuildReport);
