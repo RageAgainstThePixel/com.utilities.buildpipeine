@@ -70,7 +70,7 @@ namespace Utilities.Editor.BuildPipeline.Logging
                 {
                     var buildResultMessage = $"Unity {buildReport.summary.platform} " +
 #if UNITY_6000_0_OR_NEWER
-                                             $"${buildReport.summary.buildType} " +
+                                             $"{buildReport.summary.buildType} " +
 #endif
                                              $"Build {buildReport.summary.result}!";
                     summaryWriter.WriteLine($"# {buildResultMessage}");
