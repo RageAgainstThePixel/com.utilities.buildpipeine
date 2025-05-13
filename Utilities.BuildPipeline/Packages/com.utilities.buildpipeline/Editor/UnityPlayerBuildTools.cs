@@ -106,8 +106,52 @@ namespace Utilities.Editor.BuildPipeline
         [MenuItem("Tools/Build Player", false, 999)]
         public static void BuildPlayerMenu()
         {
-            var result = BuildUnityPlayer();
-            EditorUtility.RevealInFinder(result.summary.outputPath);
+            void OnBuildCompleted(BuildReport buildReport)
+            {
+                var message = $"Unity {buildReport.summary.platform} " +
+#if UNITY_2020_1_OR_NEWER
+                              $"{buildReport.summary.buildType} Build " +
+#endif
+                              $"{buildReport.summary.result}!\n";
+                switch (buildReport.summary.result)
+                {
+                    case BuildResult.Succeeded:
+                        Debug.Log(message);
+                        break;
+                    case BuildResult.Unknown:
+                    case BuildResult.Failed:
+                    case BuildResult.Cancelled:
+                    default:
+                        Debug.LogError($"{message}"
+#if UNITY_2020_1_OR_NEWER
+                                       + $"{buildReport.SummarizeErrors()}"
+#endif
+                                       );
+                        break;
+                }
+            }
+
+            BuildReport finalBuildReport = null;
+
+            try
+            {
+                OnBuildCompletedWithSummary += OnBuildCompleted;
+                finalBuildReport = BuildUnityPlayer();
+            }
+            finally
+            {
+                OnBuildCompletedWithSummary -= OnBuildCompleted;
+                OnBuildCompleted(finalBuildReport);
+
+                if (finalBuildReport != null)
+                {
+                    EditorUtility.RevealInFinder(finalBuildReport.summary.outputPath);
+                }
+                else
+                {
+                    Debug.LogWarning("No final build report found!");
+                }
+            }
         }
 
         /// <summary>
@@ -231,9 +275,6 @@ namespace Utilities.Editor.BuildPipeline
 
             try
             {
-#if UNITY_ADDRESSABLES
-                UnityEditor.AddressableAssets.Build.BuildScript.buildCompleted += OnAddressableBuildResult;
-#endif
                 buildReport = UnityEditor.BuildPipeline.BuildPlayer(
                     buildInfo.Scenes.ToArray(),
                     buildInfo.FullOutputPath,
@@ -246,9 +287,6 @@ namespace Utilities.Editor.BuildPipeline
             }
             finally
             {
-#if UNITY_ADDRESSABLES
-                UnityEditor.AddressableAssets.Build.BuildScript.buildCompleted -= OnAddressableBuildResult;
-#endif
                 PlayerSettings.colorSpace = oldColorSpace;
 
 #if UNITY_2023_1_OR_NEWER
@@ -267,16 +305,6 @@ namespace Utilities.Editor.BuildPipeline
 
             return buildReport;
         }
-
-#if UNITY_ADDRESSABLES
-        private static void OnAddressableBuildResult(UnityEditor.AddressableAssets.Build.AddressableAssetBuildResult addressablesBuildResult)
-        {
-            if (!string.IsNullOrWhiteSpace(addressablesBuildResult.Error))
-            {
-                throw new Exception(addressablesBuildResult.Error);
-            }
-        }
-#endif
 
         /// <summary>
         /// Validates the Unity Project assets by forcing a symbolic link sync and creates solution files.
@@ -412,8 +440,17 @@ namespace Utilities.Editor.BuildPipeline
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             Debug.Log($"Starting command line build for {EditorPreferences.ApplicationProductName}...");
 
-            BuildReport buildReport = null;
+            var buildReports = new List<BuildReport>();
             var stopwatch = Stopwatch.StartNew();
+
+            void CommandLineBuildReportCallback(BuildReport postProcessBuildReport)
+            {
+                buildReports.Add(postProcessBuildReport);
+                CILoggingUtility.GenerateBuildReport(postProcessBuildReport, stopwatch);
+                stopwatch.Restart();
+            }
+
+            BuildReport finalBuildReport = null;
 
             try
             {
@@ -432,7 +469,8 @@ namespace Utilities.Editor.BuildPipeline
                     Debug.Log($"AndroidSdkRoot: {androidSdkPath}");
                 }
 
-                buildReport = BuildUnityPlayer();
+                OnBuildCompletedWithSummary += CommandLineBuildReportCallback;
+                finalBuildReport = BuildUnityPlayer();
             }
             catch (Exception e)
             {
@@ -440,11 +478,11 @@ namespace Utilities.Editor.BuildPipeline
             }
             finally
             {
-                stopwatch.Stop();
-                CILoggingUtility.GenerateBuildReport(buildReport, stopwatch);
+                OnBuildCompletedWithSummary -= CommandLineBuildReportCallback;
+                CommandLineBuildReportCallback(finalBuildReport);
             }
 
-            if (buildReport == null)
+            if (buildReports.Count == 0)
             {
                 Debug.LogError("Failed to find a valid build report!");
                 EditorApplication.Exit(1);
@@ -452,7 +490,7 @@ namespace Utilities.Editor.BuildPipeline
             }
 
             Debug.Log("Exiting command line build...");
-            EditorApplication.Exit(buildReport.summary.result == BuildResult.Succeeded ? 0 : 1);
+            EditorApplication.Exit(buildReports.All(report => report.summary.result == BuildResult.Succeeded) ? 0 : 1);
         }
 
         internal static bool CheckBuildScenes()
@@ -524,7 +562,13 @@ namespace Utilities.Editor.BuildPipeline
         }
 
         /// <inheritdoc />
-        public void OnPostprocessBuild(BuildReport report) => buildInfo?.OnPostProcessBuild(report);
+        public void OnPostprocessBuild(BuildReport report)
+        {
+            buildInfo?.OnPostProcessBuild(report);
+            OnBuildCompletedWithSummary?.Invoke(report);
+        }
+
+        public static event Action<BuildReport> OnBuildCompletedWithSummary;
 
         #endregion IOrderedCallback
     }
