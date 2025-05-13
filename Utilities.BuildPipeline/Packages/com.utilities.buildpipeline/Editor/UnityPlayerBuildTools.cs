@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -112,29 +111,7 @@ namespace Utilities.Editor.BuildPipeline
 
             void OnBuildCompleted(BuildReport buildReport)
             {
-                if (!buildReports.Add(buildReport)) { return; }
-
-                var message = $"Unity {buildReport.summary.platform} " +
-#if UNITY_6000_0_OR_NEWER
-                              $"{buildReport.summary.buildType} Build " +
-#endif
-                              $"{buildReport.summary.result}!\n";
-                switch (buildReport.summary.result)
-                {
-                    case BuildResult.Succeeded:
-                        Debug.Log(message);
-                        break;
-                    case BuildResult.Unknown:
-                    case BuildResult.Failed:
-                    case BuildResult.Cancelled:
-                    default:
-                        Debug.LogError($"{message}"
-#if UNITY_2022_1_OR_NEWER
-                            + $"{buildReport.SummarizeErrors()}"
-#endif
-                        );
-                        break;
-                }
+                buildReports.Add(buildReport);
             }
 
             BuildReport finalBuildReport = null;
@@ -148,6 +125,31 @@ namespace Utilities.Editor.BuildPipeline
             {
                 OnBuildCompletedWithSummary -= OnBuildCompleted;
                 OnBuildCompleted(finalBuildReport);
+
+                foreach (var buildReport in buildReports)
+                {
+                    var message = $"Unity {buildReport.summary.platform} " +
+#if UNITY_6000_0_OR_NEWER
+                                  $"{buildReport.summary.buildType} Build " +
+#endif
+                                  $"{buildReport.summary.result}!\n";
+                    switch (buildReport.summary.result)
+                    {
+                        case BuildResult.Succeeded:
+                            Debug.Log(message);
+                            break;
+                        case BuildResult.Unknown:
+                        case BuildResult.Failed:
+                        case BuildResult.Cancelled:
+                        default:
+                            Debug.LogError($"{message}"
+#if UNITY_2022_1_OR_NEWER
+                                           + $"{buildReport.SummarizeErrors()}"
+#endif
+                            );
+                            break;
+                    }
+                }
 
                 if (finalBuildReport != null)
                 {
@@ -443,18 +445,18 @@ namespace Utilities.Editor.BuildPipeline
             Debug.Log($"Starting command line build for {EditorPreferences.ApplicationProductName}...");
 
             var buildReports = new HashSet<BuildReport>();
-            var stopwatch = Stopwatch.StartNew();
 
             void CommandLineBuildReportCallback(BuildReport postProcessBuildReport)
             {
-                if (buildReports.Add(postProcessBuildReport))
+                if (postProcessBuildReport != null)
                 {
-                    CILoggingUtility.GenerateBuildReport(postProcessBuildReport, stopwatch);
-                    stopwatch.Restart();
+                    buildReports.Add(postProcessBuildReport);
                 }
             }
 
             BuildReport finalBuildReport = null;
+            OnBuildCompletedWithSummary += CommandLineBuildReportCallback;
+            var failed = false;
 
             try
             {
@@ -473,28 +475,37 @@ namespace Utilities.Editor.BuildPipeline
                     Debug.Log($"AndroidSdkRoot: {androidSdkPath}");
                 }
 
-                OnBuildCompletedWithSummary += CommandLineBuildReportCallback;
                 finalBuildReport = BuildUnityPlayer();
             }
             catch (Exception e)
             {
                 Debug.LogError($"Build Failed!\n{e.Message}\n{e.StackTrace}");
+                failed = true;
             }
             finally
             {
                 OnBuildCompletedWithSummary -= CommandLineBuildReportCallback;
-                CommandLineBuildReportCallback(finalBuildReport);
             }
 
             if (buildReports.Count == 0)
             {
-                Debug.LogError("Failed to find a valid build report!");
+                Debug.LogError("Failed to find any valid build reports!");
                 EditorApplication.Exit(1);
                 return;
             }
+            else
+            {
+                CommandLineBuildReportCallback(finalBuildReport);
+
+                foreach (var buildReport in buildReports)
+                {
+                    CILoggingUtility.GenerateBuildReport(buildReport, null);
+                }
+            }
 
             Debug.Log("Exiting command line build...");
-            EditorApplication.Exit(buildReports.All(report => report.summary.result == BuildResult.Succeeded) ? 0 : 1);
+            var success = buildReports.All(report => report.summary.result == BuildResult.Succeeded) && !failed;
+            EditorApplication.Exit(success ? 0 : 1);
         }
 
         internal static bool CheckBuildScenes()
