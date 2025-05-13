@@ -106,8 +106,14 @@ namespace Utilities.Editor.BuildPipeline
         [MenuItem("Tools/Build Player", false, 999)]
         public static void BuildPlayerMenu()
         {
+            if (Application.isBatchMode) { return; }
+
+            var buildReports = new HashSet<BuildReport>();
+
             void OnBuildCompleted(BuildReport buildReport)
             {
+                if (!buildReports.Add(buildReport)) { return; }
+
                 var message = $"Unity {buildReport.summary.platform} " +
 #if UNITY_6000_0_OR_NEWER
                               $"{buildReport.summary.buildType} Build " +
@@ -281,10 +287,6 @@ namespace Utilities.Editor.BuildPipeline
                     buildInfo.BuildTarget,
                     buildInfo.BuildOptions);
             }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-            }
             finally
             {
                 PlayerSettings.colorSpace = oldColorSpace;
@@ -440,14 +442,16 @@ namespace Utilities.Editor.BuildPipeline
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             Debug.Log($"Starting command line build for {EditorPreferences.ApplicationProductName}...");
 
-            var buildReports = new List<BuildReport>();
+            var buildReports = new HashSet<BuildReport>();
             var stopwatch = Stopwatch.StartNew();
 
             void CommandLineBuildReportCallback(BuildReport postProcessBuildReport)
             {
-                buildReports.Add(postProcessBuildReport);
-                CILoggingUtility.GenerateBuildReport(postProcessBuildReport, stopwatch);
-                stopwatch.Restart();
+                if (buildReports.Add(postProcessBuildReport))
+                {
+                    CILoggingUtility.GenerateBuildReport(postProcessBuildReport, stopwatch);
+                    stopwatch.Restart();
+                }
             }
 
             BuildReport finalBuildReport = null;
