@@ -37,6 +37,9 @@ namespace Utilities.Editor.BuildPipeline
                     case "-appBundle":
                         EditorUserBuildSettings.buildAppBundle = true;
                         break;
+                    case "-apkBundle":
+                        EditorUserBuildSettings.buildAppBundle = false;
+                        break;
                     case "-splitBinary":
                         Debug.LogWarning("-splitBinary is deprecated. Use -splitBinaryPerCpuArch instead.");
                         PlayerSettings.Android.buildApkPerCpuArchitecture = true;
