@@ -147,7 +147,7 @@ namespace Buildalon.Editor.BuildPipeline
                         case BuildResult.Cancelled:
                         default:
                             Debug.LogError($"{message}"
-#if UNITY_2022_1_OR_NEWER
+#if UNITY_2023_1_OR_NEWER
                                            + $"{buildReport.SummarizeErrors()}"
 #endif
                             );
