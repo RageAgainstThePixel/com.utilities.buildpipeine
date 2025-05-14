@@ -170,6 +170,7 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 
 | Argument | Description |
 | -------- | ----------- |
+| `-apkBundle` | Builds an .apk (The default setting) |
 | `-appBundle` | Builds an .aab for [Google Play Store](https://docs.unity3d.com/2022.3/Documentation/Manual/android-distribution-google-play.html). |
 | `-splitBinaryPerCpuArch` | Builds an APK per CPU architecture. |
 | `-splitApplicationBinary` | If `-appBundle` is not passed, then Unity builds Android expansion files (OBB) for the APK, otherwise it will create asset packs for [Play Asset Delivery](https://docs.unity3d.com/2022.3/Documentation/Manual/play-asset-delivery.html). |
