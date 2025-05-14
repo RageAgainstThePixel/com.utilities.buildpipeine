@@ -195,15 +195,18 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 
 | Argument | Description |
 | -------- | ----------- |
-| `-appBundle` | Builds an .aab for Google Play Store |
-| `-splitBinary` | Builds an APK per CPU architecture. |
-| `-splitApk` | Uses APK expansion files. |
+| `-apkBundle` | Builds an .apk (The default setting) |
+| `-appBundle` | Builds an .aab for [Google Play Store](https://docs.unity3d.com/2022.3/Documentation/Manual/android-distribution-google-play.html). |
+| `-splitBinaryPerCpuArch` | Builds an APK per CPU architecture. |
+| `-splitApplicationBinary` | If `-appBundle` is not passed, then Unity builds Android expansion files (OBB) for the APK, otherwise it will create asset packs for [Play Asset Delivery](https://docs.unity3d.com/2022.3/Documentation/Manual/play-asset-delivery.html). |
 | `-keystorePath` | Path to the keystore. |
 | `-keystorePass` | Sets the keystore password. |
 | `-keyaliasName` | Name of the key to use when signing. |
 | `-keyaliasPass` | Sets the key alias password. |
 | `-symbols` | Sets the symbol creation mode. Can be: `public`, `debugging`, or `disabled`. |
 | `-versionCode` | Sets the version code of the application. Must be an integer. ***Deprecated, use `buildNumber` instead*** |
+| `-minifyRelease` | Enables minification of the release build. |
+| `-minifyDebug` | Enables minification of the debug build. |
 
 ##### Apple Device Command Line Args
 

@@ -43,6 +43,11 @@ namespace Buildalon.Editor.BuildPipeline.Logging
         /// <inheritdoc />
         public override void GenerateBuildSummary(BuildReport buildReport, Stopwatch stopwatch)
         {
+            if (Application.isBatchMode == false)
+            {
+                return;
+            }
+
             if (buildReport == null)
             {
                 Debug.LogError("Build report is null. Cannot generate Git Hub Build Summary!");
@@ -52,13 +57,22 @@ namespace Buildalon.Editor.BuildPipeline.Logging
             // temp disable logging to get the right messages sent.
             CILoggingUtility.LoggingEnabled = false;
             var summary = Environment.GetEnvironmentVariable("GITHUB_STEP_SUMMARY");
-            if (summary == null) { return; }
+
+            if (summary == null)
+            {
+                Debug.LogError("GITHUB_STEP_SUMMARY env var not found. Cannot generate Git Hub Build Summary!");
+                return;
+            }
 
             using (var summaryWriter = new StreamWriter(summary, true, Encoding.UTF8))
             {
                 try
                 {
-                    var buildResultMessage = $"Unity {buildReport.summary.platform} Build {buildReport.summary.result}!";
+                    var buildResultMessage = $"Unity {buildReport.summary.platform} " +
+#if UNITY_6000_0_OR_NEWER
+                                             $"{buildReport.summary.buildType} " +
+#endif
+                                             $"Build {buildReport.summary.result}!";
                     summaryWriter.WriteLine($"# {buildResultMessage}");
                     summaryWriter.WriteLine("");
 
@@ -72,7 +86,10 @@ namespace Buildalon.Editor.BuildPipeline.Logging
                         summaryWriter.WriteLine($"Warnings: {buildReport.summary.totalWarnings}");
                     }
 
-                    summaryWriter.WriteLine($"Total duration: {stopwatch.Elapsed:g}");
+                    if (stopwatch != null)
+                    {
+                        summaryWriter.WriteLine($"Total duration: {stopwatch.Elapsed:g}");
+                    }
                     summaryWriter.WriteLine($"Size: {FormatFileSize(buildReport.summary.totalSize)}");
                     summaryWriter.WriteLine($"Output Path: {buildReport.summary.outputPath}");
                     summaryWriter.WriteLine("");
@@ -159,16 +176,13 @@ namespace Buildalon.Editor.BuildPipeline.Logging
                     {
                         case BuildResult.Succeeded:
                             Debug.Log($"{buildResultMessage}");
-
                             break;
                         case BuildResult.Unknown:
                         case BuildResult.Cancelled:
                             Debug.Log($"{WarningColor}{buildResultMessage}{ResetColor}");
-
                             break;
                         case BuildResult.Failed:
                             Debug.Log($"{ErrorColor}{buildResultMessage}{ResetColor}");
-
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();

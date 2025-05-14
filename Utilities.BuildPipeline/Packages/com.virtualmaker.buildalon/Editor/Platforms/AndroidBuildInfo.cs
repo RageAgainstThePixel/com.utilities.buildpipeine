@@ -37,10 +37,33 @@ namespace Buildalon.Editor.BuildPipeline
                     case "-appBundle":
                         EditorUserBuildSettings.buildAppBundle = true;
                         break;
+                    case "-apkBundle":
+                        EditorUserBuildSettings.buildAppBundle = false;
+                        break;
                     case "-splitBinary":
+                        Debug.LogWarning("-splitBinary is deprecated. Use -splitBinaryPerCpuArch instead.");
                         PlayerSettings.Android.buildApkPerCpuArchitecture = true;
                         break;
+                    case "-splitBinaryPerCpuArch":
+                        PlayerSettings.Android.buildApkPerCpuArchitecture = true;
+                        break;
+#if UNITY_6000_0_OR_NEWER
+                    case "-minifyRelease":
+                        PlayerSettings.Android.minifyRelease = true;
+                        break;
+                    case "-minifyDebug":
+                        PlayerSettings.Android.minifyDebug = true;
+                        break;
+#endif
                     case "-splitApk":
+                        Debug.LogWarning("-splitApk is deprecated. Use -splitApplicationBinary instead.");
+#if UNITY_2023_1_OR_NEWER
+                        PlayerSettings.Android.splitApplicationBinary = true;
+#else
+                        PlayerSettings.Android.useAPKExpansionFiles = true;
+#endif // UNITY_2023_1_OR_NEWER
+                        break;
+                    case "-splitApplicationBinary":
 #if UNITY_2023_1_OR_NEWER
                         PlayerSettings.Android.splitApplicationBinary = true;
 #else

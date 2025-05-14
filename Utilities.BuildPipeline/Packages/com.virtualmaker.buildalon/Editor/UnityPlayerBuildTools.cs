@@ -4,7 +4,6 @@ using Buildalon.Editor.BuildPipeline.Logging;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -106,8 +105,65 @@ namespace Buildalon.Editor.BuildPipeline
         [MenuItem("Tools/Build Player", false, 999)]
         public static void BuildPlayerMenu()
         {
-            var result = BuildUnityPlayer();
-            EditorUtility.RevealInFinder(result.summary.outputPath);
+            if (Application.isBatchMode) { return; }
+
+            var buildReports = new HashSet<BuildReport>();
+
+            void OnBuildCompleted(BuildReport buildReport)
+            {
+                buildReports.Add(buildReport);
+            }
+
+            BuildReport finalBuildReport = null;
+
+            try
+            {
+                OnBuildCompletedWithSummary += OnBuildCompleted;
+                finalBuildReport = BuildUnityPlayer();
+            }
+            finally
+            {
+                OnBuildCompletedWithSummary -= OnBuildCompleted;
+
+                if (finalBuildReport != null)
+                {
+                    OnBuildCompleted(finalBuildReport);
+                }
+
+                foreach (var buildReport in buildReports)
+                {
+                    var message = $"Unity {buildReport.summary.platform} " +
+#if UNITY_6000_0_OR_NEWER
+                                  $"{buildReport.summary.buildType} Build " +
+#endif
+                                  $"{buildReport.summary.result}!\n";
+                    switch (buildReport.summary.result)
+                    {
+                        case BuildResult.Succeeded:
+                            Debug.Log(message);
+                            break;
+                        case BuildResult.Unknown:
+                        case BuildResult.Failed:
+                        case BuildResult.Cancelled:
+                        default:
+                            Debug.LogError($"{message}"
+#if UNITY_2022_1_OR_NEWER
+                                           + $"{buildReport.SummarizeErrors()}"
+#endif
+                            );
+                            break;
+                    }
+                }
+
+                if (finalBuildReport != null)
+                {
+                    EditorUtility.RevealInFinder(finalBuildReport.summary.outputPath);
+                }
+                else
+                {
+                    Debug.LogWarning("No final build report found!");
+                }
+            }
         }
 
         /// <summary>
@@ -240,12 +296,9 @@ namespace Buildalon.Editor.BuildPipeline
                     buildInfo.BuildTarget,
                     buildInfo.BuildOptions);
             }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-            }
             finally
             {
+                EditorUtility.ClearProgressBar();
 #if UNITY_ADDRESSABLES
                 UnityEditor.AddressableAssets.Build.BuildScript.buildCompleted -= OnAddressableBuildResult;
 #endif
@@ -262,7 +315,6 @@ namespace Buildalon.Editor.BuildPipeline
                     PlayerSettings.SetApplicationIdentifier(buildTargetGroup, oldBuildIdentifier);
                 }
 #endif // UNITY_2023_1_OR_NEWER
-                EditorUtility.ClearProgressBar();
             }
 
             return buildReport;
@@ -412,8 +464,19 @@ namespace Buildalon.Editor.BuildPipeline
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             Debug.Log($"Starting command line build for {EditorPreferences.ApplicationProductName}...");
 
-            BuildReport buildReport = null;
-            var stopwatch = Stopwatch.StartNew();
+            var buildReports = new HashSet<BuildReport>();
+
+            void CommandLineBuildReportCallback(BuildReport postProcessBuildReport)
+            {
+                if (postProcessBuildReport != null)
+                {
+                    buildReports.Add(postProcessBuildReport);
+                }
+            }
+
+            BuildReport finalBuildReport = null;
+            OnBuildCompletedWithSummary += CommandLineBuildReportCallback;
+            var failed = false;
 
             try
             {
@@ -432,27 +495,37 @@ namespace Buildalon.Editor.BuildPipeline
                     Debug.Log($"AndroidSdkRoot: {androidSdkPath}");
                 }
 
-                buildReport = BuildUnityPlayer();
+                finalBuildReport = BuildUnityPlayer();
             }
             catch (Exception e)
             {
                 Debug.LogError($"Build Failed!\n{e.Message}\n{e.StackTrace}");
+                failed = true;
             }
             finally
             {
-                stopwatch.Stop();
-                CILoggingUtility.GenerateBuildReport(buildReport, stopwatch);
+                OnBuildCompletedWithSummary -= CommandLineBuildReportCallback;
             }
 
-            if (buildReport == null)
+            if (buildReports.Count == 0)
             {
-                Debug.LogError("Failed to find a valid build report!");
+                Debug.LogError("Failed to find any valid build reports!");
                 EditorApplication.Exit(1);
                 return;
             }
+            else
+            {
+                CommandLineBuildReportCallback(finalBuildReport);
+
+                foreach (var buildReport in buildReports)
+                {
+                    CILoggingUtility.GenerateBuildReport(buildReport, null);
+                }
+            }
 
             Debug.Log("Exiting command line build...");
-            EditorApplication.Exit(buildReport.summary.result == BuildResult.Succeeded ? 0 : 1);
+            var success = buildReports.All(report => report.summary.result == BuildResult.Succeeded) && !failed;
+            EditorApplication.Exit(success ? 0 : 1);
         }
 
         internal static bool CheckBuildScenes()
@@ -524,7 +597,13 @@ namespace Buildalon.Editor.BuildPipeline
         }
 
         /// <inheritdoc />
-        public void OnPostprocessBuild(BuildReport report) => buildInfo?.OnPostProcessBuild(report);
+        public void OnPostprocessBuild(BuildReport report)
+        {
+            buildInfo?.OnPostProcessBuild(report);
+            OnBuildCompletedWithSummary?.Invoke(report);
+        }
+
+        public static event Action<BuildReport> OnBuildCompletedWithSummary;
 
         #endregion IOrderedCallback
     }
