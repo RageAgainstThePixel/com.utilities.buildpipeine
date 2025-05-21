@@ -106,9 +106,18 @@ namespace Buildalon.Editor.BuildPipeline.Logging
 
                         if (!hasMessages) { continue; }
 
-                        errorLogs.AddRange(step.messages.Where(message => message.type == LogType.Error || message.type == LogType.Assert || message.type == LogType.Exception));
-                        warningLogs.AddRange(step.messages.Where(message => message.type == LogType.Warning));
-                        infoLogs.AddRange(step.messages.Where(message => message.type == LogType.Log));
+                        errorLogs.AddRange(
+                            step.messages
+                                .Where(message => message.type == LogType.Error || message.type == LogType.Assert || message.type == LogType.Exception)
+                                .Where(message => !CILoggingUtility.IgnoredLogs.Any(message.content.Contains)));
+                        warningLogs.AddRange(
+                            step.messages
+                                .Where(message => message.type == LogType.Warning)
+                                .Where(message => !CILoggingUtility.IgnoredLogs.Any(message.content.Contains)));
+                        infoLogs.AddRange(
+                            step.messages
+                                .Where(message => message.type == LogType.Log)
+                                .Where(message => !CILoggingUtility.IgnoredLogs.Any(message.content.Contains)));
                     }
 
                     string ProcessLogMessage(BuildStepMessage message)

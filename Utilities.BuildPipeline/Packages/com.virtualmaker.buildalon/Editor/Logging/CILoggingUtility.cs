@@ -52,7 +52,8 @@ namespace Buildalon.Editor.BuildPipeline.Logging
             @"Reference Rewriter found some errors while running with command",
             @"Reference rewriter: Error: method `System.Numerics.Vector3[] Windows.Perception.Spatial.SpatialStageFrameOfReference::TryGetMovementBounds(Windows.Perception.Spatial.SpatialCoordinateSystem)` doesn't exist in target framework. It is referenced from XRTK.WindowsMixedReality.dll at System.Boolean XRTK.WindowsMixedReality.Providers.BoundarySystem.WindowsMixedRealityBoundaryDataProvider::TryGetBoundaryGeometry",
             @"Selected Visual Studio is missing required components and may not be able to build the generated project. You can install the missing Visual Studio components by opening the generated project in Visual Studio.",
-            @"GfxDevice renderer is null. Unity cannot update the Ambient Probe and Reflection Probes that the SkyManager generates. Run the Editor without the -nographics argument or generate lighting for your scene."
+            @"GfxDevice renderer is null. Unity cannot update the Ambient Probe and Reflection Probes that the SkyManager generates. Run the Editor without the -nographics argument or generate lighting for your scene.",
+            @"Light baking could not be started because no valid OpenCL device could be found."
         };
 
         static CILoggingUtility()
