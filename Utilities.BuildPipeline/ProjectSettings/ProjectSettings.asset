@@ -856,8 +856,8 @@ PlayerSettings:
       VoipCall: False
       WebCam: False
   metroTargetDeviceFamilies:
-    Desktop: False
-    Holographic: False
+    Desktop: True
+    Holographic: True
     IoT: False
     IoTHeadless: False
     Mobile: False
