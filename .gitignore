@@ -85,3 +85,6 @@ ThirdParty.meta
 StreamingAssets/
 StreamingAssets.meta
 Utilities.BuildPipeline/Packages/com.unity.asset-store-tools
+Utilities.BuildPipeline/Assets/Icons/WSAPlayer
+Utilities.BuildPipeline/Assets/Icons/WSAPlayer.meta
+Utilities.BuildPipeline/Assets/Icons.meta

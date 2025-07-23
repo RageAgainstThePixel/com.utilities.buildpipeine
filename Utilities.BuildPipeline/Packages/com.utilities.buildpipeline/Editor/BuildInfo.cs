@@ -540,6 +540,11 @@ namespace Utilities.Editor.BuildPipeline
             var platformIconKinds = PlayerSettings.GetSupportedIconKindsForPlatform(BuildTargetGroup);
 #endif // UNITY_6000_0_OR_NEWER
 
+            if (BuildTargetGroup == BuildTargetGroup.WSA)
+            {
+                icon.SetWSAPlayerIcons();
+            }
+
             foreach (var platformIconKind in platformIconKinds)
             {
 #if UNITY_6000_0_OR_NEWER
@@ -588,6 +593,7 @@ namespace Utilities.Editor.BuildPipeline
             }
 
             AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh(ImportAssetOptions.Default);
         }
 
         /// <inheritdoc />
