@@ -8,7 +8,7 @@ A Build Pipeline utility package for the [Unity](https://unity.com/) Game Engine
 
 Requires Unity 2019.4 LTS or higher.
 
-The recommended installation method is though the unity package manager and [OpenUPM](https://openupm.com/packages/com.utilities.buildpipeine).
+The recommended installation method is though the unity package manager and [OpenUPM](https://openupm.com/packages/com.utilities.buildpipeline).
 
 ### Via Unity Package Manager and OpenUPM
 
@@ -36,7 +36,7 @@ openupm add com.utilities.buildpipeline
 ### Via Unity Package Manager and Git url
 
 - Open your Unity Package Manager
-- Add package from git url: `https://github.com/RageAgainstThePixel/com.utilities.buildpipeine.git#upm`
+- Add package from git url: `https://github.com/RageAgainstThePixel/com.utilities.buildpipeline.git#upm`
 
 ## Documentation
 
