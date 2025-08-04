@@ -150,6 +150,7 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | `-buildOutputDirectory` | Sets the output directory for the build. |
 | `-acceptExternalModificationsToPlayer` | Sets the build options to accept external modifications to the player. |
 | `-development` | Sets the build options to build a development build of the player. |
+| `-patch` | Sets the build options to build a patch of the player for platforms that support it. |
 | `-colorSpace` | Sets the color space of the application, if the provided color space string is a valid `ColorSpace` enum value. |
 | `-compressionMethod` | Set the build compression. Can be: `LZ4`, `LZ4HC` |
 | `-buildConfiguration` | Sets the build configuration of the application. Can be:  `debug`, `master`, or `release`. |
