@@ -3,14 +3,14 @@
   "displayName": "Utilities.BuildPipeline",
   "description": "The Build Pipeline Utilities aims to give developers more tools and options when making builds with the command line or with continuous integration.",
   "keywords": [],
-  "version": "1.7.7",
+  "version": "1.7.8",
   "unity": "2019.4",
-  "documentationUrl": "https://github.com/RageAgainstThePixel/com.utilities.buildpipeine#documentation",
-  "changelogUrl": "https://github.com/RageAgainstThePixel/com.utilities.buildpipeine/releases",
+  "documentationUrl": "https://github.com/RageAgainstThePixel/com.utilities.buildpipeline#documentation",
+  "changelogUrl": "https://github.com/RageAgainstThePixel/com.utilities.buildpipeline/releases",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/RageAgainstThePixel/com.utilities.buildpipeine.git"
+    "url": "git+https://github.com/RageAgainstThePixel/com.utilities.buildpipeline.git"
   },
   "author": {
     "name": "Stephen Hodgson",

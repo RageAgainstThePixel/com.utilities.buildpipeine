@@ -36,7 +36,7 @@ openupm add com.utilities.buildpipeline
 ### Via Unity Package Manager and Git url
 
 - Open your Unity Package Manager
-- Add package from git url: `https://github.com/RageAgainstThePixel/com.utilities.buildpipeine.git#upm`
+- Add package from git url: `https://github.com/RageAgainstThePixel/com.utilities.buildpipeline.git#upm`
 
 ## Documentation
 
