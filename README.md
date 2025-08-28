@@ -164,6 +164,9 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | `-buildWithDeepProfilingSupport` | Enables deep profiling support in the player. |
 | `-il2cppCompilerConfiguration` | C++ compiler configuration used when compiling IL2CPP. Can be: `Debug`, `Release`, or `Master` |
 | `-il2cppCodeGeneration` | Control code generation for IL2CPP. Can be: `OptimizeSpeed` or `OptimizeSize` |
+| `-buildProfileName` | Sets the build profile by name. |
+| `-buildProfilePath` | Sets the build profile by path. |
+| `-buildProfileGuid` | Sets the build profile by asset guid. |
 
 #### Platform specific Command Line Arguments
 
