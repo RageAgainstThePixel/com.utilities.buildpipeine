@@ -1,0 +1,72 @@
+name: build
+permissions:
+  contents: read
+on:
+  workflow_call:
+    inputs:
+      matrix:
+        required: true
+        type: string
+    secrets:
+      UNITY_USERNAME:
+        required: true
+      UNITY_PASSWORD:
+        required: true
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    strategy:
+      matrix: ${{ fromJSON(inputs.matrix) }}
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    env:
+      UNITY_PROJECT_PATH: '' # set by unity-setup action
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          clean: true
+      - uses: RageAgainstThePixel/unity-setup@v1
+        with:
+          unity-version: ${{ matrix.unity-version }}
+          build-targets: ${{ matrix.build-target }}
+      - uses: RageAgainstThePixel/activate-unity-license@v1
+        with:
+          license: 'Personal'
+          username: ${{ secrets.UNITY_USERNAME }}
+          password: ${{ secrets.UNITY_PASSWORD }}
+      - uses: RageAgainstThePixel/unity-action@v2
+        name: ${{ matrix.build-target }}-Validate
+        with:
+          build-target: ${{ matrix.build-target }}
+          project-path: ${{ env.UNITY_PROJECT_PATH }}
+          log-name: ${{ matrix.build-target }}-Validate
+          args: '-quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset'
+      - uses: RageAgainstThePixel/unity-action@v2
+        name: ${{ matrix.build-target }}-Build
+        with:
+          build-target: ${{ matrix.build-target }}
+          project-path: ${{ env.UNITY_PROJECT_PATH }}
+          log-name: ${{ matrix.build-target }}-Build
+          args: '-quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild -sceneList Assets/Scenes/SampleScene.unity'
+      - name: Validate Text Mesh Pro Resources
+        if: ${{ matrix.unity-version != '6000.x' }}
+        shell: bash
+        run: |
+          # Validate Text Mesh Pro Resources
+          TMPRO_PATH="$UNITY_PROJECT_PATH/Assets/TextMesh Pro"
+          if [ -d "$TMPRO_PATH" ]; then
+            echo "Text Mesh Pro Resources found at $TMPRO_PATH"
+          else
+            echo "Text Mesh Pro Resources not found at $TMPRO_PATH"
+            # list the folders in the Assets directory
+            ls -l "$UNITY_PROJECT_PATH/Assets"
+            exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        name: Upload Artifacts
+        if: always() || cancelled()
+        with:
+          name: ${{ github.run_number }}.${{ github.run_attempt }} ${{ matrix.unity-version }} ${{ matrix.name }} Artifacts
+          path: ${{ github.workspace }}/**/*.log
