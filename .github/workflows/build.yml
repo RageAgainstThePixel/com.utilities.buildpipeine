@@ -54,19 +54,19 @@ jobs:
         shell: bash
         run: |
           # Only run for Unity versions that are not 6000.x
-          UNITY_MAJOR_VERSION=$(echo "$UNITY_VERSION" | cut -d'.' -f1)
+          UNITY_MAJOR_VERSION=$(echo "${{ matrix.unity-version }}" | cut -d'.' -f1)
           if [ "$UNITY_MAJOR_VERSION" = "6000" ]; then
             echo "Skipping Text Mesh Pro Resources validation for Unity 6000.x versions."
             exit 0
           fi
           # Validate Text Mesh Pro Resources
-          TMPRO_PATH="$UNITY_PROJECT_PATH/Assets/TextMesh Pro"
+          TMPRO_PATH="${{ env.UNITY_PROJECT_PATH }}/Assets/TextMesh Pro"
           if [ -d "$TMPRO_PATH" ]; then
             echo "Text Mesh Pro Resources found at $TMPRO_PATH"
           else
             echo "Text Mesh Pro Resources not found at $TMPRO_PATH"
-            # list the folders in the Assets directory
-            ls -l "$UNITY_PROJECT_PATH/Assets"
+            # list the top level folders in the Assets directory
+            ls -al "${{ env.UNITY_PROJECT_PATH }}/Assets"
             exit 1
           fi
       - uses: actions/upload-artifact@v4
