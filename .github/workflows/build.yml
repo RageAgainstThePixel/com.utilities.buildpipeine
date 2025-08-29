@@ -51,9 +51,14 @@ jobs:
           log-name: ${{ matrix.build-target }}-Build
           args: '-quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild -sceneList Assets/Scenes/SampleScene.unity'
       - name: Validate Text Mesh Pro Resources
-        if: ${{ matrix.unity-version != '6000.x' }}
         shell: bash
         run: |
+          # Only run for Unity versions that are not 6000.x
+          UNITY_MAJOR_VERSION=$(echo "$UNITY_VERSION" | cut -d'.' -f1)
+          if [ "$UNITY_MAJOR_VERSION" = "6000" ]; then
+            echo "Skipping Text Mesh Pro Resources validation for Unity 6000.x versions."
+            exit 0
+          fi
           # Validate Text Mesh Pro Resources
           TMPRO_PATH="$UNITY_PROJECT_PATH/Assets/TextMesh Pro"
           if [ -d "$TMPRO_PATH" ]; then
