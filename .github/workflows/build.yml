@@ -35,7 +35,7 @@ jobs:
       - uses: actions/setup-python@v5
         if: startsWith(matrix.unity-version, '2019') || startsWith(matrix.unity-version, '2020') && startsWith(matrix.build-target, 'WebGL')
         with:
-          python-version: '3.x'
+          python-version: '2.7'
       - uses: RageAgainstThePixel/activate-unity-license@v1
         with:
           license: 'Personal'
