@@ -33,7 +33,7 @@ jobs:
           build-targets: ${{ matrix.build-target }}
       # setup python for 2019.x and 2020.x unity-version for WebGL platform-target
       - uses: actions/setup-python@v5
-        if: ${{ startsWith(matrix.unity-version, '2019') || startsWith(matrix.unity-version, '2020') && startsWith(matrix.build-target, 'WebGL') }}
+        if: ${{ (startsWith(matrix.unity-version, '2019') || startsWith(matrix.unity-version, '2020')) && startsWith(matrix.build-target, 'WebGL') }}
         with:
           python-version: '3.x'
       - uses: RageAgainstThePixel/activate-unity-license@v1
