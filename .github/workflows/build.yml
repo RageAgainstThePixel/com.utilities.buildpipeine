@@ -80,7 +80,7 @@ jobs:
           fi
       - uses: actions/upload-artifact@v4
         name: Upload Artifacts
-        if: always() || cancelled()
+        if: failure()
         with:
           name: ${{ github.run_number }}.${{ github.run_attempt }} ${{ matrix.unity-version }} ${{ matrix.name }} Artifacts
           path: ${{ github.workspace }}/**/*.log
