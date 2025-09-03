@@ -31,11 +31,13 @@ jobs:
         with:
           unity-version: ${{ matrix.unity-version }}
           build-targets: ${{ matrix.build-target }}
-      # setup python for 2019.x and 2020.x unity-version for WebGL platform-target
-      - uses: actions/setup-python@v5
+      # Install Python and Emscripten dependencies for 2019.x/2020.x WebGL builds
+      - name: Install Python and Emscripten dependencies
         if: ${{ (startsWith(matrix.unity-version, '2019') || startsWith(matrix.unity-version, '2020')) && startsWith(matrix.build-target, 'WebGL') }}
-        with:
-          python-version: '3.x'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 python3-dev python3-pip libpython3.8
       - uses: RageAgainstThePixel/activate-unity-license@v1
         with:
           license: 'Personal'
