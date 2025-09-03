@@ -46,6 +46,8 @@ jobs:
           sudo python2 -m pip install --upgrade "setuptools<45"
           # Install brotli for Python 2 to provide a valid Linux module
           sudo python2 -m pip install brotli==1.0.9
+          # Remove Unity's bundled macOS brotli.egg so Python 2 loads the correct Linux brotli
+          sudo find $UNITY_PROJECT_PATH -name 'Brotli-0.4.0-py2.7-macosx-10.10-x86_64.egg' -exec rm -f {} +
       - uses: RageAgainstThePixel/activate-unity-license@v1
         with:
           license: 'Personal'
