@@ -31,9 +31,9 @@ jobs:
         with:
           unity-version: ${{ matrix.unity-version }}
           build-targets: ${{ matrix.build-target }}
-      # Install Python and Emscripten dependencies for 2019.x/2020.x WebGL builds
+      # Install Python and Emscripten dependencies for 2020.x WebGL builds
       - name: Install Python2 and Emscripten dependencies
-        if: ${{ (startsWith(matrix.unity-version, '2019') || startsWith(matrix.unity-version, '2020')) && startsWith(matrix.build-target, 'WebGL') }}
+        if: ${{ startsWith(matrix.unity-version, '2020') && startsWith(matrix.build-target, 'WebGL') }}
         shell: bash
         run: |
           sudo apt-get update
@@ -46,9 +46,8 @@ jobs:
           sudo python2 -m pip install --upgrade "setuptools<45"
           # Install brotli for Python 2 to provide a valid Linux module
           sudo python2 -m pip install brotli==1.0.9
-          # Remove Unity's bundled macOS brotli.egg from project and Unity install so Python 2 loads the correct Linux brotli
+          # Remove Unity's bundled macOS brotli.egg so Python 2 loads the correct Linux brotli
           sudo find $UNITY_PROJECT_PATH -name 'Brotli-0.4.0-py2.7-macosx-10.10-x86_64.egg' -exec rm -f {} +
-          sudo find /home/runner/Unity/Hub/Editor/2019.4.40f1/Editor/Data/PlaybackEngines/WebGLSupport/BuildTools/Brotli/dist -name 'Brotli-0.4.0-py2.7-macosx-10.10-x86_64.egg' -exec rm -f {} +
       - uses: RageAgainstThePixel/activate-unity-license@v1
         with:
           license: 'Personal'
