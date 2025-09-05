@@ -9,6 +9,10 @@ using UnityEditor.Build.Reporting;
 using UnityEngine;
 using Utilities.Editor.BuildPipeline.Logging;
 
+#if UNITY_6000_0_OR_NEWER
+using UnityEditor.Build.Profile;
+#endif
+
 namespace Utilities.Editor.BuildPipeline
 {
     /// <summary>
@@ -152,6 +156,11 @@ namespace Utilities.Editor.BuildPipeline
             }
             set => scenes = value.ToList();
         }
+
+#if UNITY_6000_0_OR_NEWER
+        /// <inheritdoc />
+        public BuildProfile BuildProfile { get; set; }
+#endif // UNITY_6000_0_OR_NEWER
 
         /// <inheritdoc />
         public BuildOptions BuildOptions { get; set; }
@@ -468,6 +477,51 @@ namespace Utilities.Editor.BuildPipeline
                         };
                         break;
 #endif // PLATFORM_STANDALONE_OSX && UNITY_2020_1_OR_NEWER
+#if UNITY_6000_0_OR_NEWER
+                    case "-buildProfileName":
+                        var buildProfileName = arguments[++i];
+                        var buildProfile = AssetDatabase.LoadAssetAtPath<BuildProfile>($"Assets/Settings/Build Profiles/${buildProfileName}.asset");
+
+                        if (buildProfile == null)
+                        {
+                            throw new MissingReferenceException($"Failed to load {buildProfileName}!");
+                        }
+
+                        BuildProfile.SetActiveBuildProfile(buildProfile);
+                        BuildProfile = buildProfile;
+                        break;
+                    case "-buildProfilePath":
+                        var buildProfilePath = arguments[++i];
+
+                        if (!File.Exists(buildProfilePath))
+                        {
+                            throw new Exception($"Failed to find a valid build profile at path: {buildProfilePath}");
+                        }
+
+                        buildProfile = AssetDatabase.LoadAssetAtPath<BuildProfile>(buildProfilePath);
+
+                        if (buildProfile == null)
+                        {
+                            throw new MissingReferenceException($"Failed to load {buildProfilePath}!");
+                        }
+
+                        BuildProfile.SetActiveBuildProfile(buildProfile);
+                        BuildProfile = buildProfile;
+                        break;
+                    case "-buildProfileGuid":
+                        var buildProfileGuid = arguments[++i];
+                        var buildProfilePathFromGuid = AssetDatabase.GUIDToAssetPath(buildProfileGuid);
+                        buildProfile = AssetDatabase.LoadAssetAtPath<BuildProfile>(buildProfilePathFromGuid);
+
+                        if (buildProfile == null)
+                        {
+                            throw new MissingReferenceException($"Failed to load {buildProfilePathFromGuid} from GUID: {buildProfileGuid}!");
+                        }
+
+                        BuildProfile.SetActiveBuildProfile(buildProfile);
+                        BuildProfile = buildProfile;
+                        break;
+#endif // UNITY_6000_0_OR_NEWER
                 }
             }
         }
