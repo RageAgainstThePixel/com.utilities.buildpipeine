@@ -74,6 +74,13 @@ namespace Buildalon.Editor.BuildPipeline
         /// </summary>
         IEnumerable<EditorBuildSettingsScene> Scenes { get; set; }
 
+#if UNITY_6000_0_OR_NEWER
+        /// <summary>
+        /// The build profile to use for this build.
+        /// </summary>
+        UnityEditor.Build.Profile.BuildProfile BuildProfile { get; set; }
+#endif
+
         /// <summary>
         /// Build options to include in the Unity player build pipeline.
         /// </summary>

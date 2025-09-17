@@ -103,7 +103,7 @@ namespace Buildalon.Editor.BuildPipeline
                         UnityEditor.Android.UserBuildSettings.DebugSymbols.format = Unity.Android.Types.DebugSymbolFormat.Zip;
 #endif // PLATFORM_ANDROID
 #else
-#if UNITY_2020_1_OR_NEWER
+#if UNITY_2021_1_OR_NEWER
                         var symbols = arguments[++i] switch
                         {
                             "public" => AndroidCreateSymbols.Public,

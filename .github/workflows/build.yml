@@ -1,0 +1,78 @@
+name: build
+permissions:
+  contents: read
+on:
+  workflow_call:
+    inputs:
+      matrix:
+        required: true
+        type: string
+    secrets:
+      UNITY_USERNAME:
+        required: true
+      UNITY_PASSWORD:
+        required: true
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    strategy:
+      matrix: ${{ fromJSON(inputs.matrix) }}
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    env:
+      UNITY_PROJECT_PATH: '' # set by unity-setup action
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          clean: true
+      - uses: Buildalon/unity-setup@v1
+        with:
+          unity-version: ${{ matrix.unity-version }}
+          build-targets: ${{ matrix.build-target }}
+      - uses: Buildalon/activate-unity-license@v1
+        with:
+          license: 'Personal'
+          username: ${{ secrets.UNITY_USERNAME }}
+          password: ${{ secrets.UNITY_PASSWORD }}
+      - uses: Buildalon/unity-action@v2
+        name: ${{ matrix.build-target }}-Validate
+        with:
+          build-target: ${{ matrix.build-target }}
+          project-path: ${{ env.UNITY_PROJECT_PATH }}
+          log-name: ${{ matrix.build-target }}-Validate
+          args: -quit -nographics -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
+      - uses: Buildalon/unity-action@v2
+        name: ${{ matrix.build-target }}-Build
+        with:
+          build-target: ${{ matrix.build-target }}
+          project-path: ${{ env.UNITY_PROJECT_PATH }}
+          log-name: ${{ matrix.build-target }}-Build
+          args: -quit -nographics -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild
+      - name: Validate Text Mesh Pro Resources
+        shell: bash
+        run: |
+          # Only run for Unity versions that are not 6000.x
+          UNITY_MAJOR_VERSION=$(echo "${{ matrix.unity-version }}" | cut -d'.' -f1)
+          if [ "$UNITY_MAJOR_VERSION" = "6000" ]; then
+            echo "Skipping Text Mesh Pro Resources validation for Unity 6000.x versions."
+            exit 0
+          fi
+          # Validate Text Mesh Pro Resources
+          TMPRO_PATH="${{ env.UNITY_PROJECT_PATH }}/Assets/TextMesh Pro"
+          if [ -d "$TMPRO_PATH" ]; then
+            echo "Text Mesh Pro Resources found at $TMPRO_PATH"
+          else
+            echo "Text Mesh Pro Resources not found at $TMPRO_PATH"
+            # list the top level folders in the Assets directory
+            ls -al "${{ env.UNITY_PROJECT_PATH }}/Assets"
+            exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        name: Upload Artifacts
+        if: failure()
+        with:
+          name: ${{ github.run_number }}.${{ github.run_attempt }} ${{ matrix.unity-version }} ${{ matrix.name }} Artifacts
+          path: ${{ github.workspace }}/**/*.log

@@ -1,12 +1,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Buildalon.Editor.BuildPipeline.Logging;
-using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Buildalon.Editor.BuildPipeline.Logging;
+using JetBrains.Annotations;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -275,7 +275,7 @@ namespace Buildalon.Editor.BuildPipeline
                 PlayerSettings.colorSpace = buildInfo.ColorSpace.Value;
             }
 
-            BuildReport buildReport = null;
+            BuildReport buildReport;
 
             if (Application.isBatchMode)
             {
@@ -289,6 +289,19 @@ namespace Buildalon.Editor.BuildPipeline
             {
 #if UNITY_ADDRESSABLES
                 UnityEditor.AddressableAssets.Build.BuildScript.buildCompleted += OnAddressableBuildResult;
+#endif
+#if UNITY_6000_0_OR_NEWER
+                if (buildInfo.BuildProfile != null)
+                {
+                    buildReport = UnityEditor.BuildPipeline.BuildPlayer(new BuildPlayerWithProfileOptions
+                    {
+                        options = buildInfo.BuildOptions,
+                        locationPathName = buildInfo.FullOutputPath,
+                        buildProfile = buildInfo.BuildProfile
+                    });
+                }
+                // ReSharper disable once EnforceIfStatementBraces
+                else
 #endif
                 buildReport = UnityEditor.BuildPipeline.BuildPlayer(
                     buildInfo.Scenes.ToArray(),

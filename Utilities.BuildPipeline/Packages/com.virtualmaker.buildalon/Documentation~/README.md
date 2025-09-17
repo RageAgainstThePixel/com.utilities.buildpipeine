@@ -171,6 +171,7 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | `-buildOutputDirectory` | Sets the output directory for the build. |
 | `-acceptExternalModificationsToPlayer` | Sets the build options to accept external modifications to the player. |
 | `-development` | Sets the build options to build a development build of the player. |
+| `-patch` | Sets the build options to build a patch of the player for platforms that support it. |
 | `-colorSpace` | Sets the color space of the application, if the provided color space string is a valid `ColorSpace` enum value. |
 | `-compressionMethod` | Set the build compression. Can be: `LZ4`, `LZ4HC` |
 | `-buildConfiguration` | Sets the build configuration of the application. Can be:  `debug`, `master`, or `release`. |
@@ -184,6 +185,9 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | `-buildWithDeepProfilingSupport` | Enables deep profiling support in the player. |
 | `-il2cppCompilerConfiguration` | C++ compiler configuration used when compiling IL2CPP. Can be: `Debug`, `Release`, or `Master` |
 | `-il2cppCodeGeneration` | Control code generation for IL2CPP. Can be: `OptimizeSpeed` or `OptimizeSize` |
+| `-buildProfileName` | Sets the build profile by name. |
+| `-buildProfilePath` | Sets the build profile by path. |
+| `-buildProfileGuid` | Sets the build profile by asset guid. |
 
 #### Platform specific Command Line Arguments
 
