@@ -20,12 +20,12 @@
     },
     {
       "os": "ubuntu-latest",
-      "build-target": "StandaloneLinux64",
-      "build-args": "-colorSpace Linear"
+      "build-target": "StandaloneLinux64"
     },
     {
       "os": "ubuntu-latest",
-      "build-target": "WebGL"
+      "build-target": "WebGL",
+      "build-args": "-colorSpace Linear"
     },
     {
       "os": "windows-latest",
