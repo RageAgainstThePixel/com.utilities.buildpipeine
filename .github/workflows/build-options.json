@@ -24,7 +24,18 @@
     },
     {
       "os": "ubuntu-latest",
+      "build-target": "WebGL"
+    },
+    {
+      "os": "ubuntu-latest",
       "build-target": "WebGL",
+      "unity-version": "2019",
+      "build-args": "-colorSpace Gamma"
+    },
+    {
+      "os": "ubuntu-latest",
+      "build-target": "WebGL",
+      "unity-version": "2020",
       "build-args": "-colorSpace Gamma"
     },
     {
