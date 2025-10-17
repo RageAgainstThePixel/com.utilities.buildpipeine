@@ -49,7 +49,7 @@ jobs:
           build-target: ${{ matrix.build-target }}
           project-path: ${{ env.UNITY_PROJECT_PATH }}
           log-name: ${{ matrix.build-target }}-Build
-          args: -quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild
+          args: -quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild ${{ matrix.build-options }}
       - name: Validate Text Mesh Pro Resources
         shell: bash
         run: |
