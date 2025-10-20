@@ -224,7 +224,16 @@ namespace Buildalon.Editor.BuildPipeline
                         BuildOptions = BuildOptions.SetFlag(BuildOptions.PatchPackage);
                         break;
                     case "-colorSpace":
-                        ColorSpace = (ColorSpace)Enum.Parse(typeof(ColorSpace), arguments[++i]);
+                        var colorSpaceOption = arguments[++i];
+
+                        if (Enum.TryParse<ColorSpace>(colorSpaceOption, true, out var colorSpace))
+                        {
+                            ColorSpace = colorSpace;
+                        }
+                        else
+                        {
+                            Debug.LogError($"Failed to parse -colorSpace: {colorSpaceOption}");
+                        }
                         break;
                     case "-compressionMethod":
                         var compressionMethod = arguments[++i].ToLower();

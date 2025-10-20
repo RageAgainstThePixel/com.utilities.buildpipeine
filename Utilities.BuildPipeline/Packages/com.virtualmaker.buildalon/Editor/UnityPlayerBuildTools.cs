@@ -272,6 +272,7 @@ namespace Buildalon.Editor.BuildPipeline
 
             if (buildInfo.ColorSpace.HasValue)
             {
+                Debug.Log($"Color Space: {buildInfo.ColorSpace.Value}");
                 PlayerSettings.colorSpace = buildInfo.ColorSpace.Value;
             }
 
