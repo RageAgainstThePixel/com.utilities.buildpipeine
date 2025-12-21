@@ -38,7 +38,7 @@ jobs:
         name: ${{ matrix.build-target }}-Validate
         with:
           build-target: ${{ matrix.build-target }}
-          project-path: ${{ steps.unity-setup.outputs.project-path }}
+          project-path: ${{ steps.unity-setup.outputs.unity-project-path }}
           log-name: ${{ matrix.build-target }}-Validate
           args: -quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
 
@@ -46,7 +46,7 @@ jobs:
         name: ${{ matrix.build-target }}-Build
         with:
           build-target: ${{ matrix.build-target }}
-          project-path: ${{ steps.unity-setup.outputs.project-path }}
+          project-path: ${{ steps.unity-setup.outputs.unity-project-path }}
           log-name: ${{ matrix.build-target }}-Build
           args: -quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild ${{ matrix.build-args }}
 
@@ -60,13 +60,13 @@ jobs:
             exit 0
           fi
           # Validate Text Mesh Pro Resources
-          TMPRO_PATH="${{ steps.unity-setup.outputs.project-path }}/Assets/TextMesh Pro"
+          TMPRO_PATH="${{ steps.unity-setup.outputs.unity-project-path }}/Assets/TextMesh Pro"
           if [ -d "$TMPRO_PATH" ]; then
             echo "Text Mesh Pro Resources found at $TMPRO_PATH"
           else
             echo "Text Mesh Pro Resources not found at $TMPRO_PATH"
             # list the top level folders in the Assets directory
-            ls -al "${{ steps.unity-setup.outputs.project-path }}/Assets"
+            ls -al "${{ steps.unity-setup.outputs.unity-project-path }}/Assets"
             exit 1
           fi
 

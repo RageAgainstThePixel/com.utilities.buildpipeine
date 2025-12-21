@@ -98,7 +98,7 @@ jobs:
         with:
           log-name: ${{ matrix.build-target }}-Validate
           build-target: ${{ matrix.build-target }}
-          project-path: ${{ steps.unity-setup.outputs.project-path }}
+          project-path: ${{ steps.unity-setup.outputs.unity-project-path }}
           args: -quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
 
       - uses: RageAgainstThePixel/unity-action@v3
@@ -106,7 +106,7 @@ jobs:
         with:
           log-name: ${{ matrix.build-target }}-Build
           build-target: ${{ matrix.build-target }}
-          project-path: ${{ steps.unity-setup.outputs.project-path }}
+          project-path: ${{ steps.unity-setup.outputs.unity-project-path }}
           args: -quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild ${{ matrix.build-args }}
 ```
 
