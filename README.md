@@ -111,7 +111,7 @@ jobs:
 ```
 
 > [!NOTE]
-> Embedded CI Logging in GitHub Actions and Azure DevOps can be disabled by adding the `DISABLE_EMBEDDED_BUILDPIPELINE_PLUGIN_LOGGING` environment variable to the build step with a value of `true` or `1`.
+> Embedded CI Logging in GitHub Actions and Azure DevOps can be disabled by adding the `DISABLE_EMBEDDED_BUILD_PIPELINE_PLUGIN_LOGGING` environment variable to the build step with a value of `true` or `1`.
 
 ### Executable Methods
 

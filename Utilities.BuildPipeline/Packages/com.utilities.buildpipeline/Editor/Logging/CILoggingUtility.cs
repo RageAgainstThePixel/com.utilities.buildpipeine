@@ -57,13 +57,14 @@ namespace Utilities.Editor.BuildPipeline.Logging
 
         static CILoggingUtility()
         {
-            var disableLoggingVar = Environment.GetEnvironmentVariable("DISABLE_EMBEDDED_BUILDPIPELINE_PLUGIN_LOGGING");
+            var disableLoggingVar = Environment.GetEnvironmentVariable("DISABLE_EMBEDDED_BUILD_PIPELINE_PLUGIN_LOGGING", EnvironmentVariableTarget.Process);
 
             if (!string.IsNullOrWhiteSpace(disableLoggingVar) &&
                 (disableLoggingVar.Equals("1") ||
                  disableLoggingVar.Equals("true", StringComparison.OrdinalIgnoreCase)))
             {
-                LoggingEnabled = false;
+                Debug.Log("DISABLE_EMBEDDED_BUILD_PIPELINE_PLUGIN_LOGGING detected, disabling embedded logging");
+                loggingEnabled = false;
                 return;
             }
 
