@@ -40,29 +40,21 @@ openupm add com.utilities.buildpipeline
 
 ## Documentation
 
-This package is designed to be use in conjunction with a CI/CD pipeline, such as [![marketplace](https://img.shields.io/static/v1?label=&labelColor=505050&message=Unity%20Build%20Pipeline%20Utility&color=0076D6&logo=github-actions&logoColor=0076D6)](https://github.com/marketplace/actions/unity-build-pipeline-utility).
-
 ### Example Usage
 
 #### Create Github Action Workflow
 
-1. Create a new action workflow file using [![marketplace](https://img.shields.io/static/v1?label=&labelColor=505050&message=Unity%20Build%20Pipeline%20Utility&color=0076D6&logo=github-actions&logoColor=0076D6)](https://github.com/marketplace/actions/unity-build-pipeline-utility)
-`.github/workflows/unity-build.yml`
-
-2. Add the following content to the file:
+Create a new workflow file in your Unity project repository at `.github/workflows/build.yml` with the following content:
 
 ```yml
 name: unity-build
 
 on:
   push:
-    branches:
-      - 'main'
+    branches: ['main']
   pull_request:
-    branches:
-      - '*'
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+    branches: ['*']
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -83,29 +75,43 @@ jobs:
             build-target: StandaloneOSX
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
         # Installs the Unity Editor based on your project version text file
-        # sets -> env.UNITY_EDITOR_PATH
-        # sets -> env.UNITY_PROJECT_PATH
-      - uses: RageAgainstThePixel/unity-setup@v1
+      - uses: RageAgainstThePixel/unity-setup@v2
+        id: unity-setup # used to get project path output in later steps
         with:
           unity-version: ${{ matrix.unity-versions }}
           build-targets: ${{ matrix.build-target }}
+          version-file: path/to/your/ProjectSettings/ProjectVersion.txt # optional, this step will attempt to auto detect if not provided
 
         # Activates the installation with the provided credentials
-      - uses: RageAgainstThePixel/activate-unity-license@v1
+      - uses: RageAgainstThePixel/activate-unity-license@v2
         with:
           license: 'Personal' # Choose license type to use [ Personal, Professional ]
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
           # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro activations
 
-      - name: Unity Build (${{ matrix.build-target }})
-        uses: RageAgainstThePixel/unity-build@v1
+      - uses: RageAgainstThePixel/unity-action@v3
+        name: ${{ matrix.build-target }}-Validate
         with:
+          log-name: ${{ matrix.build-target }}-Validate
           build-target: ${{ matrix.build-target }}
+          project-path: ${{ steps.unity-setup.outputs.unity-project-path }}
+          args: -quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
+
+      - uses: RageAgainstThePixel/unity-action@v3
+        name: ${{ matrix.build-target }}-Build
+        with:
+          log-name: ${{ matrix.build-target }}-Build
+          build-target: ${{ matrix.build-target }}
+          project-path: ${{ steps.unity-setup.outputs.unity-project-path }}
+          args: -quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild ${{ matrix.build-args }}
 ```
+
+> [!NOTE]
+> Embedded CI Logging in GitHub Actions and Azure DevOps can be disabled by adding the `DISABLE_EMBEDDED_BUILD_PIPELINE_PLUGIN_LOGGING` environment variable to the build step with a value of `true` or `1`.
 
 ### Executable Methods
 
