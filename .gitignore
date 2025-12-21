@@ -53,6 +53,8 @@ obj/
 *.suo
 /*.sln
 *.sln
+/*.slnx
+*.slnx
 *.user
 *.unityproj
 *.ipch
@@ -79,11 +81,13 @@ _ReSharper.Caches
 # Project Specific List #
 # ===================== #
 --Version/
+.artifacts/
 artifacts/
 ThirdParty/
 ThirdParty.meta
 StreamingAssets/
 StreamingAssets.meta
+
 Utilities.BuildPipeline/Packages/com.unity.asset-store-tools
 Utilities.BuildPipeline/Assets/Icons/WSAPlayer
 Utilities.BuildPipeline/Assets/Icons/WSAPlayer.meta
