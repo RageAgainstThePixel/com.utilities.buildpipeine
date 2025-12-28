@@ -20,6 +20,14 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: Free Disk Space
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        uses: endersonmenezes/free-disk-space@e6ed9b02e683a3b55ed0252f1ee469ce3b39a885 # v3.1.0
+        with:
+          remove_android: true
+          remove_dotnet: false
+          remove_tool_cache: false
+
       - uses: actions/checkout@v6
 
       - uses: RageAgainstThePixel/unity-setup@v2
