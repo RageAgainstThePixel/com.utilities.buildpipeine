@@ -1,6 +1,6 @@
 # com.utilities.buildpipeline
 
-[![Discord](https://img.shields.io/discord/855294214065487932.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/xQgMW9ufN4) [![openupm](https://img.shields.io/npm/v/com.utilities.buildpipeline?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.utilities.buildpipeline/) [![openupm](https://img.shields.io/badge/dynamic/json?color=brightgreen&label=downloads&query=%24.downloads&suffix=%2Fmonth&url=https%3A%2F%2Fpackage.openupm.com%2Fdownloads%2Fpoint%2Flast-month%2Fcom.utilities.buildpipeline)](https://openupm.com/packages/com.utilities.buildpipeline/) [![marketplace](https://img.shields.io/static/v1?label=&labelColor=505050&message=Unity%20Build%20Pipeline%20Utility&color=0076D6&logo=github-actions&logoColor=0076D6)](https://github.com/marketplace/actions/unity-build-pipeline-utility)
+[![Discord](https://img.shields.io/discord/855294214065487932.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/xQgMW9ufN4) [![openupm](https://img.shields.io/npm/v/com.utilities.buildpipeline?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.utilities.buildpipeline/) [![openupm](https://img.shields.io/badge/dynamic/json?color=brightgreen&label=downloads&query=%24.downloads&suffix=%2Fmonth&url=https%3A%2F%2Fpackage.openupm.com%2Fdownloads%2Fpoint%2Flast-month%2Fcom.utilities.buildpipeline)](https://openupm.com/packages/com.utilities.buildpipeline/)
 
 A Build Pipeline utility package for the [Unity](https://unity.com/) Game Engine.
 
@@ -93,7 +93,7 @@ jobs:
           password: ${{ secrets.UNITY_PASSWORD }}
           # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro activations
 
-      - uses: RageAgainstThePixel/unity-action@v3
+      - uses: RageAgainstThePixel/unity-action@dev
         name: ${{ matrix.build-target }}-Validate
         with:
           log-name: ${{ matrix.build-target }}-Validate
@@ -101,7 +101,7 @@ jobs:
           project-path: ${{ steps.unity-setup.outputs.unity-project-path }}
           args: -quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
 
-      - uses: RageAgainstThePixel/unity-action@v3
+      - uses: RageAgainstThePixel/unity-action@dev
         name: ${{ matrix.build-target }}-Build
         with:
           log-name: ${{ matrix.build-target }}-Build
