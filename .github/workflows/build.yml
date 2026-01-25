@@ -42,7 +42,7 @@ jobs:
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
 
-      - uses: RageAgainstThePixel/unity-action@v3
+      - uses: RageAgainstThePixel/unity-action@dev
         name: ${{ matrix.build-target }}-Validate
         with:
           build-target: ${{ matrix.build-target }}
@@ -50,7 +50,7 @@ jobs:
           log-name: ${{ matrix.build-target }}-Validate
           args: -quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
 
-      - uses: RageAgainstThePixel/unity-action@v3
+      - uses: RageAgainstThePixel/unity-action@dev
         name: ${{ matrix.build-target }}-Build
         with:
           build-target: ${{ matrix.build-target }}
