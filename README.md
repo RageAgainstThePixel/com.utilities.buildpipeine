@@ -93,7 +93,7 @@ jobs:
           password: ${{ secrets.UNITY_PASSWORD }}
           # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro activations
 
-      - uses: RageAgainstThePixel/unity-action@dev
+      - uses: RageAgainstThePixel/unity-action@v3
         name: ${{ matrix.build-target }}-Validate
         with:
           log-name: ${{ matrix.build-target }}-Validate
@@ -101,7 +101,7 @@ jobs:
           project-path: ${{ steps.unity-setup.outputs.unity-project-path }}
           args: -quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
 
-      - uses: RageAgainstThePixel/unity-action@dev
+      - uses: RageAgainstThePixel/unity-action@v3
         name: ${{ matrix.build-target }}-Build
         with:
           log-name: ${{ matrix.build-target }}-Build
