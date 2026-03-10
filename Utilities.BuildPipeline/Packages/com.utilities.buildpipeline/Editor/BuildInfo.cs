@@ -251,8 +251,7 @@ namespace Utilities.Editor.BuildPipeline
                         }
                         break;
                     case "-buildConfiguration":
-                        var configuration = arguments[++i].Substring(1).ToLower();
-
+                        var configuration = arguments[++i].ToLower();
                         switch (configuration)
                         {
                             case "debug":
@@ -285,9 +284,8 @@ namespace Utilities.Editor.BuildPipeline
                         Debug.LogWarning("This arg has been deprecated. use \"-allowDebugging false\" instead.");
                         break;
                     case "-allowDebugging":
-                        var value = arguments[++i];
-
-                        switch (value.ToLower())
+                        var value = arguments[++i].ToLower();
+                        switch (value)
                         {
                             case "true":
                                 EditorUserBuildSettings.allowDebugging = true;
@@ -351,7 +349,7 @@ namespace Utilities.Editor.BuildPipeline
 
                         break;
                     case "-scriptingBackend":
-                        var scriptingBackendString = arguments[++i].Substring(1).ToLower();
+                        var scriptingBackendString = arguments[++i].ToLower();
 
                         switch (scriptingBackendString)
                         {
