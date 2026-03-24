@@ -24,7 +24,14 @@ jobs:
     env:
       UNITY_PROJECT_PATH: '' # set by unity-setup action
     steps:
-      - uses: actions/checkout@v5
+      - name: Free Disk Space
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        uses: endersonmenezes/free-disk-space@e6ed9b02e683a3b55ed0252f1ee469ce3b39a885 # v3.1.0
+        with:
+          remove_android: true
+          remove_dotnet: false
+          remove_tool_cache: false
+      - uses: actions/checkout@v6
         with:
           clean: true
       - uses: Buildalon/unity-setup@v2
@@ -69,7 +76,7 @@ jobs:
             ls -al "${{ env.UNITY_PROJECT_PATH }}/Assets"
             exit 1
           fi
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         name: Upload Artifacts
         if: failure()
         with:

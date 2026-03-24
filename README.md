@@ -58,13 +58,10 @@ openupm add com.virtualmaker.buildalon
 name: unity-build
 on:
   push:
-    branches:
-      - 'main'
+    branches: ['main']
   pull_request:
-    branches:
-      - '*'
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+    branches: ['*']
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -84,7 +81,7 @@ jobs:
           - os: macos-latest
             build-target: StandaloneOSX
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
         # Installs the Unity Editor based on your project version text file
         # sets -> env.UNITY_EDITOR_PATH
@@ -93,6 +90,7 @@ jobs:
         with:
           unity-version: ${{ matrix.unity-versions }}
           build-targets: ${{ matrix.build-target }}
+          version-file: path/to/your/ProjectSettings/ProjectVersion.txt # optional, this step will attempt to auto detect if not provided
 
         # Activates the installation with the provided credentials
       - uses: buildalon/activate-unity-license@v1
@@ -132,6 +130,9 @@ jobs:
             !/**/*_BurstDebugInformation_DoNotShip/**
 ```
 
+> [!NOTE]
+> Embedded CI Logging in GitHub Actions and Azure DevOps can be disabled by adding the `DISABLE_EMBEDDED_BUILD_PIPELINE_PLUGIN_LOGGING` environment variable to the build step with a value of `true` or `1`.
+
 ### Executable Methods
 
 These methods can be executed using the `-executeMethod` command line argument to validate, sync, and build the Unity project.
@@ -144,6 +145,19 @@ These methods can be executed using the `-executeMethod` command line argument t
 
 ```bash
 "/path/to/Unity.exe" -projectPath "/path/to/unity/project" -quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild
+```
+
+#### Project Validation Command Line Arguments
+
+> [!NOTE]
+> No longer required in Unity 6+
+
+| Argument | Description |
+| -------- | ----------- |
+| `-importTMProEssentialsAsset` | Imports the TMPro Essential assets if they are not already in the project. |
+
+```bash
+"/path/to/Unity.exe" -projectPath "/path/to/unity/project" -quit -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
 ```
 
 #### Project Validation Command Line Arguments
