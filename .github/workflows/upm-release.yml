@@ -2,6 +2,7 @@ name: UPM Release
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 jobs:
   release:
     permissions:
@@ -11,6 +12,41 @@ jobs:
     - uses: actions/checkout@v6
       with:
         fetch-depth: 0
+
+    # Hub 3.20 installs under /usr/lib/unityhub; upm-release@v1 (unity-cli 1.x) still probes
+    # /opt/unityhub and always spawns the `unity-hub` PATH wrapper created during its own install.
+    # Pre-installing Hub makes the action skip install, so provide both the /opt symlink and wrapper.
+    - name: Install Unity Hub with unity-cli compatibility
+      run: |
+        set -euo pipefail
+        sudo apt-get update
+        sudo apt-get install -y xvfb
+        wget -qO- https://hub.unity3d.com/linux/keys/public | gpg --dearmor | sudo tee /usr/share/keyrings/Unity_Technologies_ApS.gpg >/dev/null
+        echo "deb [signed-by=/usr/share/keyrings/Unity_Technologies_ApS.gpg] https://hub.unity3d.com/linux/repos/deb stable main" | sudo tee /etc/apt/sources.list.d/unityhub.list
+        sudo apt-get update
+        sudo apt-get install -y unityhub
+        if [ -d /usr/lib/unityhub ] && [ ! -e /opt/unityhub ]; then
+          sudo ln -sfn /usr/lib/unityhub /opt/unityhub
+        fi
+        test -x /opt/unityhub/unityhub
+        sudo tee /usr/bin/unity-hub >/dev/null <<'WRAPPER'
+        #!/bin/bash
+        if [ -x /usr/lib/unityhub/unityhub ]; then
+          hubBin=/usr/lib/unityhub/unityhub
+        elif [ -x /opt/unityhub/unityhub ]; then
+          hubBin=/opt/unityhub/unityhub
+        else
+          hubBin=$(readlink -f "$(command -v unityhub)" 2>/dev/null || true)
+        fi
+        if [ -z "$hubBin" ] || [ ! -x "$hubBin" ]; then
+          echo "Unity Hub binary not found" >&2
+          exit 127
+        fi
+        exec xvfb-run --auto-servernum "$hubBin" "$@" 2>/dev/null
+        WRAPPER
+        sudo chmod 755 /usr/bin/unity-hub
+        command -v unity-hub
+
     - uses: RageAgainstThePixel/upm-release@v1
       with:
         username: ${{ secrets.UNITY_USERNAME }}
