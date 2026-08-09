@@ -408,26 +408,12 @@ namespace Utilities.Editor.BuildPipeline
 #endif //  UNITY_2021_1_OR_NEWER
             }
 
-            AssetDatabase.importPackageCompleted += ImportCallback;
-
-            var importPath = ResolveTmpEssentialResourcesPackagePath();
-            Debug.Log($"TextMesh Pro Essentials Import from {importPath ?? "(not found)"}");
-
-            if (string.IsNullOrEmpty(importPath) || !System.IO.File.Exists(importPath))
+            void CleanupImportHandlers()
             {
                 AssetDatabase.importPackageCompleted -= ImportCallback;
-#if UNITY_6000_0_OR_NEWER
-                // Standalone com.unity.textmeshpro was merged into com.unity.ugui; this repo's CI
-                // already skips requiring Assets/TextMesh Pro on Unity 6000. Missing package is normal.
-                Debug.Log("TMP Essential Resources .unitypackage not present; skipping import.");
-#else
-                Debug.LogWarning(
-                    $"Unable to find the TextMesh Pro essentials package at {importPath ?? "(unresolved)"}; skipping import.");
-#endif
-                return;
+                AssetDatabase.importPackageCancelled -= CancelCallback;
+                AssetDatabase.importPackageFailed -= FailedCallback;
             }
-
-            ImportPackageImmediately(importPath);
 
             void ImportCallback(string packageName)
             {
@@ -439,9 +425,44 @@ namespace Utilities.Editor.BuildPipeline
                     System.IO.File.WriteAllBytes(settingsFilePath, settingsBackup);
                 }
 
-                AssetDatabase.importPackageCompleted -= ImportCallback;
+                CleanupImportHandlers();
                 tcs.TrySetResult(true);
             }
+
+            void CancelCallback(string packageName)
+            {
+                CleanupImportHandlers();
+                tcs.TrySetException(new Exception($"TMP essentials import was cancelled ({packageName})."));
+            }
+
+            void FailedCallback(string packageName, string errorMessage)
+            {
+                CleanupImportHandlers();
+                tcs.TrySetException(new Exception($"TMP essentials import failed ({packageName}): {errorMessage}"));
+            }
+
+            AssetDatabase.importPackageCompleted += ImportCallback;
+            AssetDatabase.importPackageCancelled += CancelCallback;
+            AssetDatabase.importPackageFailed += FailedCallback;
+
+            var importPath = ResolveTmpEssentialResourcesPackagePath();
+            Debug.Log($"TextMesh Pro Essentials Import from {importPath ?? "(not found)"}");
+
+            if (string.IsNullOrEmpty(importPath) || !System.IO.File.Exists(importPath))
+            {
+                CleanupImportHandlers();
+#if UNITY_6000_0_OR_NEWER
+                // Standalone com.unity.textmeshpro was merged into com.unity.ugui; this repo's CI
+                // already skips requiring Assets/TextMesh Pro on Unity 6000. Missing package is normal.
+                Debug.Log("TMP Essential Resources .unitypackage not present; skipping import.");
+                return;
+#else
+                throw new System.IO.FileNotFoundException(
+                    $"Unable to find the TextMesh Pro essentials package at {importPath ?? "(unresolved)"}.");
+#endif
+            }
+
+            ImportPackageImmediately(importPath);
 
             await tcs.Task.ConfigureAwait(true);
 
@@ -488,8 +509,9 @@ namespace Utilities.Editor.BuildPipeline
         }
 
         /// <summary>
-        /// Imports a .unitypackage synchronously when the internal API exists; otherwise falls back to
-        /// <see cref="AssetDatabase.ImportPackage"/>. Unity 6000.6+ may not expose ImportPackageImmediately.
+        /// Imports a .unitypackage using internal <c>ImportPackageImmediately</c> when available (synchronous);
+        /// otherwise falls back to asynchronous <see cref="AssetDatabase.ImportPackage"/>.
+        /// Unity 6000.6+ may not expose ImportPackageImmediately.
         /// </summary>
         private static void ImportPackageImmediately(string importPath)
         {
