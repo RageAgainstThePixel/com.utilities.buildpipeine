@@ -48,6 +48,11 @@ namespace Utilities.Editor.BuildPipeline
 
         private bool productNameOverride;
 
+        /// <summary>
+        /// True when <see cref="ProductName"/> was set explicitly (e.g. via <c>-productName</c>).
+        /// </summary>
+        protected bool HasProductNameOverride => productNameOverride;
+
         /// <inheritdoc />
         public string ProductName
         {
@@ -62,6 +67,16 @@ namespace Utilities.Editor.BuildPipeline
             }
             set
             {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentException("Product name cannot be null or whitespace.", nameof(value));
+                }
+
+                if (value.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+                {
+                    throw new ArgumentException($"Product name contains invalid filename characters: \"{value}\"", nameof(value));
+                }
+
                 productNameOverride = true;
                 productName = value;
                 PlayerSettings.productName = productName;

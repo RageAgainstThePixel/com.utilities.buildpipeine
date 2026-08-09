@@ -15,7 +15,9 @@ namespace Utilities.Editor.BuildPipeline
         public override BuildTargetGroup BuildTargetGroup => BuildTargetGroup.WSA;
 
         /// <inheritdoc />
-        public override string FullOutputPath => OutputDirectory;
+        public override string FullOutputPath => HasProductNameOverride
+            ? $"{OutputDirectory}{System.IO.Path.DirectorySeparatorChar}{OutputName}"
+            : OutputDirectory;
 
         /// <inheritdoc />
         public override void ParseCommandLineArgs()

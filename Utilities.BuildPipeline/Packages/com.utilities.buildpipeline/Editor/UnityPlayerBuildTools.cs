@@ -175,6 +175,15 @@ namespace Utilities.Editor.BuildPipeline
             if (BuildInfo == null) { throw new ArgumentNullException(nameof(BuildInfo)); }
             EditorUtility.DisplayProgressBar($"{BuildInfo.BuildTarget} Build Pipeline", "Gathering Build Data...", 0.25f);
 
+            // Snapshot before CLI parse — setters may mutate PlayerSettings immediately.
+            var oldProductName = PlayerSettings.productName;
+            var buildTargetGroup = UnityEditor.BuildPipeline.GetBuildTargetGroup(buildInfo.BuildTarget);
+#if UNITY_2023_1_OR_NEWER
+            var oldBuildIdentifier = PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup));
+#else
+            var oldBuildIdentifier = PlayerSettings.GetApplicationIdentifier(buildTargetGroup);
+#endif // UNITY_2023_1_OR_NEWER
+
             if (BuildInfo.IsCommandLine)
             {
                 BuildInfo.ParseCommandLineArgs();
@@ -205,13 +214,6 @@ namespace Utilities.Editor.BuildPipeline
 #if UNITY_2022_3_OR_NEWER
             PlayerSettings.visionOSBundleVersion = PlayerSettings.bundleVersion;
 #endif // UNITY_2022_3_OR_NEWER
-
-            var buildTargetGroup = UnityEditor.BuildPipeline.GetBuildTargetGroup(buildInfo.BuildTarget);
-#if UNITY_2023_1_OR_NEWER
-            var oldBuildIdentifier = PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup));
-#else
-            var oldBuildIdentifier = PlayerSettings.GetApplicationIdentifier(buildTargetGroup);
-#endif // UNITY_2023_1_OR_NEWER
 
             if (!string.IsNullOrWhiteSpace(buildInfo.BundleIdentifier))
             {
@@ -317,6 +319,11 @@ namespace Utilities.Editor.BuildPipeline
                 UnityEditor.AddressableAssets.Build.BuildScript.buildCompleted -= OnAddressableBuildResult;
 #endif
                 PlayerSettings.colorSpace = oldColorSpace;
+
+                if (PlayerSettings.productName != oldProductName)
+                {
+                    PlayerSettings.productName = oldProductName;
+                }
 
 #if UNITY_2023_1_OR_NEWER
                 if (PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup)) != oldBuildIdentifier)

@@ -20,7 +20,9 @@ namespace Utilities.Editor.BuildPipeline
 
         /// <inheritdoc />
         public override string FullOutputPath => PlayerSettings.Android.buildApkPerCpuArchitecture || EditorUserBuildSettings.exportAsGoogleAndroidProject
-            ? OutputDirectory
+            ? HasProductNameOverride
+                ? $"{OutputDirectory}{System.IO.Path.DirectorySeparatorChar}{OutputName}"
+                : OutputDirectory
             : base.FullOutputPath;
 
         public override void ParseCommandLineArgs()
