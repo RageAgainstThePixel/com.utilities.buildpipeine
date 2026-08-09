@@ -35,6 +35,9 @@ jobs:
         with:
           unity-version: ${{ matrix.unity-version }}
           build-targets: ${{ matrix.build-target }}
+          # Hub 3.20+ installs to /usr/lib/unityhub; unity-setup@v2 (older unity-cli) still probes /opt/unityhub.
+          # Pin until unity-setup picks up the dual-path Hub fix.
+          hub-version: '3.14.3'
 
       - uses: RageAgainstThePixel/activate-unity-license@v2
         with:
