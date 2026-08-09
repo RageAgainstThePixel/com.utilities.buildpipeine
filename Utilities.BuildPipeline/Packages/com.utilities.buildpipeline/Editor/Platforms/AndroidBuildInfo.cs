@@ -1,6 +1,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.IO;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
@@ -21,7 +22,7 @@ namespace Utilities.Editor.BuildPipeline
         /// <inheritdoc />
         public override string FullOutputPath => PlayerSettings.Android.buildApkPerCpuArchitecture || EditorUserBuildSettings.exportAsGoogleAndroidProject
             ? HasProductNameOverride
-                ? $"{OutputDirectory}{System.IO.Path.DirectorySeparatorChar}{OutputName}"
+                ? Path.Combine(OutputDirectory, OutputName).Replace("\\", "/")
                 : OutputDirectory
             : base.FullOutputPath;
 

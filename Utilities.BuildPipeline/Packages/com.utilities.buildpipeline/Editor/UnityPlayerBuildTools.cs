@@ -177,6 +177,7 @@ namespace Utilities.Editor.BuildPipeline
 
             // Snapshot before CLI parse — setters may mutate PlayerSettings immediately.
             var oldProductName = PlayerSettings.productName;
+            var oldColorSpace = PlayerSettings.colorSpace;
             var buildTargetGroup = UnityEditor.BuildPipeline.GetBuildTargetGroup(buildInfo.BuildTarget);
 #if UNITY_2023_1_OR_NEWER
             var oldBuildIdentifier = PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup));
@@ -184,112 +185,110 @@ namespace Utilities.Editor.BuildPipeline
             var oldBuildIdentifier = PlayerSettings.GetApplicationIdentifier(buildTargetGroup);
 #endif // UNITY_2023_1_OR_NEWER
 
-            if (BuildInfo.IsCommandLine)
-            {
-                BuildInfo.ParseCommandLineArgs();
-            }
-
-            // use https://semver.org/
-            // major.minor.build
-            var version = new Version(
-                (buildInfo.Version == null || buildInfo.AutoIncrement)
-                    ? string.IsNullOrWhiteSpace(PlayerSettings.bundleVersion)
-                        ? GetValidVersionString(Application.version)
-                        : GetValidVersionString(PlayerSettings.bundleVersion)
-                    : GetValidVersionString(buildInfo.Version.ToString()));
-
-            // Only auto incitement if the version wasn't specified in the build info.
-            if (buildInfo.Version == null &&
-                buildInfo.AutoIncrement)
-            {
-                version = new Version(version.Major, version.Minor, version.Build + 1);
-            }
-
-            // Updates the Application.version and syncs Android and iOS bundle version strings
-            PlayerSettings.bundleVersion = version.ToString();
-            // Update Lumin bc the Application.version isn't synced like Android & iOS
-            PlayerSettings.Lumin.versionName = PlayerSettings.bundleVersion;
-            // Update WSA bc the Application.version isn't synced like Android & iOS
-            PlayerSettings.WSA.packageVersion = new Version(version.Major, version.Minor, version.Build, 0);
-#if UNITY_2022_3_OR_NEWER
-            PlayerSettings.visionOSBundleVersion = PlayerSettings.bundleVersion;
-#endif // UNITY_2022_3_OR_NEWER
-
-            if (!string.IsNullOrWhiteSpace(buildInfo.BundleIdentifier))
-            {
-#if UNITY_2023_1_OR_NEWER
-                PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup), buildInfo.BundleIdentifier);
-#else
-                PlayerSettings.SetApplicationIdentifier(buildTargetGroup, buildInfo.BundleIdentifier);
-#endif // UNITY_2023_1_OR_NEWER
-            }
-
-#if UNITY_2023_1_OR_NEWER
-            var playerBuildSymbols = PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup));
-#else
-            var playerBuildSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
-#endif // UNITY_2023_1_OR_NEWER
-
-            if (!string.IsNullOrEmpty(playerBuildSymbols))
-            {
-                if (buildInfo.HasConfigurationSymbol())
-                {
-                    buildInfo.AppendWithoutConfigurationSymbols(playerBuildSymbols);
-                }
-                else
-                {
-                    buildInfo.AppendSymbols(playerBuildSymbols.Split(';'));
-                }
-            }
-
-            if (!string.IsNullOrEmpty(buildInfo.BuildSymbols))
-            {
-#if UNITY_2023_1_OR_NEWER
-                PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup), buildInfo.BuildSymbols);
-#else
-                PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, buildInfo.BuildSymbols);
-#endif // UNITY_2023_1_OR_NEWER
-            }
-
-            if ((buildInfo.BuildOptions & BuildOptions.Development) == BuildOptions.Development &&
-                !buildInfo.HasConfigurationSymbol())
-            {
-                buildInfo.AppendSymbols(BuildSymbolDebug);
-            }
-
-            if (buildInfo.HasAnySymbols(BuildSymbolDebug))
-            {
-                buildInfo.BuildOptions |= BuildOptions.Development | BuildOptions.AllowDebugging;
-            }
-
-            if (buildInfo.HasAnySymbols(BuildSymbolRelease))
-            {
-                // Unity automatically adds the DEBUG symbol if the BuildOptions.Development flag is
-                // specified. In order to have debug symbols and the RELEASE symbols we have to
-                // inject the symbol Unity relies on to enable the /debug+ flag of csc.exe which is "DEVELOPMENT_BUILD"
-                buildInfo.AppendSymbols("DEVELOPMENT_BUILD");
-            }
-
-            var oldColorSpace = PlayerSettings.colorSpace;
-
-            if (buildInfo.ColorSpace.HasValue)
-            {
-                Debug.Log($"Color Space: {buildInfo.ColorSpace.Value}");
-                PlayerSettings.colorSpace = buildInfo.ColorSpace.Value;
-            }
-
-            BuildReport buildReport;
-
-            if (Application.isBatchMode)
-            {
-                Debug.Log($"Build Target: {buildInfo.BuildTarget}");
-                Debug.Log($"Build Options: {buildInfo.BuildOptions}");
-                Debug.Log($"Target output: \"{buildInfo.FullOutputPath}\"");
-                Debug.Log($"Scenes in build:\n{string.Join("\n    ", buildInfo.Scenes.Select(scene => scene.path))}");
-            }
+            BuildReport buildReport = null;
 
             try
             {
+                if (BuildInfo.IsCommandLine)
+                {
+                    BuildInfo.ParseCommandLineArgs();
+                }
+
+                // use https://semver.org/
+                // major.minor.build
+                var version = new Version(
+                    (buildInfo.Version == null || buildInfo.AutoIncrement)
+                        ? string.IsNullOrWhiteSpace(PlayerSettings.bundleVersion)
+                            ? GetValidVersionString(Application.version)
+                            : GetValidVersionString(PlayerSettings.bundleVersion)
+                        : GetValidVersionString(buildInfo.Version.ToString()));
+
+                // Only auto incitement if the version wasn't specified in the build info.
+                if (buildInfo.Version == null &&
+                    buildInfo.AutoIncrement)
+                {
+                    version = new Version(version.Major, version.Minor, version.Build + 1);
+                }
+
+                // Updates the Application.version and syncs Android and iOS bundle version strings
+                PlayerSettings.bundleVersion = version.ToString();
+                // Update Lumin bc the Application.version isn't synced like Android & iOS
+                PlayerSettings.Lumin.versionName = PlayerSettings.bundleVersion;
+                // Update WSA bc the Application.version isn't synced like Android & iOS
+                PlayerSettings.WSA.packageVersion = new Version(version.Major, version.Minor, version.Build, 0);
+#if UNITY_2022_3_OR_NEWER
+                PlayerSettings.visionOSBundleVersion = PlayerSettings.bundleVersion;
+#endif // UNITY_2022_3_OR_NEWER
+
+                if (!string.IsNullOrWhiteSpace(buildInfo.BundleIdentifier))
+                {
+#if UNITY_2023_1_OR_NEWER
+                    PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup), buildInfo.BundleIdentifier);
+#else
+                    PlayerSettings.SetApplicationIdentifier(buildTargetGroup, buildInfo.BundleIdentifier);
+#endif // UNITY_2023_1_OR_NEWER
+                }
+
+#if UNITY_2023_1_OR_NEWER
+                var playerBuildSymbols = PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup));
+#else
+                var playerBuildSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
+#endif // UNITY_2023_1_OR_NEWER
+
+                if (!string.IsNullOrEmpty(playerBuildSymbols))
+                {
+                    if (buildInfo.HasConfigurationSymbol())
+                    {
+                        buildInfo.AppendWithoutConfigurationSymbols(playerBuildSymbols);
+                    }
+                    else
+                    {
+                        buildInfo.AppendSymbols(playerBuildSymbols.Split(';'));
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(buildInfo.BuildSymbols))
+                {
+#if UNITY_2023_1_OR_NEWER
+                    PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup), buildInfo.BuildSymbols);
+#else
+                    PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, buildInfo.BuildSymbols);
+#endif // UNITY_2023_1_OR_NEWER
+                }
+
+                if ((buildInfo.BuildOptions & BuildOptions.Development) == BuildOptions.Development &&
+                    !buildInfo.HasConfigurationSymbol())
+                {
+                    buildInfo.AppendSymbols(BuildSymbolDebug);
+                }
+
+                if (buildInfo.HasAnySymbols(BuildSymbolDebug))
+                {
+                    buildInfo.BuildOptions |= BuildOptions.Development | BuildOptions.AllowDebugging;
+                }
+
+                if (buildInfo.HasAnySymbols(BuildSymbolRelease))
+                {
+                    // Unity automatically adds the DEBUG symbol if the BuildOptions.Development flag is
+                    // specified. In order to have debug symbols and the RELEASE symbols we have to
+                    // inject the symbol Unity relies on to enable the /debug+ flag of csc.exe which is "DEVELOPMENT_BUILD"
+                    buildInfo.AppendSymbols("DEVELOPMENT_BUILD");
+                }
+
+                if (buildInfo.ColorSpace.HasValue)
+                {
+                    Debug.Log($"Color Space: {buildInfo.ColorSpace.Value}");
+                    PlayerSettings.colorSpace = buildInfo.ColorSpace.Value;
+                }
+
+                if (Application.isBatchMode)
+                {
+                    Debug.Log($"Build Target: {buildInfo.BuildTarget}");
+                    Debug.Log($"Build Options: {buildInfo.BuildOptions}");
+                    Debug.Log($"Target output: \"{buildInfo.FullOutputPath}\"");
+                    Debug.Log($"Scenes in build:\n{string.Join("\n    ", buildInfo.Scenes.Select(scene => scene.path))}");
+                }
+
 #if UNITY_ADDRESSABLES
                 UnityEditor.AddressableAssets.Build.BuildScript.buildCompleted += OnAddressableBuildResult;
 #endif
