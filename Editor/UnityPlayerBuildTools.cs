@@ -408,18 +408,12 @@ namespace Utilities.Editor.BuildPipeline
 #endif //  UNITY_2021_1_OR_NEWER
             }
 
-            AssetDatabase.importPackageCompleted += ImportCallback;
-
-            var packageFullPath = TMPro.EditorUtilities.TMP_EditorUtility.packageFullPath;
-            var importPath = $"{packageFullPath}/Package Resources/TMP Essential Resources.unitypackage";
-            Debug.Log($"TextMesh Pro Essentials Import from {importPath}");
-
-            if (!System.IO.File.Exists(importPath))
+            void CleanupImportHandlers()
             {
-                throw new System.IO.FileNotFoundException($"Unable to find the TextMesh Pro package at {importPath}");
+                AssetDatabase.importPackageCompleted -= ImportCallback;
+                AssetDatabase.importPackageCancelled -= CancelCallback;
+                AssetDatabase.importPackageFailed -= FailedCallback;
             }
-
-            ImportPackageImmediately(importPath);
 
             void ImportCallback(string packageName)
             {
@@ -431,28 +425,110 @@ namespace Utilities.Editor.BuildPipeline
                     System.IO.File.WriteAllBytes(settingsFilePath, settingsBackup);
                 }
 
-                AssetDatabase.importPackageCompleted -= ImportCallback;
+                CleanupImportHandlers();
                 tcs.TrySetResult(true);
             }
+
+            void CancelCallback(string packageName)
+            {
+                CleanupImportHandlers();
+                tcs.TrySetException(new Exception($"TMP essentials import was cancelled ({packageName})."));
+            }
+
+            void FailedCallback(string packageName, string errorMessage)
+            {
+                CleanupImportHandlers();
+                tcs.TrySetException(new Exception($"TMP essentials import failed ({packageName}): {errorMessage}"));
+            }
+
+            AssetDatabase.importPackageCompleted += ImportCallback;
+            AssetDatabase.importPackageCancelled += CancelCallback;
+            AssetDatabase.importPackageFailed += FailedCallback;
+
+            var importPath = ResolveTmpEssentialResourcesPackagePath();
+            Debug.Log($"TextMesh Pro Essentials Import from {importPath ?? "(not found)"}");
+
+            if (string.IsNullOrEmpty(importPath) || !System.IO.File.Exists(importPath))
+            {
+                CleanupImportHandlers();
+#if UNITY_6000_0_OR_NEWER
+                // Standalone com.unity.textmeshpro was merged into com.unity.ugui; this repo's CI
+                // already skips requiring Assets/TextMesh Pro on Unity 6000. Missing package is normal.
+                Debug.Log("TMP Essential Resources .unitypackage not present; skipping import.");
+                return;
+#else
+                throw new System.IO.FileNotFoundException(
+                    $"Unable to find the TextMesh Pro essentials package at {importPath ?? "(unresolved)"}.");
+#endif
+            }
+
+            ImportPackageImmediately(importPath);
 
             await tcs.Task.ConfigureAwait(true);
 
             if (!System.IO.Directory.Exists("Assets/TextMesh Pro"))
             {
+#if UNITY_6000_0_OR_NEWER
+                Debug.Log("Assets/TextMesh Pro was not created after import; continuing.");
+#else
                 throw new Exception("Failed to import TextMeshPro resources!");
+#endif
             }
-
-            Debug.Log("TextMesh Pro Essentials Import Completed");
+            else
+            {
+                Debug.Log("TextMesh Pro Essentials Import Completed");
+            }
 #else
             await Task.CompletedTask;
 #endif // TEXT_MESH_PRO
         }
 
+        /// <summary>
+        /// Resolves the TMP essentials .unitypackage path (ugui Package Resources, then TMP_EditorUtility).
+        /// </summary>
+        private static string ResolveTmpEssentialResourcesPackagePath()
+        {
+#if TEXT_MESH_PRO
+            const string relativePackage = "Package Resources/TMP Essential Resources.unitypackage";
+
+            // Unity's own TMP_PackageResourceImporter uses Packages/com.unity.ugui after the merge.
+            var uguiRoot = System.IO.Path.GetFullPath("Packages/com.unity.ugui");
+            var uguiPackage = System.IO.Path.Combine(uguiRoot, relativePackage);
+            if (System.IO.File.Exists(uguiPackage))
+            {
+                return uguiPackage;
+            }
+
+            var packageFullPath = TMPro.EditorUtilities.TMP_EditorUtility.packageFullPath;
+            if (!string.IsNullOrEmpty(packageFullPath))
+            {
+                return $"{packageFullPath}/{relativePackage}";
+            }
+#endif
+            return null;
+        }
+
+        /// <summary>
+        /// Imports a .unitypackage using internal <c>ImportPackageImmediately</c> when available (synchronous);
+        /// otherwise falls back to asynchronous <see cref="AssetDatabase.ImportPackage"/>.
+        /// Unity 6000.6+ may not expose ImportPackageImmediately.
+        /// </summary>
         private static void ImportPackageImmediately(string importPath)
         {
-            var importImmediate = typeof(AssetDatabase).GetMethod(nameof(ImportPackageImmediately), BindingFlags.NonPublic | BindingFlags.Static);
-            Debug.Assert(importImmediate != null);
-            importImmediate.Invoke(null, new object[] { importPath });
+            var importImmediate = typeof(AssetDatabase).GetMethod(
+                "ImportPackageImmediately",
+                BindingFlags.NonPublic | BindingFlags.Static);
+
+            if (importImmediate != null)
+            {
+                importImmediate.Invoke(null, new object[] { importPath });
+                return;
+            }
+
+            Debug.Log(
+                "AssetDatabase.ImportPackageImmediately is unavailable; " +
+                $"using AssetDatabase.ImportPackage(\"{importPath}\", interactive: false).");
+            AssetDatabase.ImportPackage(importPath, false);
         }
 
         /// <summary>
