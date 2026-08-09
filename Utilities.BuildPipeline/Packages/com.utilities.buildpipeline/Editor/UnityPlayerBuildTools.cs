@@ -416,7 +416,9 @@ namespace Utilities.Editor.BuildPipeline
 
             if (!System.IO.File.Exists(importPath))
             {
-                throw new System.IO.FileNotFoundException($"Unable to find the TextMesh Pro package at {importPath}");
+                AssetDatabase.importPackageCompleted -= ImportCallback;
+                Debug.LogWarning($"Unable to find the TextMesh Pro essentials package at {importPath}; skipping import.");
+                return;
             }
 
             ImportPackageImmediately(importPath);
@@ -448,11 +450,26 @@ namespace Utilities.Editor.BuildPipeline
 #endif // TEXT_MESH_PRO
         }
 
+        /// <summary>
+        /// Imports a .unitypackage synchronously when the internal API exists; otherwise falls back to
+        /// <see cref="AssetDatabase.ImportPackage"/>. Unity 6000.6+ may not expose ImportPackageImmediately.
+        /// </summary>
         private static void ImportPackageImmediately(string importPath)
         {
-            var importImmediate = typeof(AssetDatabase).GetMethod(nameof(ImportPackageImmediately), BindingFlags.NonPublic | BindingFlags.Static);
-            Debug.Assert(importImmediate != null);
-            importImmediate.Invoke(null, new object[] { importPath });
+            var importImmediate = typeof(AssetDatabase).GetMethod(
+                "ImportPackageImmediately",
+                BindingFlags.NonPublic | BindingFlags.Static);
+
+            if (importImmediate != null)
+            {
+                importImmediate.Invoke(null, new object[] { importPath });
+                return;
+            }
+
+            Debug.LogWarning(
+                "AssetDatabase.ImportPackageImmediately is unavailable; " +
+                $"falling back to AssetDatabase.ImportPackage(\"{importPath}\", interactive: false).");
+            AssetDatabase.ImportPackage(importPath, false);
         }
 
         /// <summary>
