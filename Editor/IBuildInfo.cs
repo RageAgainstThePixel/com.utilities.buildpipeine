@@ -27,6 +27,11 @@ namespace Utilities.Editor.BuildPipeline
         string BundleIdentifier { get; set; }
 
         /// <summary>
+        /// The build product name.
+        /// </summary>
+        string ProductName { get; set; }
+
+        /// <summary>
         /// The build version number.
         /// </summary>
         /// <remarks>
@@ -120,6 +125,7 @@ namespace Utilities.Editor.BuildPipeline
         /// -versionName "0.1.0"<para/>
         /// -versionCode "1"<para/>
         /// -bundleIdentifier "com.xrtk.core"<para/>
+        /// -productName "My Product"<para/>
         /// -sceneList (CSV format)<para/>
         /// -sceneListFile (CSV format)<para/>
         /// -buildOutputDirectory <para/>

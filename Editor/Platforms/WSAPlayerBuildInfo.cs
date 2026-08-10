@@ -1,6 +1,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,7 +16,9 @@ namespace Utilities.Editor.BuildPipeline
         public override BuildTargetGroup BuildTargetGroup => BuildTargetGroup.WSA;
 
         /// <inheritdoc />
-        public override string FullOutputPath => OutputDirectory;
+        public override string FullOutputPath => HasProductNameOverride
+            ? Path.Combine(OutputDirectory, OutputName).Replace("\\", "/")
+            : OutputDirectory;
 
         /// <inheritdoc />
         public override void ParseCommandLineArgs()
