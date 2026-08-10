@@ -44,6 +44,45 @@ namespace Utilities.Editor.BuildPipeline
             }
         }
 
+        private string productName;
+
+        private bool productNameOverride;
+
+        /// <summary>
+        /// True when <see cref="ProductName"/> was set explicitly (e.g. via <c>-productName</c>).
+        /// </summary>
+        protected bool HasProductNameOverride => productNameOverride;
+
+        /// <inheritdoc />
+        public string ProductName
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(productName))
+                {
+                    productName = PlayerSettings.productName;
+                }
+
+                return productName;
+            }
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentException("Product name cannot be null or whitespace.", nameof(value));
+                }
+
+                if (value.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+                {
+                    throw new ArgumentException($"Product name contains invalid filename characters: \"{value}\"", nameof(value));
+                }
+
+                productNameOverride = true;
+                productName = value;
+                PlayerSettings.productName = productName;
+            }
+        }
+
         /// <inheritdoc />
         public virtual Version Version { get; set; }
 
@@ -110,7 +149,10 @@ namespace Utilities.Editor.BuildPipeline
         }
 
         /// <inheritdoc />
-        public virtual string FullOutputPath => $"{OutputDirectory}{Path.DirectorySeparatorChar}{BundleIdentifier}{ExecutableFileExtension}";
+        public virtual string OutputName => productNameOverride ? ProductName : BundleIdentifier;
+
+        /// <inheritdoc />
+        public virtual string FullOutputPath => $"{OutputDirectory}{Path.DirectorySeparatorChar}{OutputName}{ExecutableFileExtension}";
 
         /// <inheritdoc />
         public virtual string ExecutableFileExtension
@@ -122,13 +164,21 @@ namespace Utilities.Editor.BuildPipeline
                     case BuildTarget.StandaloneWindows:
                     case BuildTarget.StandaloneWindows64:
 #if PLATFORM_STANDALONE_WIN
-                        return UnityEditor.WindowsStandalone.UserBuildSettings.createSolution ? $"{Path.DirectorySeparatorChar}{Application.productName}" : ".exe";
+                        return UnityEditor.WindowsStandalone.UserBuildSettings.createSolution
+                            ? HasProductNameOverride
+                                ? Path.DirectorySeparatorChar.ToString()
+                                : $"{Path.DirectorySeparatorChar}{ProductName}"
+                            : ".exe";
 #else
                         return ".exe";
 #endif
                     case BuildTarget.StandaloneOSX:
 #if PLATFORM_STANDALONE_OSX
-                        return UnityEditor.OSXStandalone.UserBuildSettings.createXcodeProject ? $"{Path.DirectorySeparatorChar}{Application.productName}" : ".app";
+                        return UnityEditor.OSXStandalone.UserBuildSettings.createXcodeProject
+                            ? HasProductNameOverride
+                                ? Path.DirectorySeparatorChar.ToString()
+                                : $"{Path.DirectorySeparatorChar}{ProductName}"
+                            : ".app";
 #else
                         return ".app";
 #endif
@@ -203,6 +253,9 @@ namespace Utilities.Editor.BuildPipeline
                         break;
                     case "-bundleIdentifier":
                         BundleIdentifier = arguments[++i];
+                        break;
+                    case "-productName":
+                        ProductName = arguments[++i];
                         break;
                     case "-sceneList":
                         Scenes = UnityPlayerBuildTools.SplitSceneList(arguments[++i]);
