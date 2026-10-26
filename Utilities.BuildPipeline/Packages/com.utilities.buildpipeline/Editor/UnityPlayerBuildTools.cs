@@ -521,16 +521,17 @@ namespace Utilities.Editor.BuildPipeline
         /// </summary>
         private static void ImportPackageImmediately(string importPath)
         {
-            const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Static;
-            var importImmediate = typeof(AssetDatabase).GetMethod("ImportPackageImmediately", flags);
-
-            if (importImmediate == null)
-            {
-                var assetPackageUtility = AppDomain.CurrentDomain.GetAssemblies()
-                    .Select(assembly => assembly.GetType("UnityEditor.AssetPackage.Utility", false))
-                    .FirstOrDefault(type => type != null);
-                importImmediate = assetPackageUtility?.GetMethod("ImportPackageImmediately", flags, null, new[] { typeof(string) }, null);
-            }
+#if UNITY_6000_6_OR_NEWER
+            var importPackageType = typeof(UnityEditor.AssetPackage.Package).Assembly.GetType("UnityEditor.AssetPackage.Utility");
+#else
+            var importPackageType = typeof(AssetDatabase);
+#endif // UNITY_6000_6_OR_NEWER
+            var importImmediate = importPackageType?.GetMethod(
+                "ImportPackageImmediately",
+                BindingFlags.NonPublic | BindingFlags.Static,
+                null,
+                new[] { typeof(string) },
+                null);
 
             if (importImmediate != null)
             {
