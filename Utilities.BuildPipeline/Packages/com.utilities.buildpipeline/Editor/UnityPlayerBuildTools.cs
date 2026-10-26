@@ -540,9 +540,13 @@ namespace Utilities.Editor.BuildPipeline
             }
 
             Debug.Log(
-                "AssetDatabase.ImportPackageImmediately is unavailable; " +
-                $"using AssetDatabase.ImportPackage(\"{importPath}\", interactive: false).");
+                "ImportPackageImmediately is unavailable; " +
+                $"falling back to async package import of \"{importPath}\" (interactive: false).");
+#if UNITY_6000_6_OR_NEWER
+            UnityEditor.AssetPackage.Package.Import(importPath, false);
+#else
             AssetDatabase.ImportPackage(importPath, false);
+#endif // UNITY_6000_6_OR_NEWER
         }
 
         /// <summary>
