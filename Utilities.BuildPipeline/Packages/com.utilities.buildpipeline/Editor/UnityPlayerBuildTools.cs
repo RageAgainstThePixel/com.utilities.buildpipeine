@@ -517,13 +517,20 @@ namespace Utilities.Editor.BuildPipeline
         /// <summary>
         /// Imports a .unitypackage using internal <c>ImportPackageImmediately</c> when available (synchronous);
         /// otherwise falls back to asynchronous <see cref="AssetDatabase.ImportPackage"/>.
-        /// Unity 6000.6+ may not expose ImportPackageImmediately.
+        /// Unity 6000.6+ moved ImportPackageImmediately from AssetDatabase to UnityEditor.AssetPackage.Utility.
         /// </summary>
         private static void ImportPackageImmediately(string importPath)
         {
-            var importImmediate = typeof(AssetDatabase).GetMethod(
-                "ImportPackageImmediately",
-                BindingFlags.NonPublic | BindingFlags.Static);
+            const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Static;
+            var importImmediate = typeof(AssetDatabase).GetMethod("ImportPackageImmediately", flags);
+
+            if (importImmediate == null)
+            {
+                var assetPackageUtility = AppDomain.CurrentDomain.GetAssemblies()
+                    .Select(assembly => assembly.GetType("UnityEditor.AssetPackage.Utility", false))
+                    .FirstOrDefault(type => type != null);
+                importImmediate = assetPackageUtility?.GetMethod("ImportPackageImmediately", flags, null, new[] { typeof(string) }, null);
+            }
 
             if (importImmediate != null)
             {
