@@ -33,7 +33,7 @@ jobs:
 
       - uses: RageAgainstThePixel/unity-setup@v2
         id: unity-setup
-        timeout-minutes: 30
+        timeout-minutes: 45
         with:
           unity-version: ${{ matrix.unity-version }}
           build-targets: ${{ matrix.build-target }}
@@ -49,6 +49,7 @@ jobs:
 
       - uses: RageAgainstThePixel/unity-action@v3
         name: ${{ matrix.build-target }}-Validate
+        timeout-minutes: 30
         with:
           build-target: ${{ matrix.build-target }}
           project-path: ${{ steps.unity-setup.outputs.unity-project-path }}
@@ -57,6 +58,7 @@ jobs:
 
       - uses: RageAgainstThePixel/unity-action@v3
         name: ${{ matrix.build-target }}-Build
+        timeout-minutes: 30
         with:
           build-target: ${{ matrix.build-target }}
           project-path: ${{ steps.unity-setup.outputs.unity-project-path }}
