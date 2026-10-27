@@ -81,6 +81,19 @@ jobs:
             exit 1
           fi
 
+      - name: Debug Gradle
+        if: ${{ failure() && matrix.build-target == 'Android' }}
+        shell: bash
+        run: |
+          PRJ="${{ steps.unity-setup.outputs.unity-project-path }}/Library/Bee/Android/Prj/IL2CPP/Gradle"
+          cat "$PRJ/settings.gradle" "$PRJ/build.gradle" "$PRJ/gradle.properties" || true
+          ls -al ~/.gradle ~/.gradle/init.d 2>/dev/null || true
+          EDITOR_DIR="$(dirname "${{ steps.unity-setup.outputs.unity-editor-path }}")"
+          GRADLE_DIR="$(find "$EDITOR_DIR" /home/runner/Unity -type d -path '*AndroidPlayer/Tools/gradle' 2>/dev/null | head -n1)"
+          JAVA="$(dirname "$GRADLE_DIR")/../OpenJDK/bin/java"
+          ls -al "$GRADLE_DIR" "$GRADLE_DIR/init.d" 2>/dev/null || true
+          cd "$PRJ/launcher" && "$JAVA" -classpath "$GRADLE_DIR"/lib/gradle-launcher-*.jar org.gradle.launcher.GradleMain --info --stacktrace help 2>&1 | grep -iE 'resolv|could not|refused|unknownhost|offline|repository|exception|caused by|init' | head -n 150 || true
+
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
