@@ -4,8 +4,10 @@ using UnityEditor.Android;
 using UnityEngine;
 
 /// <summary>
+/// When UNITY_THISISABUILDMACHINE is set (unity-action@v3 sets it for every editor launch),
 /// Unity 6000.6+ generates settings.gradle with Unity's internal artifactory listed first.
 /// It is unreachable outside Unity's network, which fails Gradle plugin resolution, so strip it.
+/// Remove once CI runs on a unity-action release that no longer sets the variable.
 /// </summary>
 internal class StripUnityInternalGradleRepositories : IPostGenerateGradleAndroidProject
 {
