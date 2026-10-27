@@ -17,6 +17,7 @@ jobs:
       matrix: ${{ fromJSON(inputs.matrix) }}
       fail-fast: false
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
     permissions:
       contents: read
     steps:
@@ -32,6 +33,7 @@ jobs:
 
       - uses: RageAgainstThePixel/unity-setup@v2
         id: unity-setup
+        timeout-minutes: 30
         with:
           unity-version: ${{ matrix.unity-version }}
           build-targets: ${{ matrix.build-target }}
