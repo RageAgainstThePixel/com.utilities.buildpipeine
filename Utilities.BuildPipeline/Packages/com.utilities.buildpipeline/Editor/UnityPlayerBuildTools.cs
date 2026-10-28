@@ -517,13 +517,21 @@ namespace Utilities.Editor.BuildPipeline
         /// <summary>
         /// Imports a .unitypackage using internal <c>ImportPackageImmediately</c> when available (synchronous);
         /// otherwise falls back to asynchronous <see cref="AssetDatabase.ImportPackage"/>.
-        /// Unity 6000.6+ may not expose ImportPackageImmediately.
+        /// Unity 6000.6+ moved ImportPackageImmediately from AssetDatabase to UnityEditor.AssetPackage.Utility.
         /// </summary>
         private static void ImportPackageImmediately(string importPath)
         {
-            var importImmediate = typeof(AssetDatabase).GetMethod(
+#if UNITY_6000_6_OR_NEWER
+            var importPackageType = typeof(UnityEditor.AssetPackage.Package).Assembly.GetType("UnityEditor.AssetPackage.Utility");
+#else
+            var importPackageType = typeof(AssetDatabase);
+#endif // UNITY_6000_6_OR_NEWER
+            var importImmediate = importPackageType?.GetMethod(
                 "ImportPackageImmediately",
-                BindingFlags.NonPublic | BindingFlags.Static);
+                BindingFlags.NonPublic | BindingFlags.Static,
+                null,
+                new[] { typeof(string) },
+                null);
 
             if (importImmediate != null)
             {
@@ -532,9 +540,13 @@ namespace Utilities.Editor.BuildPipeline
             }
 
             Debug.Log(
-                "AssetDatabase.ImportPackageImmediately is unavailable; " +
-                $"using AssetDatabase.ImportPackage(\"{importPath}\", interactive: false).");
+                "ImportPackageImmediately is unavailable; " +
+                $"falling back to async package import of \"{importPath}\" (interactive: false).");
+#if UNITY_6000_6_OR_NEWER
+            UnityEditor.AssetPackage.Package.Import(importPath, false);
+#else
             AssetDatabase.ImportPackage(importPath, false);
+#endif // UNITY_6000_6_OR_NEWER
         }
 
         /// <summary>
