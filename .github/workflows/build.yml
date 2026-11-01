@@ -43,13 +43,13 @@ jobs:
           build-targets: ${{ matrix.build-target }}
           allow-security-alert: ${{ inputs.allow-security-alert }}
 
-      - uses: RageAgainstThePixel/activate-unity-license@v2
+      - uses: RageAgainstThePixel/activate-unity-license@v3
         with:
           license: personal
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
 
-      - uses: RageAgainstThePixel/unity-action@v3
+      - uses: RageAgainstThePixel/unity-action@v4
         name: ${{ matrix.build-target }}-Validate
         timeout-minutes: 30
         with:
@@ -58,7 +58,7 @@ jobs:
           log-name: ${{ matrix.build-target }}-Validate
           args: -quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
 
-      - uses: RageAgainstThePixel/unity-action@v3
+      - uses: RageAgainstThePixel/unity-action@v4
         name: ${{ matrix.build-target }}-Build
         timeout-minutes: 30
         with:
