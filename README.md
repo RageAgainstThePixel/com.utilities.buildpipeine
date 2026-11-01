@@ -8,6 +8,8 @@ A Build Pipeline utility package for the [Unity](https://unity.com/) Game Engine
 
 Requires Unity 2019.4 LTS or higher.
 
+CI tests the current Unity streams on pull requests, and a monthly run covers the older lines.
+
 The recommended installation method is though the unity package manager and [OpenUPM](https://openupm.com/packages/com.utilities.buildpipeline).
 
 ### Via Unity Package Manager and OpenUPM
@@ -75,10 +77,10 @@ jobs:
             build-target: StandaloneOSX
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
         # Installs the Unity Editor based on your project version text file
-      - uses: RageAgainstThePixel/unity-setup@v2
+      - uses: RageAgainstThePixel/unity-setup@v3
         id: unity-setup # used to get project path output in later steps
         with:
           unity-version: ${{ matrix.unity-versions }}

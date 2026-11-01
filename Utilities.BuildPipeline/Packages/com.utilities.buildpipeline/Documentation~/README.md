@@ -75,10 +75,10 @@ jobs:
             build-target: StandaloneOSX
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
         # Installs the Unity Editor based on your project version text file
-      - uses: RageAgainstThePixel/unity-setup@v2
+      - uses: RageAgainstThePixel/unity-setup@v3
         id: unity-setup # used to get project path output in later steps
         with:
           unity-version: ${{ matrix.unity-versions }}
