@@ -41,5 +41,10 @@
       "os": "macos-latest",
       "build-target": "iOS"
     }
+  ],
+  "exclude": [
+    {
+      "unity-version": "7000.0"
+    }
   ]
 }
