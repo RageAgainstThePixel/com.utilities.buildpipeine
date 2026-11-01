@@ -41,6 +41,8 @@ jobs:
         with:
           unity-version: ${{ matrix.unity-version }}
           build-targets: ${{ matrix.build-target }}
+          # the streams include the beta and alpha, which only have prereleases until they ship
+          channels: f,b,a
           allow-security-alert: ${{ inputs.allow-security-alert }}
 
       - uses: RageAgainstThePixel/activate-unity-license@v3
