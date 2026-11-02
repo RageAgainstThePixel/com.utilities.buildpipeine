@@ -8,6 +8,8 @@ A Build Pipeline utility package for the [Unity](https://unity.com/) Game Engine
 
 Requires Unity 2019.4 LTS or higher.
 
+CI tests the current Unity streams on pull requests, and a monthly run covers the older lines.
+
 The recommended installation method is though the unity package manager and [OpenUPM](https://openupm.com/packages/com.utilities.buildpipeline).
 
 ### Via Unity Package Manager and OpenUPM
@@ -75,10 +77,10 @@ jobs:
             build-target: StandaloneOSX
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
         # Installs the Unity Editor based on your project version text file
-      - uses: RageAgainstThePixel/unity-setup@v2
+      - uses: RageAgainstThePixel/unity-setup@v3
         id: unity-setup # used to get project path output in later steps
         with:
           unity-version: ${{ matrix.unity-versions }}
@@ -86,14 +88,14 @@ jobs:
           version-file: path/to/your/ProjectSettings/ProjectVersion.txt # optional, this step will attempt to auto detect if not provided
 
         # Activates the installation with the provided credentials
-      - uses: RageAgainstThePixel/activate-unity-license@v2
+      - uses: RageAgainstThePixel/activate-unity-license@v3
         with:
           license: 'Personal' # Choose license type to use [ Personal, Professional ]
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
           # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro activations
 
-      - uses: RageAgainstThePixel/unity-action@v3
+      - uses: RageAgainstThePixel/unity-action@v4
         name: ${{ matrix.build-target }}-Validate
         with:
           log-name: ${{ matrix.build-target }}-Validate
@@ -101,7 +103,7 @@ jobs:
           project-path: ${{ steps.unity-setup.outputs.unity-project-path }}
           args: -quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
 
-      - uses: RageAgainstThePixel/unity-action@v3
+      - uses: RageAgainstThePixel/unity-action@v4
         name: ${{ matrix.build-target }}-Build
         with:
           log-name: ${{ matrix.build-target }}-Build
