@@ -9,10 +9,6 @@ on:
         required: false
         type: boolean
         default: false
-      alpha-streams:
-        required: false
-        type: string
-        default: '[]'
     secrets:
       UNITY_USERNAME:
         required: true
@@ -24,7 +20,7 @@ jobs:
     strategy:
       matrix: ${{ fromJSON(inputs.matrix) }}
       fail-fast: false
-    continue-on-error: ${{ contains(fromJSON(inputs.alpha-streams), matrix.unity-version) }}
+    continue-on-error: ${{ matrix.prerelease == true }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     permissions:
