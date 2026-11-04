@@ -20,6 +20,7 @@ jobs:
     strategy:
       matrix: ${{ fromJSON(inputs.matrix) }}
       fail-fast: false
+    continue-on-error: ${{ matrix.prerelease == true }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     permissions:
