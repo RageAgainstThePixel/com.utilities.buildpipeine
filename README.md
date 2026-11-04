@@ -8,7 +8,7 @@ A Build Pipeline utility package for the [Unity](https://unity.com/) Game Engine
 
 Requires Unity 2019.4 LTS or higher.
 
-CI tests the current Unity streams on pull requests, and a monthly run covers the older lines. Every Unity row reports as its own check, and rows on a stream with no final release yet (alpha or beta) report without failing the run.
+CI tests the current Unity streams on pull requests, and a monthly run covers the older lines.
 
 The recommended installation method is though the unity package manager and [OpenUPM](https://openupm.com/packages/com.utilities.buildpipeline).
 
