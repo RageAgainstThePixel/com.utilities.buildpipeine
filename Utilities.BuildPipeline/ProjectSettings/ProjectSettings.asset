@@ -177,7 +177,6 @@ PlayerSettings:
     Android: com.utilities.buildpipeline
     Lumin: com.utilities.buildpipeline
     Standalone: com.utilities.buildpipeline
-    WebGL: com.utilities.buildpipeline
     Windows Store Apps: com.utilities.buildpipeline
     iPhone: com.utilities.buildpipeline
   buildNumber:
@@ -584,7 +583,7 @@ PlayerSettings:
   switchAccessibleURLs: 
   switchLegalInformation: 
   switchMainThreadStackSize: 1048576
-  switchPresenceGroupId: 
+  switchPresenceGroupId:
   switchLogoHandling: 0
   switchReleaseVersion: 0
   switchDisplayVersion: 1.0.0
@@ -592,7 +591,7 @@ PlayerSettings:
   switchTouchScreenUsage: 0
   switchSupportedLanguagesMask: 0
   switchLogoType: 0
-  switchApplicationErrorCodeCategory: 
+  switchApplicationErrorCodeCategory:
   switchUserAccountSaveDataSize: 0
   switchUserAccountSaveDataJournalSize: 0
   switchApplicationAttribute: 0
