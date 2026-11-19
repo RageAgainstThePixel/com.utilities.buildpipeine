@@ -534,7 +534,9 @@ namespace Utilities.Editor.BuildPipeline
 #if UNITY_2022_1_OR_NEWER
                             "x64" => UnityEditor.Build.OSArchitecture.x64,
                             "arm64" => UnityEditor.Build.OSArchitecture.ARM64,
+#pragma warning disable CS0618 // deprecated on 6000.7, and removed on 7000.0, which is handled above
                             "x64arm64" => UnityEditor.Build.OSArchitecture.x64ARM64,
+#pragma warning restore CS0618
 #else
                             "x64" => UnityEditor.OSXStandalone.MacOSArchitecture.x64,
                             "arm64" => UnityEditor.OSXStandalone.MacOSArchitecture.ARM64,
