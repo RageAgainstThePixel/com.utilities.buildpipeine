@@ -47,11 +47,13 @@ jobs:
           # the streams include the beta and alpha, which only have prereleases until they ship
           channels: f,b,a
           allow-security-alert: ${{ inputs.allow-security-alert }}
+
       - uses: RageAgainstThePixel/activate-unity-license@v3
         with:
           license: personal
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
+
       - uses: RageAgainstThePixel/unity-action@v4
         name: ${{ matrix.build-target }}-Validate
         timeout-minutes: 30
@@ -60,6 +62,7 @@ jobs:
           project-path: ${{ steps.unity-setup.outputs.unity-project-path }}
           log-name: ${{ matrix.build-target }}-Validate
           args: -quit -nographics -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
+
       - uses: RageAgainstThePixel/unity-action@v4
         name: ${{ matrix.build-target }}-Build
         timeout-minutes: 30
