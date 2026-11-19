@@ -20,6 +20,7 @@ jobs:
     strategy:
       matrix: ${{ fromJSON(inputs.matrix) }}
       fail-fast: false
+    continue-on-error: ${{ matrix.prerelease == true }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     permissions:
@@ -34,6 +35,8 @@ jobs:
           remove_tool_cache: false
 
       - uses: actions/checkout@v7
+        with:
+          clean: true
 
       - uses: RageAgainstThePixel/unity-setup@v3
         id: unity-setup

@@ -522,12 +522,21 @@ namespace Utilities.Editor.BuildPipeline
 #if PLATFORM_STANDALONE_OSX && UNITY_2020_1_OR_NEWER
                     case "-arch":
                         var arch = arguments[++i].ToLower();
+#if UNITY_7000_0_OR_NEWER
+                        // Apple silicon (ARM64) is the only macOS player architecture, and the setting was removed
+                        if (arch != "arm64")
+                        {
+                            Debug.LogWarning($"-arch {arch} is ignored: Unity 7000.0 and newer only build Apple silicon (arm64) macOS players.");
+                        }
+#else
                         UnityEditor.OSXStandalone.UserBuildSettings.architecture = arch switch
                         {
 #if UNITY_2022_1_OR_NEWER
                             "x64" => UnityEditor.Build.OSArchitecture.x64,
                             "arm64" => UnityEditor.Build.OSArchitecture.ARM64,
+#pragma warning disable CS0618 // deprecated on 6000.7, and removed on 7000.0, which is handled above
                             "x64arm64" => UnityEditor.Build.OSArchitecture.x64ARM64,
+#pragma warning restore CS0618
 #else
                             "x64" => UnityEditor.OSXStandalone.MacOSArchitecture.x64,
                             "arm64" => UnityEditor.OSXStandalone.MacOSArchitecture.ARM64,
@@ -535,6 +544,7 @@ namespace Utilities.Editor.BuildPipeline
 #endif // UNITY_2020_1_OR_NEWER
                             _ => throw new Exception($"Unsupported architecture: {arch}"),
                         };
+#endif // UNITY_7000_0_OR_NEWER
                         break;
 #endif // PLATFORM_STANDALONE_OSX && UNITY_2020_1_OR_NEWER
 #if UNITY_6000_0_OR_NEWER
